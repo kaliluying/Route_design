@@ -47,11 +47,11 @@ class Scale:
         """
         if self.start:
             factor = 1
+            self.start = 0
         else:
             f1 = self.w_box / w
             f2 = self.h_box / h
             factor = min(f1, f2)
-        self.start = 0
         height = int(h * factor)
         # width = int(w * factor)
         if height <= 0:
@@ -117,9 +117,6 @@ class Scale:
         img2 = img2.rotate(angle)
         fff = Image.new('RGBA', img2.size, (236, 236, 236, 236))
         img2 = Image.composite(img2, fff, img2)
-        # if self.flash: self.img_path = self.img_path.replace('.', '5.')
-        # self.flash = False
-        # img2.save(self.img_path)
         self.img_path = temp_path
         return img2
 
@@ -132,5 +129,6 @@ class Scale:
         self.obj.place(x=1000, y=100)
         self.obj.remove()
         self.obj.widget.bind("<Key>", self.rotate)
+
         self.game_loop()
         self.win.protocol('WM_DELETE_WINDOW', self.close_win)

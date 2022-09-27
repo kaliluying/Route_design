@@ -9,8 +9,8 @@ class SelectedCanvas(Canvas):
 
     def __init__(self, master=None, cnf={}, **kw):
         Canvas.__init__(self, master, cnf, **kw)
-        self.height = 80
-        self.width = 5
+        self.height = 40
+        self.width = 40
         self.config(bd=0, highlightthickness=0)
         self.is_sizing = False
         self.old_width = 0
