@@ -35,6 +35,7 @@ font_size = 1
 remove_size = 1
 state_f = 1
 px = 0
+remove_px = {}
 
 img_path = "img/one.png"
 
@@ -359,7 +360,7 @@ def leftButtonDown(event):
 
 # 鼠标左键滚动事件
 def leftButtonMove(event):
-    global lastDraw, px, length
+    global lastDraw, px, length, remove_px
 
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
@@ -368,9 +369,11 @@ def leftButtonMove(event):
         y = event.y - Y.get()
         if x > 0 and y > 0:
             px += (math.sqrt(x * x + y * y)) / 10
+            temp_px = (math.sqrt(x * x + y * y)) / 10
         else:
             px += (abs(x + y)) / 10
-
+            temp_px = (abs(x + y)) / 10
+        remove_px[lastDraw] = temp_px
         length.config(text="%.2fm" % px)
         X.set(event.x)
         Y.set(event.y)
@@ -399,7 +402,7 @@ def remove():
 
 # 清屏
 def clear():
-    global lastDraw, end, h1, h2, watermark, length, px
+    global lastDraw, end, h1, h2, watermark, length, px, remove_px
     for item in canvas.find_all():
         canvas.delete(item)
     wid = WIDTH / 10
@@ -413,6 +416,7 @@ def clear():
     canvas.create_line(10, 20, 60, 20)
     px = 0
     length.config(text="%.2fm" % px)
+    remove_px = {}
 
     if state_f:
         watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
@@ -423,22 +427,25 @@ def clear():
 
 # 撤销
 def back():
-    global end
-    try:
-        for i in range(end[-2], end[-1] + 1):
-            canvas.delete(i)
-        end.pop()
-    except:
-        end = [0]
-    # wid = WIDTH / 10
-    # hei = HEIGHT / 10
-    # h1 = canvas.create_text(WIDTH - 40, 10, text=f"长：{wid}m")
-    # h2 = canvas.create_text(WIDTH - 40, 30, text=f"宽：{hei}m")
-    #
-    # canvas.create_text(30, 10, text="5m")
-    # canvas.create_line(10, 15, 10, 20)
-    # canvas.create_line(50, 15, 50, 20)
-    # canvas.create_line(10, 20, 50, 20)
+    global end, remove_px, px, length
+    temp = 0
+    temp_dict = {}
+    iteration = remove_px.keys()
+    for i in range(end[-2] + 1, end[-1] + 1):
+        if next(iter(remove_px)) > i:
+            continue
+        canvas.delete(i)
+    for i in iteration:
+        if i > end[-2]:
+            temp += remove_px[i]
+            temp_dict[i] = remove_px[i]
+    for i in temp_dict.keys():
+        if i in remove_px:
+            del remove_px[i]
+    end.pop()
+    px -= temp
+
+    length.config(text="%.2fm" % px)
 
 
 # 通用字号
@@ -511,7 +518,7 @@ def about():
 
 # 帮助文档
 def open_web():
-    webbrowser.open("https://gitee.com")
+    webbrowser.open("https://github.com/kaliluying/Route_design/blob/main/README.md")
 
 
 # 障碍号
