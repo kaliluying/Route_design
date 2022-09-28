@@ -37,10 +37,8 @@ state_f = 1
 px = 0
 remove_px = {}
 
-# img_path = "img/one.png"
 # 单横木
-one_path = 'img/test-1.png'
-# image = 'img/one.png'
+one_path = 'img/one.png'
 # 组合障碍
 com_image = "img/com.png"
 # 利物浦
@@ -61,7 +59,7 @@ direction_image = "img/direction.png"
 # 起/终点线
 line_image = "img/line.png"
 # 进出口
-gate_image = "img/gate1.png"
+gate_image = "img/gate.png"
 # icon
 icon_path = "img/ic.png"
 icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
@@ -143,14 +141,6 @@ def start_direction(image_path):
     image_path = image_path.replace('.', '-dir.')
     img1.save(image_path)
     return image_path
-    # img1 = Image.open(image_path)
-    # w, h = img1.size
-    # img2 = Image.open("img/direction.png")
-    # w1, h1 = img2.size
-    # img2 = img2.resize((w, h1))
-    # r, g, b, alpha = img2.split()
-    # img1.paste(img2, (0, h // 2 - 5), alpha)
-    # img1.save("img/com.png")
 
 
 # 障碍号确认
