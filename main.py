@@ -37,9 +37,10 @@ state_f = 1
 px = 0
 remove_px = {}
 
-img_path = "img/one.png"
-
-image = 'img/test-1.png'
+# img_path = "img/one.png"
+# 单横木
+one_path = 'img/test-1.png'
+# image = 'img/one.png'
 # 组合障碍
 com_image = "img/com.png"
 # 利物浦
@@ -84,14 +85,14 @@ def is_number(s):
 
 # 合并图片
 def merge(m, m1=0):
-    global image, com_image
-    img_obj = Image.open(image)
-    img_obj2 = Image.open(image)
+    global one_path, com_image
+    img_obj = Image.open(one_path)
+    img_obj2 = Image.open(one_path)
     result = Image.new(img_obj.mode, (m + m1 + 10, 40))
     result.paste(img_obj, box=(0, 0))
     result.paste(img_obj2, box=(m + m1, 0))
     if m1:
-        image3 = Image.open(image)
+        image3 = Image.open(one_path)
         result.paste(image3, box=(m, 0))
         result.save("img/com2.png")
         com_image = "img/com2.png"
@@ -138,10 +139,18 @@ def start_direction(image_path):
     w1, h1 = img2.size
     img2 = img2.resize((w, h1))
     r, g, b, alpha = img2.split()
-    img1.paste(img2, (0, h // 2 - 8), alpha)
+    img1.paste(img2, (0, h // 2 - 5), alpha)
     image_path = image_path.replace('.', '-dir.')
     img1.save(image_path)
     return image_path
+    # img1 = Image.open(image_path)
+    # w, h = img1.size
+    # img2 = Image.open("img/direction.png")
+    # w1, h1 = img2.size
+    # img2 = img2.resize((w, h1))
+    # r, g, b, alpha = img2.split()
+    # img1.paste(img2, (0, h // 2 - 5), alpha)
+    # img1.save("img/com.png")
 
 
 # 障碍号确认
@@ -156,7 +165,7 @@ def insert():
 
 # 单横木
 def monorail():
-    image_path = expand(img_path)
+    image_path = expand(one_path)
     image_path = start_direction(image_path)
     mon = SelectedCanvas()
     scale = Scale(win, image_path, mon)
