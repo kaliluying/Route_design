@@ -177,32 +177,38 @@ def tirail():
 
 # 组合障碍
 def combination():
-    a_b = var_a_b.get()
-    b_c = var_b_c.get()
-    if (not a_b and not b_c) or (not is_number(a_b) and not is_number(b_c)):
-        messagebox.showinfo("警告", "请输入数字")
-        return
-    if is_number(a_b) and is_number(b_c):
-        m = a_b
-        m1 = b_c
-        m = int(float(m) * 10)
-        m1 = int(float(m1) * 10)
-        merge(m, m1)
-        image_path = expand(com_image)
-        image_path = start_direction(image_path)
-        s = SelectedCanvas()
-        com = Scale(win, image_path, s)
-        com.run()
-
-    else:
-        m = a_b if is_number(a_b) else b_c
-        m = int(float(m) * 10)
-        merge(m)
-        image_path = expand(com_image)
-        image_path = start_direction(image_path)
-        s = SelectedCanvas()
-        com = Scale(win, image_path, s)
-        com.run()
+    # a_b = var_a_b.get()
+    # b_c = var_b_c.get()
+    # if (not a_b and not b_c) or (not is_number(a_b) and not is_number(b_c)):
+    #     messagebox.showinfo("警告", "请输入数字")
+    #     return
+    # if is_number(a_b) and is_number(b_c):
+    #     m = a_b
+    #     m1 = b_c
+    #     m = int(float(m) * 10)
+    #     m1 = int(float(m1) * 10)
+    #     merge(m, m1)
+    #     image_path = expand(com_image)
+    #     image_path = start_direction(image_path)
+    #     s = SelectedCanvas()
+    #     com = Scale(win, image_path, s)
+    #     com.run()
+    #
+    # else:
+    #     m = a_b if is_number(a_b) else b_c
+    #     m = int(float(m) * 10)
+    #     merge(m)
+    #     image_path = expand(com_image)
+    #     image_path = start_direction(image_path)
+    #     s = SelectedCanvas()
+    #     com = Scale(win, image_path, s)
+    #     com.run()
+    merge(10)
+    image_path = expand(com_image)
+    image_path = start_direction(image_path)
+    s = SelectedCanvas()
+    com = Scale(win, image_path, s)
+    com.run()
 
 
 # 利物浦

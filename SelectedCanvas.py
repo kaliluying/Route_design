@@ -45,10 +45,10 @@ class SelectedCanvas(Canvas):
         self.create_rectangle(-1, -1, -2, -2, tag='side', dash=3, outline='grey')
         self.tag_bind('side', "<Button-1>", self._mousedown, add='+')
         self.tag_bind('side', "<B1-Motion>", self._drag, add='+')
-        self.tag_bind('side', '<Enter>', lambda event: self.config(cursor='fleur'))
-        self.tag_bind('side', '<Leave>', lambda event: self.config(cursor='arrow'))
+        # self.tag_bind('side', '<Enter>', lambda event: self.config(cursor='fleur'))
+        # self.tag_bind('side', '<Leave>', lambda event: self.config(cursor='arrow'))
         for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
-            self.create_rectangle(-1, -1, -2, -2, tag=name, outline='blue')
+            self.create_rectangle(-1, -1, -1, -1, tag=name, outline='blue')
             self.tag_bind(name, "<Enter>", partial(self.on_mouse_enter, name))
             self.tag_bind(name, "<Leave>", partial(self.on_mouse_leave, name))
             self.tag_bind(name, "<Button-1>", partial(self.on_mouse_click, name))
@@ -72,9 +72,9 @@ class SelectedCanvas(Canvas):
         self.coords('ne', width - 8, 0, width - 1, 7)
         self.coords('se', width - 8, height - 8, width - 1, height - 1)
         self.coords('e', width - 8, (height - 7) / 2, width - 1, (height - 7) / 2 + 7)
-        if is_fill:
-            for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
-                self.itemconfig(name, fill='blue')
+        # if is_fill:
+        #     for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
+        #         self.itemconfig(name, fill='blue')
 
     def hide(self):
         """
@@ -92,12 +92,12 @@ class SelectedCanvas(Canvas):
         :param event: event
         :return: None
         """
-        if tag_name in ("nw", "sw", "ne", "se"):
-            self["cursor"] = "sizing"
-        elif tag_name in ("w", "e"):
-            self["cursor"] = "sb_h_double_arrow"
-        else:
-            self["cursor"] = "sb_v_double_arrow"
+        # if tag_name in ("nw", "sw", "ne", "se"):
+        #     self["cursor"] = "sizing"
+        # elif tag_name in ("w", "e"):
+        #     self["cursor"] = "sb_h_double_arrow"
+        # else:
+        #     self["cursor"] = "sb_v_double_arrow"
 
     def on_mouse_leave(self, tag_name, event):
         """
@@ -106,9 +106,9 @@ class SelectedCanvas(Canvas):
         :param event: event
         :return: None
         """
-        if self.is_sizing:
-            return
-        self["cursor"] = "arrow"
+        # if self.is_sizing:
+        #     return
+        # self["cursor"] = "arrow"
 
     def on_mouse_click(self, tag_name, event):
         """
