@@ -5,7 +5,6 @@ import tkinter as tk
 from scale import Scale
 import tkinter.filedialog
 import tkinter.simpledialog
-from tkinter import Checkbutton
 from tkinter import messagebox
 from SelectedCanvas import SelectedCanvas
 from PIL import ImageGrab, Image, ImageOps, ImageTk
@@ -19,12 +18,11 @@ w = win.winfo_screenwidth()
 h = win.winfo_screenheight()
 win.geometry(f"{w}x{h}")
 win.state("zoomed")
-# win.iconbitmap("img/ic.ico")
 win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
 # 全局变量
 WIDTH = 900
 HEIGHT = 600
-FONT = ("微软雅黑", 20)
+FONT = ("微软雅黑", 18)
 X = tk.IntVar(value=0)
 Y = tk.IntVar(value=0)
 what = tk.IntVar(value=1)
@@ -102,20 +100,15 @@ def merge(m, m1=0):
 def expand(path):
     img = Image.open(path)
     w, h = img.size
+    l = r = t = b = 0
     if w < h:
         var_ex = h - w
         l = var_ex // 2
         r = var_ex - l
-        t = 0
-        b = 0
     elif w > h:
         var_ex = w - h
         t = var_ex // 2
         b = var_ex - t
-        l = 0
-        r = 0
-    else:
-        l = r = t = b = 0
 
     left_pad = l
     top_pad = t
@@ -159,6 +152,7 @@ def monorail():
     image_path = start_direction(image_path)
     mon = SelectedCanvas()
     scale = Scale(win, image_path, mon)
+    print(scale)
     scale.run()
 
 
@@ -169,6 +163,16 @@ def oxer():
     ox = SelectedCanvas()
     scale = Scale(win, image_path, ox)
     scale.run()
+
+
+# 三横木
+def tirail():
+    merge(10, 10)
+    image_path = expand(com_image)
+    image_path = start_direction(image_path)
+    s = SelectedCanvas()
+    com = Scale(win, image_path, s)
+    com.run()
 
 
 # 组合障碍
@@ -214,7 +218,6 @@ def live():
 def force():
     # image_path = expand(force_image)
     fo = SelectedCanvas()
-
     fo.create_widget(tk.Label, image=force_obj)
     fo.place(x=1000, y=100)
     fo.remove()
@@ -263,8 +266,7 @@ def gate():
 
 
 # 赛事标题确认
-def title_ok():
-    txt = var_title.get()
+def title_ok(txt):
     china_list = re.findall(r"[\u4e00-\u9fa5]", txt)
     china = len(china_list) * 20
     letter = (len(txt) - len(china_list)) * 10
@@ -272,11 +274,6 @@ def title_ok():
     if t_x < 0: messagebox.showinfo('INFO', "长度过长")
     title.configure(text=txt)
     title.place(x=t_x, y=120)
-
-
-# 清除赛事标题
-def title_rm():
-    text.delete(0, 'end')
 
 
 # 赛事信息确认
@@ -292,6 +289,9 @@ def dle():
                 temp[info[i]] = info_var[i]
 
         for key, value in temp.items():
+            if key == '比赛名称':
+                title_ok(value.get())
+                continue
             tk.Label(frame_tit, text=key + ': ', font=("微软雅黑", 21)).pack(padx=1, pady=4)
             tk.Label(frame_inp, text=value.get(), font=("微软雅黑", 21)).pack(padx=1, pady=4)
 
@@ -342,6 +342,7 @@ def found():
         if state_f:
             watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
                                            font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc")
+        length.place(x=WIDTH - 30, y=140)
 
     else:
         messagebox.showerror('错误', '请输入正整数')
@@ -515,6 +516,11 @@ def about():
     tk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
 
 
+# 开发者信息
+def developer_info():
+    pass
+
+
 # 帮助文档
 def open_web():
     webbrowser.open("https://github.com/kaliluying/Route_design/blob/main/README.md")
@@ -523,23 +529,36 @@ def open_web():
 # 障碍号
 tk.Label(win, text="障碍号：", font=FONT).place(x=850, y=20)
 var_id = tk.StringVar()
-e_id = tk.Entry(win, textvariable=var_id)
+e_id = tk.Entry(win, textvariable=var_id, width=4)
 e_id.place(x=930, y=20)
 
-tk.Button(win, text='确认', command=insert).place(x=980, y=50)
+tk.Button(win, text='确认', command=insert).place(x=890, y=50)
 
-tk.Button(win, text='单横木', command=monorail).place(x=1150, y=10)
-tk.Button(win, text='双横木', command=oxer).place(x=1150, y=50)
+# 障碍物
+tk.Button(win, text='进出口', command=gate).place(x=170, y=8)
+tk.Button(win, text='指北针', command=compass).place(x=170, y=38)
 
-tk.Label(win, text='A-->B:').place(x=1250, y=15)
-var_a_b = tk.StringVar()
-a_b = tk.Entry(win, textvariable=var_a_b, width=10)
-a_b.place(x=1295, y=13)
-tk.Label(win, text='B-->C:').place(x=1250, y=50)
-var_b_c = tk.StringVar()
-b_c = tk.Entry(win, textvariable=var_b_c, width=10)
-b_c.place(x=1295, y=48)
-tk.Button(win, text='组合障碍', command=combination).place(x=1300, y=80)
+tk.Button(win, text='水障', command=water_barrier).place(x=255, y=8)
+tk.Button(win, text='砖墙', command=brick_wall).place(x=255, y=38)
+
+tk.Button(win, text='起/终点线', command=line).place(x=332, y=8)
+tk.Button(win, text='强制通过点', command=force).place(x=330, y=38)
+
+tk.Button(win, text='利物浦', command=live).place(x=440, y=8)
+tk.Button(win, text='单横木', command=monorail).place(x=440, y=38)
+
+tk.Button(win, text='双横木', command=oxer).place(x=520, y=8)
+tk.Button(win, text='三横木', command=tirail).place(x=520, y=38)
+
+# tk.Label(win, text='A-->B:').place(x=1250, y=15)
+# var_a_b = tk.StringVar()
+# a_b = tk.Entry(win, textvariable=var_a_b, width=10)
+# a_b.place(x=1295, y=13)
+# tk.Label(win, text='B-->C:').place(x=1250, y=50)
+# var_b_c = tk.StringVar()
+# b_c = tk.Entry(win, textvariable=var_b_c, width=10)
+# b_c.place(x=1295, y=48)
+tk.Button(win, text='组合障碍', command=combination).place(x=600, y=8)
 
 # 路线图信息主容器
 frame_l_info = tk.Frame(win)
@@ -549,34 +568,34 @@ frame_l_info.place(x=10, y=10)
 frame_lable = tk.Frame(frame_l_info)
 frame_input = tk.Frame(frame_l_info)
 frame_button = tk.Frame(frame_l_info)
+frame_button.pack(side='bottom')
 frame_lable.pack(side='left')
-frame_button.pack(side='right')
 frame_input.pack(side='right')
 
 # 路线图长度
-tk.Label(frame_lable, text="路线图长度(m):", font=FONT).pack()
+tk.Label(frame_lable, text="长度(m):", font=FONT).pack()
 var_l_w = tk.StringVar()
 var_l_w.set('90')
-var_l_w_inp = tk.Entry(frame_input, textvariable=var_l_w)
+var_l_w_inp = tk.Entry(frame_input, textvariable=var_l_w, width=5)
 var_l_w_inp.pack()
 
 # 路线图宽度
-tk.Label(frame_lable, text="路线图宽度(m):", font=FONT).pack()
+tk.Label(frame_lable, text="宽度(m):", font=FONT).pack()
 var_l_h = tk.StringVar()
 var_l_h.set("60")
-var_l_h_inp = tk.Entry(frame_input, textvariable=var_l_h)
+var_l_h_inp = tk.Entry(frame_input, textvariable=var_l_h, width=5)
 var_l_h_inp.pack()
-tk.Button(frame_button, text="确认", command=found).pack(padx=5, pady=5)
+tk.Button(frame_button, text="确认", command=found).pack()
 
-# 保存
-tk.Label(win, text="保存:", font=FONT).place(x=10, y=70)
-var_path = tk.Entry(win, bg='white', width=20)
-var_path.place(x=60, y=70)
-tk.Button(win, text='浏览', command=selectExcelfile).place(x=260, y=70)
-bt = tk.Button(win, text="下载", command=preservation)
-bt.place(x=330, y=70)
-checkvar = tk.StringVar(value="0")
-Checkbutton(win, text="包括右侧赛事信息", variable=checkvar, onvalue=1, offvalue=0).place(x=90, y=100)
+# # 保存
+# tk.Label(win, text="保存:", font=FONT).place(x=10, y=70)
+# var_path = tk.Entry(win, bg='white', width=20)
+# var_path.place(x=60, y=70)
+# tk.Button(win, text='浏览', command=selectExcelfile).place(x=260, y=70)
+# bt = tk.Button(win, text="下载", command=preservation)
+# bt.place(x=330, y=70)
+# checkvar = tk.StringVar(value="0")
+# Checkbutton(win, text="包括右侧赛事信息", variable=checkvar, onvalue=1, offvalue=0).place(x=90, y=100)
 
 # 路线图
 f = tk.Frame(win, width=WIDTH, height=HEIGHT, bg="black", border=1)
@@ -613,17 +632,10 @@ canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 title = tk.Label(win, text="比赛名称", font=FONT)
 title.place(x=350, y=120)
 
-# 输入标题
-tk.Label(win, text="比赛名:", font=FONT).place(x=410, y=20)
-var_title = tk.StringVar()
-text = tk.Entry(win, textvariable=var_title, width=35)
-text.place(x=500, y=20)
-tk.Button(win, text="确认", command=title_ok).place(x=550, y=50)
-tk.Button(win, text="清除", command=title_rm).place(x=700, y=50)
-
 # 信息
 info = [
-    '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间', '障碍数量', '跳跃数量', '附加赛', '路线设计师',
+    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间', '障碍数量', '跳跃数量', '附加赛',
+    '路线设计师',
 ]
 
 # 赛事信息主容器
@@ -665,22 +677,11 @@ font_menuType.add_command(label="通用", command=currency_font)
 font_menuType.add_command(label="铅笔", command=currency_pen)
 font_menuType.add_command(label="橡皮擦", command=currency_remove)
 
-# 障碍
-obstacle = tk.Menu(menu, tearoff=0)
-menu.add_cascade(label="障碍", menu=obstacle)
-obstacle.add_command(label="起/终点线", command=line)
-obstacle.add_command(label="利物浦", command=live)
-obstacle.add_command(label="砖墙", command=brick_wall)
-obstacle.add_command(label="水障", command=water_barrier)
-obstacle.add_command(label="进出口", command=gate)
-obstacle.add_command(label="指北针", command=compass)
-obstacle.add_command(label="强制通过点", command=force)
-
 # 帮助
 app_help = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="帮助", menu=app_help)
 app_help.add_command(label="关于软件", command=about)
-app_help.add_command(label="开发者信息", command=currency_font)
+app_help.add_command(label="开发者信息", command=developer_info)
 app_help.add_command(label="帮助文档", command=open_web)
 
 win.config(menu=menu)
