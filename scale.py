@@ -1,5 +1,7 @@
 import tkinter as tk
+from Tools import is_number, merge, com_image, start_direction, expand
 from PIL import Image, ImageTk
+from tkinter import messagebox
 
 
 class Scale:
@@ -7,35 +9,39 @@ class Scale:
     组件缩放，旋转
     """
 
-    def __init__(self, win, img_path, obj):
+    def __init__(self, win, img_path, obj, obstacle=None, focus=None):
         """
         初始化项目
         :param win: 窗口
         :param img_path: 图片路径
         :param obj: SelectedCanvas对象
         """
-        self.tk_image = None
-        self.win = win
-        self.win_size = []
-        self.img = Image.open(img_path)
-        self.img_path = img_path
-        self.w_box = 40
-        self.h_box = 40
-        self.obj = obj
-        self.loop = None
-        self.flash = True
-        self.start = 1
-        self.angle = 0
+        self.frame_button = None
+        self.frame_input = None
+        self.obstacle = obstacle
+        self.tk_image = None  # 储存变形后的图片对象
+        self.win = win  # 主窗口
+        self.win_size = []  # 储存窗口大小
+        self.img = Image.open(img_path)  # 图片对象
+        self.img_path = img_path  # 图片路径
+        self.w_box = 40  # 组件宽度
+        self.h_box = 40  # 组件高度
+        self.obj = obj  # SelectedCanvas对象
+        self.loop = None  # 循环
+        self.flash = True  # 初始化是不改变图片尺寸
+        self.start = 1  # 状态
+        self.angle = 0  # 角度
+        self.focus = focus  # 工具类
 
     def pic_with_win_auto_size(self):
         """
         创建标签，放入图片
         :return:
         """
-        w, h = self.img.size
-        self.obj.create_widget(tk.Label, width=self.w_box + 3, height=self.h_box)
-        pil_image_resized = self.resize(w, h)
-        self.tk_image = ImageTk.PhotoImage(pil_image_resized)
+        # w, h = self.img.size
+        self.obj.create_widget(tk.Label, height=self.h_box)
+        # pil_image_resized = self.resize(w, h)
+        self.tk_image = ImageTk.PhotoImage(self.img)
         self.obj.widget.configure(image=self.tk_image)
 
     def resize(self, w, h):
@@ -105,6 +111,58 @@ class Scale:
             self.img = self.rotate_bound(self.angle)
             self.pic_with_win_auto_size()
 
+    def pop(self, event):
+        """
+        按下删除键后执行的方法
+        :param event:
+        :return:
+        """
+        if self.obstacle in ["oxer", "tirail", "combination"]:
+            self.focus.remove()
+        self.obj.destroy()
+
+    def update(self, event):
+        """
+        聚焦显示框
+        :param event:
+        :return:
+        """
+        if self.obstacle in ["oxer", "tirail", "combination"]:
+            self.frame_input, self.frame_button = self.focus.update(self.obstacle)
+            button = self.frame_button.winfo_children()[0]
+            button.config(command=self.update_img)
+
+    def update_img(self):
+        """
+        从聚焦生成的输入框中获取值更新图片
+        :return:
+        """
+        temp = []
+        for i in self.frame_input.winfo_children():
+            if is_number(i.get()):
+                temp.append(i.get())
+            elif i.get() == '':
+                pass
+            else:
+                messagebox.showerror("错误", "请输入数字")
+                i.delete(0, 'end')
+                return
+        if self.obstacle == "oxer":
+            val = temp[0]
+            com_image = merge(int(val))
+            image_path = expand(com_image)
+            self.img_path = start_direction(image_path)
+            self.img = Image.open(self.img_path)
+            self.pic_with_win_auto_size()
+        elif self.obstacle == "tirail":
+            val_a = int(temp[0])
+            val_b = int(temp[1])
+            com_image = merge(val_a, m1=val_b)
+            image_path = expand(com_image)
+            self.img_path = start_direction(image_path)
+            self.img = Image.open(self.img_path)
+            self.pic_with_win_auto_size()
+
     def rotate_bound(self, angle):
         """
         旋转图片
@@ -127,8 +185,9 @@ class Scale:
         """
         self.pic_with_win_auto_size()
         self.obj.place(x=1000, y=100)
-        self.obj.remove()
         self.obj.widget.bind("<Key>", self.rotate)
+        self.obj.bind("<FocusIn>", self.update)
+        self.obj.widget.bind("<Key-BackSpace>", self.pop)
 
-        self.game_loop()
+        # self.game_loop()
         self.win.protocol('WM_DELETE_WINDOW', self.close_win)

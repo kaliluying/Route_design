@@ -1,5 +1,4 @@
 from tkinter import Canvas
-from functools import partial
 
 
 class SelectedCanvas(Canvas):
@@ -45,15 +44,6 @@ class SelectedCanvas(Canvas):
         self.create_rectangle(-1, -1, -2, -2, tag='side', dash=3, outline='grey')
         self.tag_bind('side', "<Button-1>", self._mousedown, add='+')
         self.tag_bind('side', "<B1-Motion>", self._drag, add='+')
-        # self.tag_bind('side', '<Enter>', lambda event: self.config(cursor='fleur'))
-        # self.tag_bind('side', '<Leave>', lambda event: self.config(cursor='arrow'))
-        for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
-            self.create_rectangle(-1, -1, -1, -1, tag=name, outline='blue')
-            self.tag_bind(name, "<Enter>", partial(self.on_mouse_enter, name))
-            self.tag_bind(name, "<Leave>", partial(self.on_mouse_leave, name))
-            self.tag_bind(name, "<Button-1>", partial(self.on_mouse_click, name))
-            self.tag_bind(name, "<B1-Motion>", partial(self.on_mouse_move, name))
-            self.tag_bind(name, "<ButtonRelease-1>", partial(self.on_mouse_release, name))
 
     def show(self, is_fill=False):
         """
@@ -84,31 +74,6 @@ class SelectedCanvas(Canvas):
         self.coords('side', -1, -1, -2, -2, )
         for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
             self.coords(name, -1, -1, -2, -2)
-
-    def on_mouse_enter(self, tag_name, event):
-        """
-        鼠标进入事件
-        :param tag_name: 标签名字
-        :param event: event
-        :return: None
-        """
-        # if tag_name in ("nw", "sw", "ne", "se"):
-        #     self["cursor"] = "sizing"
-        # elif tag_name in ("w", "e"):
-        #     self["cursor"] = "sb_h_double_arrow"
-        # else:
-        #     self["cursor"] = "sb_v_double_arrow"
-
-    def on_mouse_leave(self, tag_name, event):
-        """
-        鼠标离开事件
-        :param tag_name: 标签名字
-        :param event: event
-        :return: None
-        """
-        # if self.is_sizing:
-        #     return
-        # self["cursor"] = "arrow"
 
     def on_mouse_click(self, tag_name, event):
         """

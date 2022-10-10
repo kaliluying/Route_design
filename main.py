@@ -5,9 +5,11 @@ import tkinter as tk
 from scale import Scale
 import tkinter.filedialog
 import tkinter.simpledialog
+from focus import Focus
+from Tools import is_number, start_direction, expand, merge
 from tkinter import messagebox
 from SelectedCanvas import SelectedCanvas
-from PIL import ImageGrab, Image, ImageOps, ImageTk
+from PIL import ImageGrab, Image, ImageTk
 
 # 创建窗口
 win = tk.Tk()
@@ -34,6 +36,7 @@ remove_size = 1
 state_f = 1
 px = 0
 remove_px = {}
+focus = Focus(win)
 
 # 单横木
 one_path = 'img/one.png'
@@ -52,8 +55,6 @@ compass_image = "img/compass.png"
 water_barrier_iamge = "img/water_barrier.png"
 # 砖墙
 brick_wall_image = "img/brick_wall.png"
-# 行进方向
-direction_image = "img/direction.png"
 # 起/终点线
 line_image = "img/line.png"
 # 进出口
@@ -61,79 +62,6 @@ gate_image = "img/gate.png"
 # icon
 icon_path = "img/ic.png"
 icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
-
-
-# 检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
-def is_number(s):
-    try:  # 如果能运行float(s)语句，返回True（字符串s是浮点数）
-        float(s)
-        return True
-    except ValueError:  # ValueError为Python的一种标准异常，表示"传入无效的参数"
-        pass  # 如果引发了ValueError这种异常，不做任何事情（pass：不做任何事情，一般用做占位语句）
-    try:
-        import unicodedata  # 处理ASCii码的包
-        unicodedata.numeric(s)  # 把一个表示数字的字符串转换为浮点数返回的函数
-        return True
-    except (TypeError, ValueError):
-        pass
-    return False
-
-
-# 合并图片
-def merge(m, m1=0):
-    global one_path, com_image
-    img_obj = Image.open(one_path)
-    img_obj2 = Image.open(one_path)
-    result = Image.new(img_obj.mode, (m + m1 + 10, 40))
-    result.paste(img_obj, box=(0, 0))
-    result.paste(img_obj2, box=(m + m1, 0))
-    if m1:
-        image3 = Image.open(one_path)
-        result.paste(image3, box=(m, 0))
-        result.save("img/com2.png")
-        com_image = "img/com2.png"
-        return
-    result.save("img/com.png")
-
-
-# 图片扩展
-def expand(path):
-    img = Image.open(path)
-    w, h = img.size
-    l = r = t = b = 0
-    if w < h:
-        var_ex = h - w
-        l = var_ex // 2
-        r = var_ex - l
-    elif w > h:
-        var_ex = w - h
-        t = var_ex // 2
-        b = var_ex - t
-
-    left_pad = l
-    top_pad = t
-    right_pad = r
-    bottom_pad = b
-
-    padding = (left_pad, top_pad, right_pad, bottom_pad)
-    img2 = ImageOps.expand(img, padding, fill=(236, 236, 236, 0))
-    image_path = path.replace('.', '-exp.')
-    img2.save(image_path)
-    return image_path
-
-
-# 添加行进方向
-def start_direction(image_path):
-    img1 = Image.open(image_path)
-    w, h = img1.size
-    img2 = Image.open(direction_image)
-    w1, h1 = img2.size
-    img2 = img2.resize((w, h1))
-    r, g, b, alpha = img2.split()
-    img1.paste(img2, (0, h // 2 - 5), alpha)
-    image_path = image_path.replace('.', '-dir.')
-    img1.save(image_path)
-    return image_path
 
 
 # 障碍号确认
@@ -151,8 +79,7 @@ def monorail():
     image_path = expand(one_path)
     image_path = start_direction(image_path)
     mon = SelectedCanvas()
-    scale = Scale(win, image_path, mon)
-    print(scale)
+    scale = Scale(win, image_path, mon, obstacle=mon)
     scale.run()
 
 
@@ -161,53 +88,27 @@ def oxer():
     image_path = expand(oxer_image)
     image_path = start_direction(image_path)
     ox = SelectedCanvas()
-    scale = Scale(win, image_path, ox)
+    scale = Scale(win, image_path, ox, obstacle="oxer", focus=focus)
     scale.run()
 
 
 # 三横木
 def tirail():
-    merge(10, 10)
+    com_image = merge(10, 10)
     image_path = expand(com_image)
     image_path = start_direction(image_path)
     s = SelectedCanvas()
-    com = Scale(win, image_path, s)
+    com = Scale(win, image_path, s, obstacle="tirail", focus=focus)
     com.run()
 
 
 # 组合障碍
 def combination():
-    # a_b = var_a_b.get()
-    # b_c = var_b_c.get()
-    # if (not a_b and not b_c) or (not is_number(a_b) and not is_number(b_c)):
-    #     messagebox.showinfo("警告", "请输入数字")
-    #     return
-    # if is_number(a_b) and is_number(b_c):
-    #     m = a_b
-    #     m1 = b_c
-    #     m = int(float(m) * 10)
-    #     m1 = int(float(m1) * 10)
-    #     merge(m, m1)
-    #     image_path = expand(com_image)
-    #     image_path = start_direction(image_path)
-    #     s = SelectedCanvas()
-    #     com = Scale(win, image_path, s)
-    #     com.run()
-    #
-    # else:
-    #     m = a_b if is_number(a_b) else b_c
-    #     m = int(float(m) * 10)
-    #     merge(m)
-    #     image_path = expand(com_image)
-    #     image_path = start_direction(image_path)
-    #     s = SelectedCanvas()
-    #     com = Scale(win, image_path, s)
-    #     com.run()
-    merge(10)
+    com_image = merge(10)
     image_path = expand(com_image)
     image_path = start_direction(image_path)
     s = SelectedCanvas()
-    com = Scale(win, image_path, s)
+    com = Scale(win, image_path, s, obstacle="combination", focus=focus)
     com.run()
 
 
@@ -473,33 +374,33 @@ def currency_remove():
     remove_size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=remove_size)
 
 
-# 保存
-def selectExcelfile():
-    filename = tkinter.filedialog.asksaveasfilename(filetypes=[('.png', 'PNG')], initialfile="路线设计")
-    var_path.delete(0, 'end')
-    var_path.insert(tk.INSERT, filename)
-
-
-# 保存
-def preservation():
-    path = var_path.get()
-    if not path: return
-    x1 = 5
-    y1 = title.winfo_y() + 40
-    if checkvar.get() == '1':
-        x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
-    elif checkvar.get() == '0':
-        x2 = f.winfo_x() + f.winfo_width() + 10
-    else:
-        x2 = f.winfo_x() + f.winfo_width()
-    y2 = f.winfo_y() + f.winfo_height() + 70
-    try:
-        ImageGrab.grab((x1, y1, x2, y2)).save(path)
-
-        messagebox.showinfo("成功", "保存成功")
-    except EOFError as e:
-        print('Error saving image:', e)
-    var_path.delete('0', 'end')
+# # 保存
+# def selectExcelfile():
+#     filename = tkinter.filedialog.asksaveasfilename(filetypes=[('.png', 'PNG')], initialfile="路线设计")
+#     var_path.delete(0, 'end')
+#     var_path.insert(tk.INSERT, filename)
+#
+#
+# # 保存
+# def preservation():
+#     path = var_path.get()
+#     if not path: return
+#     x1 = 5
+#     y1 = title.winfo_y() + 40
+#     if checkvar.get() == '1':
+#         x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
+#     elif checkvar.get() == '0':
+#         x2 = f.winfo_x() + f.winfo_width() + 10
+#     else:
+#         x2 = f.winfo_x() + f.winfo_width()
+#     y2 = f.winfo_y() + f.winfo_height() + 70
+#     try:
+#         ImageGrab.grab((x1, y1, x2, y2)).save(path)
+#
+#         messagebox.showinfo("成功", "保存成功")
+#     except EOFError as e:
+#         print('Error saving image:', e)
+#     var_path.delete('0', 'end')
 
 
 # 清除水印
