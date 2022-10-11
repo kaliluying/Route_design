@@ -5,6 +5,7 @@ import tkinter as tk
 from scale import Scale
 import tkinter.filedialog
 import tkinter.simpledialog
+from tkinter import Checkbutton
 from focus import Focus
 from Tools import is_number, start_direction, expand, merge
 from tkinter import messagebox
@@ -40,8 +41,6 @@ focus = Focus(win)
 
 # 单横木
 one_path = 'img/one.png'
-# 组合障碍
-com_image = "img/com.png"
 # 利物浦
 live_image = "img/liverpool.png"
 # 双横木
@@ -94,21 +93,25 @@ def oxer():
 
 # 三横木
 def tirail():
-    com_image = merge(10, 10)
-    image_path = expand(com_image)
-    image_path = start_direction(image_path)
+    image_path = merge(10, 10)
     s = SelectedCanvas()
     com = Scale(win, image_path, s, obstacle="tirail", focus=focus)
     com.run()
 
 
-# 组合障碍
-def combination():
-    com_image = merge(10)
-    image_path = expand(com_image)
-    image_path = start_direction(image_path)
+# AB组合障碍
+def combination_ab():
+    image_path = merge(10)
     s = SelectedCanvas()
-    com = Scale(win, image_path, s, obstacle="combination", focus=focus)
+    com = Scale(win, image_path, s, obstacle="combination_ab", focus=focus)
+    com.run()
+
+
+# ABC组合障碍
+def combination_abc():
+    image_path = merge(10, m1=10)
+    s = SelectedCanvas()
+    com = Scale(win, image_path, s, obstacle="combination_abc", focus=focus)
     com.run()
 
 
@@ -123,7 +126,6 @@ def live():
 
 # 强制通过点
 def force():
-    # image_path = expand(force_image)
     fo = SelectedCanvas()
     fo.create_widget(tk.Label, image=force_obj)
     fo.place(x=1000, y=100)
@@ -457,15 +459,8 @@ tk.Button(win, text='单横木', command=monorail).place(x=440, y=38)
 tk.Button(win, text='双横木', command=oxer).place(x=520, y=8)
 tk.Button(win, text='三横木', command=tirail).place(x=520, y=38)
 
-# tk.Label(win, text='A-->B:').place(x=1250, y=15)
-# var_a_b = tk.StringVar()
-# a_b = tk.Entry(win, textvariable=var_a_b, width=10)
-# a_b.place(x=1295, y=13)
-# tk.Label(win, text='B-->C:').place(x=1250, y=50)
-# var_b_c = tk.StringVar()
-# b_c = tk.Entry(win, textvariable=var_b_c, width=10)
-# b_c.place(x=1295, y=48)
-tk.Button(win, text='组合障碍', command=combination).place(x=600, y=8)
+tk.Button(win, text='AB组合障碍', command=combination_ab).place(x=605, y=8)
+tk.Button(win, text='ABC组合障碍', command=combination_abc).place(x=600, y=38)
 
 # 路线图信息主容器
 frame_l_info = tk.Frame(win)
@@ -494,7 +489,7 @@ var_l_h_inp = tk.Entry(frame_input, textvariable=var_l_h, width=5)
 var_l_h_inp.pack()
 tk.Button(frame_button, text="确认", command=found).pack()
 
-# # 保存
+# 保存
 # tk.Label(win, text="保存:", font=FONT).place(x=10, y=70)
 # var_path = tk.Entry(win, bg='white', width=20)
 # var_path.place(x=60, y=70)

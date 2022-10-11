@@ -1,7 +1,7 @@
 import tkinter as tk
-from Tools import is_number, merge, com_image, start_direction, expand
-from PIL import Image, ImageTk
 from tkinter import messagebox
+from PIL import Image, ImageTk
+from Tools import is_number, merge, start_direction, expand, combination
 
 
 class Scale:
@@ -32,6 +32,8 @@ class Scale:
         self.start = 1  # 状态
         self.angle = 0  # 角度
         self.focus = focus  # 工具类
+        self.info = []
+        self.com_info = {}
 
     def pic_with_win_auto_size(self):
         """
@@ -93,7 +95,7 @@ class Scale:
         结束监听，销毁窗口
         :return:
         """
-        self.win.after_cancel(self.loop)
+        # self.win.after_cancel(self.loop)
         self.win.destroy()
 
     def rotate(self, event):
@@ -117,7 +119,7 @@ class Scale:
         :param event:
         :return:
         """
-        if self.obstacle in ["oxer", "tirail", "combination"]:
+        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc"]:
             self.focus.remove()
         self.obj.destroy()
 
@@ -127,8 +129,8 @@ class Scale:
         :param event:
         :return:
         """
-        if self.obstacle in ["oxer", "tirail", "combination"]:
-            self.frame_input, self.frame_button = self.focus.update(self.obstacle)
+        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc"]:
+            self.frame_input, self.frame_button = self.focus.update(self, self.obstacle, info=self.info)
             button = self.frame_button.winfo_children()[0]
             button.config(command=self.update_img)
 
@@ -137,31 +139,66 @@ class Scale:
         从聚焦生成的输入框中获取值更新图片
         :return:
         """
-        temp = []
+        self.info.clear()
         for i in self.frame_input.winfo_children():
+            if self.obstacle == "combination_ab":
+                if is_number(i.get()):
+                    self.com_info[i.getname()] = i.get()
+                    continue
+                elif i.get() == '':
+                    self.com_info[i.getname()] = '0'
+                    continue
+                else:
+                    messagebox.showerror("错误", "请输入数字")
+                    i.delete(0, 'end')
+                    return
             if is_number(i.get()):
-                temp.append(i.get())
+                self.info.append(i.get())
             elif i.get() == '':
                 pass
             else:
                 messagebox.showerror("错误", "请输入数字")
                 i.delete(0, 'end')
                 return
+
         if self.obstacle == "oxer":
-            val = temp[0]
-            com_image = merge(int(val))
-            image_path = expand(com_image)
-            self.img_path = start_direction(image_path)
-            self.img = Image.open(self.img_path)
-            self.pic_with_win_auto_size()
+            val = self.info[0]
+            self.update(val)
         elif self.obstacle == "tirail":
-            val_a = int(temp[0])
-            val_b = int(temp[1])
-            com_image = merge(val_a, m1=val_b)
-            image_path = expand(com_image)
-            self.img_path = start_direction(image_path)
-            self.img = Image.open(self.img_path)
-            self.pic_with_win_auto_size()
+            val_a = int(self.info[0])
+            val_b = int(self.info[1])
+            self.img_updata(val_a, val_b)
+        elif self.obstacle == "combination_ab":
+            m1, m2, m3 = self.com_info.values()
+            m1, m2, m3 = int(m1), int(m2), int(m3)
+            if m1 and m2 and m3:
+                self.img_path = combination(m1, m2, m3)
+                self.img = Image.open(self.img_path)
+                self.pic_with_win_auto_size()
+                return
+            if m1 and m2:
+                self.img_updata(m1, m2)
+                return
+            elif m1 and m3:
+                self.img_updata(m1, m3)
+                return
+            elif m2 and m3:
+                self.img_updata(m2, m3)
+                return
+            if m1:
+                self.img_updata(m1)
+                return
+            elif m2:
+                self.img_updata(m2)
+                return
+            elif m3:
+                self.img_updata(m3)
+                return
+
+    def img_updata(self, m1, m2=0):
+        self.img_path = merge(m1, m1=m2)
+        self.img = Image.open(self.img_path)
+        self.pic_with_win_auto_size()
 
     def rotate_bound(self, angle):
         """

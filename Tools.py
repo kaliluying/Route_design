@@ -1,4 +1,15 @@
 from PIL import Image, ImageOps
+import tkinter as tk
+
+
+class Entry(tk.Entry):
+    def __init__(self, master=None, cnf={}, **kw):
+        tk.Entry.__init__(self, master, cnf, **kw)
+        self.name = kw['name'] if kw['name'] else None
+
+    def getname(self):
+        return self.name
+
 
 # 行进方向
 direction_image = "img/direction.png"
@@ -36,10 +47,10 @@ def merge(m, m1=0):
         result.paste(image3, box=(m, 0))
         result.save("img/com2.png")
         com_image = "img/com2.png"
-        return com_image
+        return start_direction(expand(com_image))
     com_image = "img/com.png"
     result.save(com_image)
-    return com_image
+    return start_direction(expand(com_image))
 
 
 # 图片扩展
@@ -80,3 +91,19 @@ def start_direction(image_path):
     image_path = image_path.replace('.', '-dir.')
     img1.save(image_path)
     return image_path
+
+
+def combination(m1, m2, m3):
+    img_obj = Image.open(one_path)
+    img_obj2 = Image.open(one_path)
+    img_obj3 = Image.open(one_path)
+    img_obj4 = Image.open(one_path)
+
+    result = Image.new(img_obj.mode, (m1 + m2 + m3 + 20, 40))
+    result.paste(img_obj, box=(0, 0))
+    result.paste(img_obj2, box=(m1 + 5, 0))
+    result.paste(img_obj3, box=(m1 + m2 + 10, 0))
+    result.paste(img_obj4, box=(m1 + m2 + m3 + 15, 0))
+    result.save("img/com3.png")
+    com_image = "img/com3.png"
+    return start_direction(expand(com_image))
