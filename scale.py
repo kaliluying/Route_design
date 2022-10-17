@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
-from Tools import is_number, merge, start_direction, expand, combination
+from Tools import is_number, merge, start_direction, expand, combination, com_abc
 
 
 class Scale:
@@ -34,6 +34,7 @@ class Scale:
         self.focus = focus  # 工具类
         self.info = []
         self.com_info = {}
+        self.state = {}
 
     def pic_with_win_auto_size(self):
         """
@@ -130,7 +131,8 @@ class Scale:
         :return:
         """
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc"]:
-            self.frame_input, self.frame_button = self.focus.update(self, self.obstacle, info=self.info)
+            self.frame_input, self.frame_button = self.focus.update(self, self.obstacle, info=self.info,
+                                                                    state=self.state, com_info=self.com_info)
             button = self.frame_button.winfo_children()[0]
             button.config(command=self.update_img)
 
@@ -141,12 +143,16 @@ class Scale:
         """
         self.info.clear()
         for i in self.frame_input.winfo_children():
-            if self.obstacle == "combination_ab":
+            if self.obstacle == "combination_ab" or self.obstacle == "combination_abc":
                 if is_number(i.get()):
                     self.com_info[i.getname()] = i.get()
+                    self.state[i.getname()] = i.getstate()
+                    if self.state[i.getname()] == "disabled":
+                        self.com_info[i.getname()] = "0"
                     continue
                 elif i.get() == '':
                     self.com_info[i.getname()] = '0'
+                    self.state[i.getname()] = i.getstate()
                     continue
                 else:
                     messagebox.showerror("错误", "请输入数字")
@@ -160,10 +166,9 @@ class Scale:
                 messagebox.showerror("错误", "请输入数字")
                 i.delete(0, 'end')
                 return
-
         if self.obstacle == "oxer":
             val = self.info[0]
-            self.update(val)
+            self.img_updata(int(val))
         elif self.obstacle == "tirail":
             val_a = int(self.info[0])
             val_b = int(self.info[1])
@@ -194,6 +199,18 @@ class Scale:
             elif m3:
                 self.img_updata(m3)
                 return
+        elif self.obstacle == "combination_abc":
+            m1, m2, m3, m4, m5 = self.com_info.values()
+            m1, m2, m3, m4, m5 = int(m1), int(m2), int(m3), int(m4), int(m5)
+            # if m1 and m2 and m3 and m4 and m5:
+            #     self.img_path = com_abc(m1, m2, m3, m4, m5)
+            #     self.img = Image.open(self.img_path)
+            #     self.pic_with_win_auto_size()
+            #     return
+            # if m1 and
+            self.img_path = com_abc(m1, m2, m3, m4, m5)
+            self.img = Image.open(self.img_path)
+            self.pic_with_win_auto_size()
 
     def img_updata(self, m1, m2=0):
         self.img_path = merge(m1, m1=m2)

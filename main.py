@@ -22,6 +22,7 @@ h = win.winfo_screenheight()
 win.geometry(f"{w}x{h}")
 win.state("zoomed")
 win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
+
 # 全局变量
 WIDTH = 900
 HEIGHT = 600

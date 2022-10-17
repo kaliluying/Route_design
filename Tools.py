@@ -5,10 +5,24 @@ import tkinter as tk
 class Entry(tk.Entry):
     def __init__(self, master=None, cnf={}, **kw):
         tk.Entry.__init__(self, master, cnf, **kw)
-        self.name = kw['name'] if kw['name'] else None
+        self.con = None
+        self.kw = kw
+
+    def config(self, cnf=None, **kw):
+        tk.Entry.configure(self, cnf, **kw)
+        self.con = kw
 
     def getname(self):
-        return self.name
+        return self.kw['name']
+
+    def getstate(self):
+        try:
+            try:
+                return self.con['state']
+            except:
+                return self.kw['state']
+        except:
+            return ''
 
 
 # 行进方向
@@ -106,4 +120,23 @@ def combination(m1, m2, m3):
     result.paste(img_obj4, box=(m1 + m2 + m3 + 15, 0))
     result.save("img/com3.png")
     com_image = "img/com3.png"
+    return start_direction(expand(com_image))
+
+
+def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
+    img_obj1 = img_obj2 = img_obj3 = img_obj4 = img_obj5 = img_obj6 = Image.open(one_path)
+    result = Image.new(img_obj1.mode, (m1 + m2 + m3 + m4 + m5 + 30, 40))
+
+    if m1:
+        result.paste(img_obj1, box=(m1 + 5, 0))
+    result.paste(img_obj2, box=(0, 0))
+    if m3:
+        result.paste(img_obj3, box=(m1 + m2 + 10, 0))
+    result.paste(img_obj4, box=(m1 + m2 + m3 + 15, 0))
+    if m5:
+        result.paste(img_obj5, box=(m1 + m2 + m3 + m4 + 20, 0))
+    result.paste(img_obj6, box=(m1 + m2 + m3 + + m4 + m5 + 25, 0))
+
+    result.save("img/com_abc.png")
+    com_image = "img/com_abc.png"
     return start_direction(expand(com_image))
