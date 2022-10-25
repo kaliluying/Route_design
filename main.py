@@ -1,182 +1,138 @@
+import os
 import re
 import math
 import webbrowser
-import tkinter as tk
-from scale import Scale
-import tkinter.filedialog
 import tkinter.simpledialog
-from tkinter import Checkbutton
-from focus import Focus
-from Tools import is_number, start_direction, expand, merge
-from tkinter import messagebox
-from SelectedCanvas import SelectedCanvas
-from PIL import ImageGrab, Image, ImageTk
-
-# 创建窗口
-win = tk.Tk()
-win.title("路线设计")
-
-# 程序最大化
-w = win.winfo_screenwidth()
-h = win.winfo_screenheight()
-win.geometry(f"{w}x{h}")
-win.state("zoomed")
-win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
-
-# 全局变量
-WIDTH = 900
-HEIGHT = 600
-FONT = ("微软雅黑", 18)
-X = tk.IntVar(value=0)
-Y = tk.IntVar(value=0)
-what = tk.IntVar(value=1)
-lastDraw = 0
-end = [0]
-size = 1
-font_size = 1
-remove_size = 1
-state_f = 1
-px = 0
-remove_px = {}
-focus = Focus(win)
-
-# 单横木
-one_path = 'img/one.png'
-# 利物浦
-live_image = "img/liverpool.png"
-# 双横木
-oxer_image = "img/oxer.png"
-# 强制通过点
-force_image = "img/force.png"
-force_obj = ImageTk.PhotoImage(Image.open(force_image))
-# 指北针
-compass_image = "img/compass.png"
-# 水障
-water_barrier_iamge = "img/water_barrier.png"
-# 砖墙
-brick_wall_image = "img/brick_wall.png"
-# 起/终点线
-line_image = "img/line.png"
-# 进出口
-gate_image = "img/gate.png"
-# icon
-icon_path = "img/ic.png"
-icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
+from scale import CreateImg, CreateTxt
+from Tools import *
+from Commom import *
 
 
 # 障碍号确认
 def insert():
+    global index_txt
     var = var_id.get()
-    s = SelectedCanvas()
-    s.create_widget(tk.Label, text=var, fg='black')
-    s.place(x=900, y=100)
-    s.remove()
+    index_txt += 1
+    CreateTxt(canvas, index_txt).create_txt(var)
     e_id.delete(0, 'end')
 
 
 # 单横木
 def monorail():
+    global index_img
     image_path = expand(one_path)
     image_path = start_direction(image_path)
-    mon = SelectedCanvas()
-    scale = Scale(win, image_path, mon, obstacle=mon)
-    scale.run()
+    index_img += 1
+    CreateImg(canvas, index_img, image_path).create_img()
 
 
 # 双横木
 def oxer():
+    global index_img
     image_path = expand(oxer_image)
     image_path = start_direction(image_path)
-    ox = SelectedCanvas()
-    scale = Scale(win, image_path, ox, obstacle="oxer", focus=focus)
-    scale.run()
+    # ox = SelectedCanvas()
+    # scale = Scale(win, image_path, ox, obstacle="oxer", focus=focus)
+    # scale.run()
+    index_img += 1
+    CreateImg(canvas, index_img, image_path, obstacle='oxer').create_img()
 
 
 # 三横木
 def tirail():
+    global index_img
     image_path = merge(10, 10)
-    s = SelectedCanvas()
-    com = Scale(win, image_path, s, obstacle="tirail", focus=focus)
-    com.run()
+    # s = SelectedCanvas()
+    # com = Scale(win, image_path, s, obstacle="tirail", focus=focus)
+    # com.run()
+    index_img += 1
+    CreateImg(canvas, index_img, image_path, obstacle='tirail').create_img()
 
 
 # AB组合障碍
 def combination_ab():
+    global index_img
     image_path = merge(10)
-    s = SelectedCanvas()
-    com = Scale(win, image_path, s, obstacle="combination_ab", focus=focus)
-    com.run()
+    # s = SelectedCanvas()
+    # com = Scale(win, image_path, s, obstacle="combination_ab", focus=focus)
+    # com.run()
+    index_img += 1
+    CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create_img()
 
 
 # ABC组合障碍
 def combination_abc():
+    global index_img
     image_path = merge(10, m1=10)
-    s = SelectedCanvas()
-    com = Scale(win, image_path, s, obstacle="combination_abc", focus=focus)
-    com.run()
+    # s = SelectedCanvas()
+    # com = Scale(win, image_path, s, obstacle="combination_abc", focus=focus)
+    # com.run()
+    index_img += 1
+    CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create_img()
 
 
 # 利物浦
 def live():
+    global index_img
+    index_img += 1
     image_path = expand(live_image)
     image_path = start_direction(image_path)
-    li = SelectedCanvas()
-    scale = Scale(win, image_path, li)
-    scale.run()
+    CreateImg(canvas, index_img, image_path).create_img()
 
 
 # 强制通过点
 def force():
-    fo = SelectedCanvas()
-    fo.create_widget(tk.Label, image=force_obj)
-    fo.place(x=1000, y=100)
-    fo.remove()
+    global index_img
+    index_img += 1
+    CreateImg(canvas, index_img, force_image).create_img()
 
 
 # 指北针
 def compass():
+    global index_img
+    index_img += 1
     image_path = expand(compass_image)
-    com = SelectedCanvas()
-    scale = Scale(win, image_path, com)
-    scale.run()
+    CreateImg(canvas, index_img, image_path).create_img()
 
 
 # 水障
 def water_barrier():
+    global index_img
+    index_img += 1
     image_path = expand(water_barrier_iamge)
     image_path = start_direction(image_path)
-    water = SelectedCanvas()
-    scale = Scale(win, image_path, water)
-    scale.run()
+    CreateImg(canvas, index_img, image_path).create_img()
 
 
 # 砖墙
 def brick_wall():
+    global index_img
+    index_img += 1
     image_path = expand(brick_wall_image)
-    brick = SelectedCanvas()
-    scale = Scale(win, image_path, brick)
-    scale.run()
+    CreateImg(canvas, index_img, image_path).create_img()
 
 
 # 起/终点线
 def line():
+    global index_img
+    index_img += 1
     image_path = expand(line_image)
     image_path = start_direction(image_path)
-    li = SelectedCanvas()
-    scale = Scale(win, image_path, li)
-    scale.run()
+    CreateImg(canvas, index_img, image_path).create_img()
 
 
 # 进出口
 def gate():
+    global index_img
+    index_img += 1
     image_path = expand(gate_image)
-    ga = SelectedCanvas()
-    scale = Scale(win, image_path, ga)
-    scale.run()
+    CreateImg(canvas, index_img, image_path).create_img()
 
 
 # 赛事标题确认
 def title_ok(txt):
+    global temp_txt
+    temp_txt = txt
     china_list = re.findall(r"[\u4e00-\u9fa5]", txt)
     china = len(china_list) * 20
     letter = (len(txt) - len(china_list)) * 10
@@ -300,6 +256,10 @@ def leftButtonUp(event):
     end.append(lastDraw)
 
 
+def drag():
+    what.set(0)
+
+
 # 铅笔
 def pen():
     what.set(1)
@@ -377,13 +337,34 @@ def currency_remove():
     remove_size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=remove_size)
 
 
-# # 保存
-# def selectExcelfile():
-#     filename = tkinter.filedialog.asksaveasfilename(filetypes=[('.png', 'PNG')], initialfile="路线设计")
-#     var_path.delete(0, 'end')
-#     var_path.insert(tk.INSERT, filename)
-#
-#
+def save_1():
+    checkvar = '1'
+    sava(checkvar)
+
+
+def save_0():
+    checkvar = '0'
+    sava(checkvar)
+
+
+# 保存
+def sava(checkvar):
+    x1 = 5
+    y1 = title.winfo_y() + 40
+    if checkvar == '1':
+        x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
+    elif checkvar == '0':
+        x2 = f.winfo_x() + f.winfo_width() + 10
+    y2 = f.winfo_y() + f.winfo_height() + 70
+    txt = temp_txt if temp_txt else '路线设计'
+    path = os.getcwd() + f'/{txt}.png'
+    try:
+        ImageGrab.grab((x1, y1, x2, y2)).save(path)
+        messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
+    except EOFError as e:
+        print('Error saving image:', e)
+
+
 # # 保存
 # def preservation():
 #     path = var_path.get()
@@ -490,7 +471,7 @@ var_l_h_inp = tk.Entry(frame_input, textvariable=var_l_h, width=5)
 var_l_h_inp.pack()
 tk.Button(frame_button, text="确认", command=found).pack()
 
-# 保存
+# # 保存
 # tk.Label(win, text="保存:", font=FONT).place(x=10, y=70)
 # var_path = tk.Entry(win, bg='white', width=20)
 # var_path.place(x=60, y=70)
@@ -566,12 +547,20 @@ menu = tk.Menu(win)
 
 # 工具栏
 menuType = tk.Menu(menu, tearoff=0)
+menu_sava = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="工具栏", menu=menuType)
-menuType.add_command(label="铅笔", command=pen)
-menuType.add_command(label="橡皮擦", command=remove)
+menuType.add_radiobutton(label="指针拖动", command=drag, variable=what, value=0)
+menuType.add_radiobutton(label="铅笔", command=pen, variable=what, value=1)
+menuType.add_radiobutton(label="橡皮擦", command=remove, variable=what, value=2)
+
 menuType.add_command(label="清屏", command=clear)
 menuType.add_command(label="撤销", command=back)
 menuType.add_command(label="清除水印", command=remove_f)
+
+menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
+menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)
+
+menuType.add_cascade(label="保存", menu=menu_sava)
 
 # 字号
 font_menuType = tk.Menu(menu, tearoff=0)

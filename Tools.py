@@ -1,29 +1,4 @@
 from PIL import Image, ImageOps
-import tkinter as tk
-
-
-class Entry(tk.Entry):
-    def __init__(self, master=None, cnf={}, **kw):
-        tk.Entry.__init__(self, master, cnf, **kw)
-        self.con = None
-        self.kw = kw
-
-    def config(self, cnf=None, **kw):
-        tk.Entry.configure(self, cnf, **kw)
-        self.con = kw
-
-    def getname(self):
-        return self.kw['name']
-
-    def getstate(self):
-        try:
-            try:
-                return self.con['state']
-            except:
-                return self.kw['state']
-        except:
-            return ''
-
 
 # 行进方向
 direction_image = "img/direction.png"

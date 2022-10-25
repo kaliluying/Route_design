@@ -1,8 +1,28 @@
-import tkinter as tk
-from functools import partial
-from tkinter import Checkbutton
-from PIL import Image
-from Tools import merge, combination, Entry, com_abc
+from Commom import *
+from Tools import *
+
+
+class Entry(tk.Entry):
+    def __init__(self, master=None, cnf={}, **kw):
+        tk.Entry.__init__(self, master, cnf, **kw)
+        self.con = None
+        self.kw = kw
+
+    def config(self, cnf=None, **kw):
+        tk.Entry.configure(self, cnf, **kw)
+        self.con = kw
+
+    def getname(self):
+        return self.kw['name']
+
+    def getstate(self):
+        try:
+            try:
+                return self.con['state']
+            except:
+                return self.kw['state']
+        except:
+            return ''
 
 
 class Focus:
@@ -191,18 +211,21 @@ class Focus:
                 print(e)
             obj.img_path = merge(5, m1=20)
             obj.img = Image.open(obj.img_path)
-            obj.pic_with_win_auto_size()
+            obj.temp_path = ImageTk.PhotoImage(obj.img)
+            obj.app.itemconfig(obj.tag, image=obj.temp_path)
         elif x1.get() == '0':
             try:
                 if x2.get() == '1':
                     obj.img_path = merge(20, m1=5)
                     obj.img = Image.open(obj.img_path)
-                    obj.pic_with_win_auto_size()
+                    obj.temp_path = ImageTk.PhotoImage(obj.img)
+                    obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
                 elif x2.get() == '0':
                     obj.img_path = merge(10)
                     obj.img = Image.open(obj.img_path)
-                    obj.pic_with_win_auto_size()
+                    obj.temp_path = ImageTk.PhotoImage(obj.img)
+                    obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
             except Exception as e:
                 print(e)
@@ -234,18 +257,21 @@ class Focus:
                 pass
             obj.img_path = merge(20, m1=5)
             obj.img = Image.open(obj.img_path)
-            obj.pic_with_win_auto_size()
+            obj.temp_path = ImageTk.PhotoImage(obj.img)
+            obj.app.itemconfig(obj.tag, image=obj.temp_path)
         elif x2.get() == '0':
             try:
                 if x1.get() == '1':
                     obj.img_path = merge(5, m1=20)
                     obj.img = Image.open(obj.img_path)
-                    obj.pic_with_win_auto_size()
+                    obj.temp_path = ImageTk.PhotoImage(obj.img)
+                    obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
                 elif x1.get() == '0':
                     obj.img_path = merge(10)
                     obj.img = Image.open(obj.img_path)
-                    obj.pic_with_win_auto_size()
+                    obj.temp_path = ImageTk.PhotoImage(obj.img)
+                    obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
             except Exception as e:
                 print(e)
@@ -262,12 +288,14 @@ class Focus:
         """
         obj.img_path = combination(5, 15, 5)
         obj.img = Image.open(obj.img_path)
-        obj.pic_with_win_auto_size()
+        obj.temp_path = ImageTk.PhotoImage(obj.img)
+        obj.app.itemconfig(obj.tag, image=obj.temp_path)
 
     def combination_abc(self, obj, m1=0, m2=0, m3=0, m4=0, m5=0):
         obj.img_path = com_abc(m1, m2, m3, m4, m5)
         obj.img = Image.open(obj.img_path)
-        obj.pic_with_win_auto_size()
+        obj.temp_path = ImageTk.PhotoImage(obj.img)
+        obj.app.itemconfig(obj.tag, image=obj.temp_path)
 
     def judge_abc(self, x1, x2, x3, obj):
         if x1.get() == '1':
