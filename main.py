@@ -31,9 +31,6 @@ def oxer():
     global index_img
     image_path = expand(oxer_image)
     image_path = start_direction(image_path)
-    # ox = SelectedCanvas()
-    # scale = Scale(win, image_path, ox, obstacle="oxer", focus=focus)
-    # scale.run()
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='oxer').create_img()
 
@@ -42,9 +39,6 @@ def oxer():
 def tirail():
     global index_img
     image_path = merge(10, 10)
-    # s = SelectedCanvas()
-    # com = Scale(win, image_path, s, obstacle="tirail", focus=focus)
-    # com.run()
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='tirail').create_img()
 
@@ -53,9 +47,6 @@ def tirail():
 def combination_ab():
     global index_img
     image_path = merge(10)
-    # s = SelectedCanvas()
-    # com = Scale(win, image_path, s, obstacle="combination_ab", focus=focus)
-    # com.run()
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create_img()
 
@@ -64,9 +55,6 @@ def combination_ab():
 def combination_abc():
     global index_img
     image_path = merge(10, m1=10)
-    # s = SelectedCanvas()
-    # com = Scale(win, image_path, s, obstacle="combination_abc", focus=focus)
-    # com.run()
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create_img()
 
@@ -365,28 +353,6 @@ def sava(checkvar):
         print('Error saving image:', e)
 
 
-# # 保存
-# def preservation():
-#     path = var_path.get()
-#     if not path: return
-#     x1 = 5
-#     y1 = title.winfo_y() + 40
-#     if checkvar.get() == '1':
-#         x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
-#     elif checkvar.get() == '0':
-#         x2 = f.winfo_x() + f.winfo_width() + 10
-#     else:
-#         x2 = f.winfo_x() + f.winfo_width()
-#     y2 = f.winfo_y() + f.winfo_height() + 70
-#     try:
-#         ImageGrab.grab((x1, y1, x2, y2)).save(path)
-#
-#         messagebox.showinfo("成功", "保存成功")
-#     except EOFError as e:
-#         print('Error saving image:', e)
-#     var_path.delete('0', 'end')
-
-
 # 清除水印
 def remove_f():
     global state_f
@@ -470,16 +436,6 @@ var_l_h.set("60")
 var_l_h_inp = tk.Entry(frame_input, textvariable=var_l_h, width=5)
 var_l_h_inp.pack()
 tk.Button(frame_button, text="确认", command=found).pack()
-
-# # 保存
-# tk.Label(win, text="保存:", font=FONT).place(x=10, y=70)
-# var_path = tk.Entry(win, bg='white', width=20)
-# var_path.place(x=60, y=70)
-# tk.Button(win, text='浏览', command=selectExcelfile).place(x=260, y=70)
-# bt = tk.Button(win, text="下载", command=preservation)
-# bt.place(x=330, y=70)
-# checkvar = tk.StringVar(value="0")
-# Checkbutton(win, text="包括右侧赛事信息", variable=checkvar, onvalue=1, offvalue=0).place(x=90, y=100)
 
 # 路线图
 f = tk.Frame(win, width=WIDTH, height=HEIGHT, bg="black", border=1)
