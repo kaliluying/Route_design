@@ -128,10 +128,11 @@ class Focus:
         ent_a.pack()
 
         Checkbutton(self.frame_label, text="A双横木", variable=checkvar_a, onvalue=1, offvalue=0,
-                    command=partial(self.oxer_a, checkvar_a, checkvar_b, checkvar_c, ent_a, obj, obstacle)).pack()
+                    command=partial(self.oxer_a, checkvar_a, checkvar_b, checkvar_c, ent_a, obj, obstacle,
+                                    var_a)).pack()
 
         tk.Label(self.frame_label, text='A-->B:').pack()
-        var_a_b = tk.StringVar(value=info['ent_a_b'] if info else '')
+        var_a_b = tk.StringVar(value=info['ent_a_b'] if info else '30')
         ent_a_b = Entry(self.frame_input, textvariable=var_a_b, width=5, name="ent_a_b")
         ent_a_b.pack()
 
@@ -142,10 +143,11 @@ class Focus:
         ent_b.pack()
 
         Checkbutton(self.frame_label, text="B双横木", variable=checkvar_b, onvalue=1, offvalue=0,
-                    command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle)).pack()
+                    command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
+                                    var_b)).pack()
         if obstacle == "combination_abc":
             tk.Label(self.frame_label, text='B-->C:').pack()
-            var_b_c = tk.StringVar(value=info['ent_b_c'] if info else '')
+            var_b_c = tk.StringVar(value=info['ent_b_c'] if info else '30')
             ent_b_c = Entry(self.frame_input, textvariable=var_b_c, width=5, name="ent_b_c")
             ent_b_c.pack()
             var_c = tk.StringVar(value=info['ent_c'] if info else '')
@@ -154,7 +156,7 @@ class Focus:
                           name="ent_c")
             ent_c.pack()
             Checkbutton(self.frame_label, text="C双横木", variable=checkvar_c, onvalue=1, offvalue=0,
-                        command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj)).pack()
+                        command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).pack()
 
         tk.Button(self.frame_button, text="确认").pack()
         return checkvar_a, checkvar_b
@@ -173,7 +175,7 @@ class Focus:
         for i in self.frame_select.winfo_children():
             i.destroy()
 
-    def oxer(self, x1, ent):
+    def oxer(self, x1, ent, var):
         """
         :param x1:
         :param ent:
@@ -181,11 +183,14 @@ class Focus:
         :return:
         """
         if x1.get() == '1':
-            ent.config(state='normal')
+            ent.config(state='normal', )
+            # if not var.get():
+            #     print(var.get())
+            #     var.set('1')
         elif x1.get() == '0':
             ent.config(state='disabled')
 
-    def oxer_a(self, x1, x2, x3, ent_a, obj, obstacle):
+    def oxer_a(self, x1, x2, x3, ent_a, obj, obstacle, var_a):
         """
         选中A障碍是否为双横木
         :param x1: a障碍是否为双横木
@@ -196,7 +201,7 @@ class Focus:
         :param obstacle: ab组合还是abc
         :return:
         """
-        self.oxer(x1, ent_a)
+        self.oxer(x1, ent_a, var_a)
         if obstacle == "combination_abc":
             self.judge_abc(x1, x2, x3, obj)
             return
@@ -209,28 +214,29 @@ class Focus:
                     pass
             except Exception as e:
                 print(e)
-            obj.img_path = merge(5, m1=20)
+            obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get())
+            # obj.img_path = merge(5, m1=20)
             obj.img = Image.open(obj.img_path)
             obj.temp_path = ImageTk.PhotoImage(obj.img)
             obj.app.itemconfig(obj.tag, image=obj.temp_path)
         elif x1.get() == '0':
             try:
                 if x2.get() == '1':
-                    obj.img_path = merge(20, m1=5)
+                    obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get())
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
                 elif x2.get() == '0':
-                    obj.img_path = merge(10)
+                    obj.img_path = merge_ab(state=1, m1=30)
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
             except Exception as e:
-                print(e)
+                print('a障碍', e)
 
-    def oxer_b(self, x1, x2, x3, ent_b, obj, obstacle):
+    def oxer_b(self, x1, x2, x3, ent_b, obj, obstacle, var_b):
         """
         选中B障碍是否为双横木
         :param x1:
@@ -241,7 +247,7 @@ class Focus:
         :param obstacle:
         :return:
         """
-        self.oxer(x2, ent_b)
+        self.oxer(x2, ent_b, var_b)
         if obstacle == "combination_abc":
             self.judge_abc(x1, x2, x3, obj)
             return
@@ -255,29 +261,29 @@ class Focus:
                     pass
             except:
                 pass
-            obj.img_path = merge(20, m1=5)
+            obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get())
             obj.img = Image.open(obj.img_path)
             obj.temp_path = ImageTk.PhotoImage(obj.img)
             obj.app.itemconfig(obj.tag, image=obj.temp_path)
         elif x2.get() == '0':
             try:
                 if x1.get() == '1':
-                    obj.img_path = merge(5, m1=20)
+                    obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get())
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
                 elif x1.get() == '0':
-                    obj.img_path = merge(10)
+                    obj.img_path = merge_ab(state=1, m1=30)
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
             except Exception as e:
-                print(e)
+                print('b障碍', e)
 
-    def oxer_c(self, x1, x2, x3, ent_c, obj):
-        self.oxer(x3, ent_c)
+    def oxer_c(self, x1, x2, x3, ent_c, obj, var_c):
+        self.oxer(x3, ent_c, var_c)
         self.judge_abc(x1, x2, x3, obj)
 
     def com(self, obj):
@@ -286,54 +292,54 @@ class Focus:
         :param obj:
         :return:
         """
-        obj.img_path = combination(5, 15, 5)
+        obj.img_path = merge_ab(state=2, m1=30)
         obj.img = Image.open(obj.img_path)
         obj.temp_path = ImageTk.PhotoImage(obj.img)
         obj.app.itemconfig(obj.tag, image=obj.temp_path)
 
-    def combination_abc(self, obj, m1=0, m2=0, m3=0, m4=0, m5=0):
-        obj.img_path = com_abc(m1, m2, m3, m4, m5)
+    def combination_abc(self, obj, x1, x2, x3):
+        obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get(), state_c=x3.get(), b_c=30)
         obj.img = Image.open(obj.img_path)
         obj.temp_path = ImageTk.PhotoImage(obj.img)
         obj.app.itemconfig(obj.tag, image=obj.temp_path)
 
     def judge_abc(self, x1, x2, x3, obj):
-        if x1.get() == '1':
-            try:
+        try:
+            if x1.get() == '1':
                 if x2.get() == '1':
                     if x3.get() == '1':
-                        print(2)
-                        self.combination_abc(obj, m1=5, m2=10, m3=5, m4=10, m5=5)
-                        print(3)
+                        obj.img_path = merge_ab(state=2, m1=30, m2=30)
+                        obj.img = Image.open(obj.img_path)
+                        obj.temp_path = ImageTk.PhotoImage(obj.img)
+                        obj.app.itemconfig(obj.tag, image=obj.temp_path)
                         return
                     elif x3.get() == '0':
-                        self.combination_abc(obj, m1=5, m2=10, m3=5, m4=10)
+                        self.combination_abc(obj, x1, x2, x3)
                         return
                 elif x2.get() == '0':
                     if x3.get() == '1':
-                        self.combination_abc(obj, m1=5, m2=10, m4=10, m5=5)
+                        self.combination_abc(obj, x1, x2, x3)
                         return
                     elif x3.get() == '0':
-                        self.combination_abc(obj, m1=5, m2=10, m4=10)
+                        self.combination_abc(obj, x1, x2, x3)
                         return
-            except Exception as e:
-                print(e)
-
-        elif x1.get() == '0':
-            try:
+            elif x1.get() == '0':
                 if x2.get() == '1':
                     if x3.get() == '1':
-                        self.combination_abc(obj, m2=10, m3=5, m4=10, m5=5)
+                        self.combination_abc(obj, x1, x2, x3)
                         return
                     elif x3.get() == '0':
-                        self.combination_abc(obj, m2=10, m3=5, m4=10)
+                        self.combination_abc(obj, x1, x2, x3)
                         return
                 elif x2.get() == '0':
                     if x3.get() == '1':
-                        self.combination_abc(obj, m2=10, m4=10, m5=5)
+                        self.combination_abc(obj, x1, x2, x3)
                         return
                     elif x3.get() == '0':
-                        self.combination_abc(obj, m2=10, m4=10)
+                        obj.img_path = merge_ab(state=1, m1=30, m2=30)
+                        obj.img = Image.open(obj.img_path)
+                        obj.temp_path = ImageTk.PhotoImage(obj.img)
+                        obj.app.itemconfig(obj.tag, image=obj.temp_path)
                         return
-            except Exception as e:
-                print(e)
+        except Exception as e:
+            print('abc障碍', e)

@@ -1,11 +1,15 @@
 from PIL import Image, ImageOps
 
 # 行进方向
-direction_image = "img/direction.png"
+direction_image = "img/direction2.png"
 # 单横木
 one_path = 'img/one.png'
 # 组合障碍
 com_image = "img/com.png"
+# 单横木行进方向
+one_exp_dir_path = "img/one-exp-dir.png"
+# 双横木行进方向
+oxer_exp_dir_path = "img/oxer-exp-dir.png"
 
 
 # 检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
@@ -115,3 +119,88 @@ def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
     result.save("img/com_abc.png")
     com_image = "img/com_abc.png"
     return start_direction(expand(com_image))
+
+
+def merge_ab(state, m1=0, m2=0):
+    if state == 1:
+        path = one_exp_dir_path
+    if state == 2:
+        path = oxer_exp_dir_path
+    img_obj = Image.open(path)
+    img_obj2 = Image.open(path)
+    var = 45
+    if m2:
+        var = 50
+    result = Image.new(img_obj.mode, (m1 + m2 + var, 40))
+    result.paste(img_obj, box=(0, 0))
+    result.paste(img_obj2, box=(m1 + 5, 0))
+    if m2:
+        image3 = Image.open(path)
+        result.paste(image3, box=(m1 + m2 + 10, 0))
+        result.save("img/com_abc.png")
+        com_image = "img/com_abc.png"
+        return com_image
+    com_image = "img/com_ab.png"
+    result.save(com_image)
+    return com_image
+
+
+def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
+    a_img = one_exp_dir_path
+    b_img = one_exp_dir_path
+    c_img = one_exp_dir_path
+    if stare_a == "1":
+        a_img = merge(a + 5)
+    if state_b == "1":
+        b_img = merge(b + 5)
+    if state_c == "1":
+        c_img = merge(c + 5)
+    var = 45
+    if state_c:
+        var = 50
+    img_obj = Image.open(a_img)
+    img_obj2 = Image.open(b_img)
+    result = Image.new(img_obj.mode, (a + b + c + a_b + b_c + var, 40))
+    result.paste(img_obj, box=(0, 0))
+    result.paste(img_obj2, box=(a_b + 5, 0))
+    if state_c:
+        image3 = Image.open(c_img)
+        result.paste(image3, box=(a_b + b_c + 10, 0))
+        result.save("img/oxer_obs_abc.png")
+        com_image = "img/oxer_obs_abc.png"
+        result.save(com_image)
+        return com_image
+    com_image = "img/oxer_obs_ab.png"
+    result.save(com_image)
+    return com_image
+
+
+def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
+    a_img = merge(a)
+    img_obj = Image.open(a_img)
+    b_img = merge(b)
+    img_obj2 = Image.open(b_img)
+    c_img = merge(c)
+    image3 = Image.open(c_img)
+    result = Image.new(img_obj.mode, (a_b + b_c + 50, 40))
+    result.paste(img_obj, box=(0, 0))
+    result.paste(img_obj2, box=(37, 0))
+    result.paste(image3, box=(74, 0))
+    result.save("img/obs_abc.png")
+    com_image = "img/obs_abc.png"
+    result.save(com_image)
+    return com_image
+
+
+def obs_ab(a=0, b=0, a_b=30):
+    a_img = merge(a)
+    img_obj = Image.open(a_img)
+    b_img = merge(b)
+    img_obj2 = Image.open(b_img)
+    result = Image.new(img_obj.mode, (a_b + 45, 40))
+    result.paste(img_obj, box=(0, 0))
+    result.paste(img_obj2, box=(37, 0))
+    result.save("img/obs_ab.png")
+    com_image = "img/obs_ab.png"
+    result.save(com_image)
+    return com_image

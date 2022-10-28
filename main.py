@@ -46,7 +46,7 @@ def tirail():
 # AB组合障碍
 def combination_ab():
     global index_img
-    image_path = merge(10)
+    image_path = merge_ab(state=1, m1=30)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create_img()
 
@@ -54,7 +54,7 @@ def combination_ab():
 # ABC组合障碍
 def combination_abc():
     global index_img
-    image_path = merge(10, m1=10)
+    image_path = merge_ab(state=1, m1=30, m2=30)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create_img()
 
@@ -218,7 +218,7 @@ def leftButtonMove(event):
 
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
-                                      fill='#000000', width=font_size)
+                                      fill='#000000', width=font_size, tags="line")
         x = event.x - X.get()
         y = event.y - Y.get()
         if x > 0 and y > 0:
@@ -260,27 +260,10 @@ def remove():
 
 # 清屏
 def clear():
-    global lastDraw, end, h1, h2, watermark, length, px, remove_px
-    for item in canvas.find_all():
-        canvas.delete(item)
-    wid = WIDTH / 10
-    hei = HEIGHT / 10
-    h1 = canvas.create_text(WIDTH - 40, 10, text=f"长：{wid}m")
-    h2 = canvas.create_text(WIDTH - 40, 30, text=f"宽：{hei}m")
-
-    canvas.create_text(35, 10, text="5m")
-    canvas.create_line(10, 15, 10, 20)
-    canvas.create_line(60, 15, 60, 20)
-    canvas.create_line(10, 20, 60, 20)
+    global px, length
+    canvas.delete("line")
     px = 0
     length.config(text="%.2fm" % px)
-    remove_px = {}
-
-    if state_f:
-        watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
-                                       font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc")
-    end = [0]
-    lastDraw = 0
 
 
 # 撤销
