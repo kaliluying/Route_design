@@ -29,7 +29,7 @@ def is_number(s):
 
 
 # 合并图片
-def merge(m, m1=0):
+def merge(m, m1=0, state=1):
     img_obj = Image.open(one_path)
     img_obj2 = Image.open(one_path)
     result = Image.new(img_obj.mode, (m + m1 + 10, 40))
@@ -40,14 +40,14 @@ def merge(m, m1=0):
         result.paste(image3, box=(m, 0))
         result.save("img/com2.png")
         com_image = "img/com2.png"
-        return start_direction(expand(com_image))
+        return start_direction(expand(com_image, state))
     com_image = "img/com.png"
     result.save(com_image)
-    return start_direction(expand(com_image))
+    return start_direction(expand(com_image, state))
 
 
 # 图片扩展
-def expand(path):
+def expand(path, state=1):
     img = Image.open(path)
     w, h = img.size
     l = r = t = b = 0
@@ -55,7 +55,7 @@ def expand(path):
         var_ex = h - w
         l = var_ex // 2
         r = var_ex - l
-    elif w > h:
+    elif state and w > h:
         var_ex = w - h
         t = var_ex // 2
         b = var_ex - t
@@ -176,16 +176,16 @@ def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
 
 
 def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
-    a_img = merge(a)
+    a_img = merge(a + 5 if a else 0, state=0)
     img_obj = Image.open(a_img)
-    b_img = merge(b)
+    b_img = merge(b + 5 if b else 0, state=0)
     img_obj2 = Image.open(b_img)
-    c_img = merge(c)
+    c_img = merge(c + 5 if c else 0, state=0)
     image3 = Image.open(c_img)
-    result = Image.new(img_obj.mode, (a_b + b_c + 50, 40))
+    result = Image.new(img_obj.mode, (a + b + c + a_b + b_c + 50, 40))
     result.paste(img_obj, box=(0, 0))
-    result.paste(img_obj2, box=(37, 0))
-    result.paste(image3, box=(74, 0))
+    result.paste(img_obj2, box=(a + a_b + (10 if a else 5), 0))
+    result.paste(image3, box=(a + b + a_b + b_c + (10 if a else 5) + (10 if b else 5), 0))
     result.save("img/obs_abc.png")
     com_image = "img/obs_abc.png"
     result.save(com_image)
@@ -193,13 +193,13 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
 
 
 def obs_ab(a=0, b=0, a_b=30):
-    a_img = merge(a)
+    a_img = merge(a + 5 if a else 0, state=0)
     img_obj = Image.open(a_img)
-    b_img = merge(b)
+    b_img = merge(b + 5 if b else 0, state=0)
     img_obj2 = Image.open(b_img)
-    result = Image.new(img_obj.mode, (a_b + 45, 40))
+    result = Image.new(img_obj.mode, (a + b + a_b + 45, 40))
     result.paste(img_obj, box=(0, 0))
-    result.paste(img_obj2, box=(37, 0))
+    result.paste(img_obj2, box=(a + a_b + (10 if a else 5), 0))
     result.save("img/obs_ab.png")
     com_image = "img/obs_ab.png"
     result.save(com_image)
