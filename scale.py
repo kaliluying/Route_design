@@ -40,7 +40,7 @@ class CreateTxt(T):
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=tag)
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
-        self.app.tag_bind(tag, "<Button-3>", partial(self.pop, self.tag))
+        self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
 
 
 class CreateImg(T):
