@@ -9,9 +9,9 @@ win = tk.Tk()
 win.title("路线设计")
 
 # 程序最大化
-w = win.winfo_screenwidth()
-h = win.winfo_screenheight()
-win.geometry(f"{w}x{h}")
+W = win.winfo_screenwidth()
+H = win.winfo_screenheight()
+win.geometry(f"{W}x{H}")
 win.state("zoomed")
 win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
 

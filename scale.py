@@ -57,6 +57,7 @@ class CreateImg(T):
         self.info = []
         self.com_info = {}
         self.state = {}
+        self.name = ''
 
     def create_img(self):
         self.tag = "img" + self.index
@@ -126,30 +127,6 @@ class CreateImg(T):
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
             self.app.itemconfig(self.tag, image=self.temp_path)
-            # if m1 and m2 and m3:
-            #     self.img_path = combination(m1, m2, m3)
-            #     self.img = Image.open(self.img_path)
-            #     self.temp_path = ImageTk.PhotoImage(self.img)
-            #     self.app.itemconfig(self.tag, image=self.temp_path)
-            #     return
-            # if m1 and m2:
-            #     self.img_updata(m1, m2)
-            #     return
-            # elif m1 and m3:
-            #     self.img_updata(m1, m3)
-            #     return
-            # elif m2 and m3:
-            #     self.img_updata(m2, m3)
-            #     return
-            # if m1:
-            #     self.img_updata(m1)
-            #     return
-            # elif m2:
-            #     self.img_updata(m2)
-            #     return
-            # elif m3:
-            #     self.img_updata(m3)
-            #     return
         elif self.obstacle == "combination_abc":
             a, a_b, b, b_c, c = self.com_info.values()
             a, a_b, b, b_c, c = int(a), int(a_b), int(b), int(b_c), int(c)
@@ -169,10 +146,23 @@ class CreateImg(T):
         按钮
         :return:
         """
-        tk.Label(win, text="旋转:", font=FONT).place(x=1000, y=20)
+        tk.Label(win, text="旋转:", font=FONT).place(x=960, y=20)
         var = tk.StringVar()
-        tk.Entry(win, textvariable=var).place(x=1050, y=20, width=50)
-        tk.Button(win, text="确认", command=partial(self.rotate, self.tag, var)).place(x=1030, y=50)
+        tk.Entry(win, textvariable=var, width=5).place(x=1010, y=20)
+        tk.Button(win, text="确认", command=partial(self.rotate, self.tag, var)).place(x=1000, y=50)
+        tk.Label(win, text="障碍名称:", font=FONT).place(x=1070, y=20)
+        var_name = tk.StringVar(value=self.name)
+        tk.Entry(win, textvariable=var_name, width=4).place(x=1160, y=20)
+        tk.Button(win, text="确认", command=partial(self.set_name, var_name)).place(x=1130, y=50)
+        tk.Button(win, text="放置", command=self.set_state).place(x=1130, y=90)
+
+    def set_state(self):
+        self.app.lower(self.tag)
+
+    def set_name(self, name):
+        print(type(name.get()))
+        self.name = name.get()
+        print(self.name)
 
     def rotate(self, id, angle):
         """

@@ -2,6 +2,7 @@ import os
 import re
 import math
 import webbrowser
+import subprocess
 import tkinter.simpledialog
 from scale import CreateImg, CreateTxt
 from Tools import *
@@ -327,13 +328,24 @@ def sava(checkvar):
     elif checkvar == '0':
         x2 = f.winfo_x() + f.winfo_width() + 10
     y2 = f.winfo_y() + f.winfo_height() + 70
+
     txt = temp_txt if temp_txt else '路线设计'
-    path = os.getcwd() + f'/{txt}.png'
+    if not os.path.exists('./download'):
+        os.mkdir('./download')
+    path = os.getcwd() + f'/download/{txt}.png'
     try:
         ImageGrab.grab((x1, y1, x2, y2)).save(path)
         messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
     except EOFError as e:
         print('Error saving image:', e)
+
+
+# 打开文件保存路径
+def open_file():
+    if not os.path.exists('./download'):
+        os.mkdir('./download')
+    path = os.getcwd() + f'/download'
+    subprocess.call(["open", path])
 
 
 # 清除水印
@@ -356,23 +368,18 @@ def about():
     tk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
 
 
-# 开发者信息
-def developer_info():
-    pass
-
-
 # 帮助文档
 def open_web():
     webbrowser.open("https://github.com/kaliluying/Route_design/blob/main/README.md")
 
 
 # 障碍号
-tk.Label(win, text="障碍号：", font=FONT).place(x=850, y=20)
+tk.Label(win, text="障碍号：", font=FONT).place(x=830, y=20)
 var_id = tk.StringVar()
 e_id = tk.Entry(win, textvariable=var_id, width=4)
-e_id.place(x=930, y=20)
+e_id.place(x=900, y=20)
 
-tk.Button(win, text='确认', command=insert).place(x=890, y=50)
+tk.Button(win, text='确认', command=insert).place(x=870, y=50)
 
 # 障碍物
 tk.Button(win, text='进出口', command=gate).place(x=170, y=8)
@@ -492,14 +499,18 @@ menuType.add_radiobutton(label="指针拖动", command=drag, variable=what, valu
 menuType.add_radiobutton(label="铅笔", command=pen, variable=what, value=1)
 menuType.add_radiobutton(label="橡皮擦", command=remove, variable=what, value=2)
 
-menuType.add_command(label="清屏", command=clear)
-menuType.add_command(label="撤销", command=back)
-menuType.add_command(label="清除水印", command=remove_f)
+# 功能
+function_menuType = tk.Menu(menu, tearoff=0)
+menu.add_cascade(label="功能", menu=function_menuType)
+function_menuType.add_command(label="清屏", command=clear)
+function_menuType.add_command(label="撤销", command=back)
+function_menuType.add_command(label="清除水印", command=remove_f)
+function_menuType.add_command(label="打开文件保存位置", command=open_file)
 
 menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
 menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)
 
-menuType.add_cascade(label="保存", menu=menu_sava)
+function_menuType.add_cascade(label="保存", menu=menu_sava)
 
 # 字号
 font_menuType = tk.Menu(menu, tearoff=0)
@@ -512,7 +523,6 @@ font_menuType.add_command(label="橡皮擦", command=currency_remove)
 app_help = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="帮助", menu=app_help)
 app_help.add_command(label="关于软件", command=about)
-app_help.add_command(label="开发者信息", command=developer_info)
 app_help.add_command(label="帮助文档", command=open_web)
 
 win.config(menu=menu)
