@@ -196,7 +196,9 @@ def found():
         h2 = canvas.create_text(WIDTH - 40, 30, text=f"宽：{hei}m")
         if state_f:
             watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
-                                           font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc")
+                                           font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc",
+                                           tags="watermark")
+            canvas.lower("watermark")
         length.place(x=WIDTH - 30, y=140)
 
     else:
