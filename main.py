@@ -348,11 +348,11 @@ def open_file():
     subprocess.call(["open", path])
 
 
-# 清除水印
-def remove_f():
-    global state_f
-    canvas.delete(watermark)
-    state_f = 0
+# # 清除水印
+# def remove_f():
+#     global state_f
+#     canvas.delete(watermark)
+#     state_f = 0
 
 
 # 关于软件
@@ -366,6 +366,7 @@ def about():
     tk.Label(app_frame, text="路线设计", font=("宋体", 15, "bold")).pack()
     tk.Label(app_frame, text="版本 1.0").pack()
     tk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
+    tk.Label(app_frame, text="软件开发：许志亮 葛茂林").pack()
 
 
 # 帮助文档
@@ -504,7 +505,7 @@ function_menuType = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="功能", menu=function_menuType)
 function_menuType.add_command(label="清屏", command=clear)
 function_menuType.add_command(label="撤销", command=back)
-function_menuType.add_command(label="清除水印", command=remove_f)
+# function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件保存位置", command=open_file)
 
 menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
