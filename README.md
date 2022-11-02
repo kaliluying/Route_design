@@ -21,7 +21,7 @@
 通过输入框输入宽高
 ### 比赛信息
 输入需要的，<span style="color:red">不填不影响</span>，确认后可点击修改按钮修改信息
-![](./readme_img/info.gif)
+<img src="https://github.com/kaliluying/Route_design/blob/main/readme_img/info.gif" alt="image-20210912162650789" style="zoom: 50%;" />
 ### 画图
 默认为指针拖动，可在工具栏中修改，字号修改线条的粗细(后设置的优先级高)
 ### 保存
