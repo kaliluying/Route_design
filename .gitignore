@@ -9,3 +9,6 @@ main.spec
 run.py
 CombinationObstacle.py
 temp.py
+
+dist
+build
