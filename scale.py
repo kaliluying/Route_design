@@ -158,11 +158,10 @@ class CreateImg(T):
 
     def set_state(self):
         self.app.lower(self.tag)
+        self.app.lower("watermark")
 
     def set_name(self, name):
-        print(type(name.get()))
         self.name = name.get()
-        print(self.name)
 
     def rotate(self, id, angle):
         """
