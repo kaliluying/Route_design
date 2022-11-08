@@ -56,7 +56,7 @@ class Focus:
         :return:
         """
         self.frame = tk.Frame(self.win)
-        self.frame.place(x=1250, y=15)
+        self.frame.place(x=1250, y=10)
         self.frame_button = tk.Frame(self.frame)
         self.frame_button.pack(side="bottom")
         self.frame_label = tk.Frame(self.frame)
@@ -78,18 +78,18 @@ class Focus:
         """
         self.remove()
         if obstacle == "oxer":
-            tk.Label(self.frame_label, text='A-->B:').pack()
+            tk.Label(self.frame_label, text='A-->B(m):').pack()
             var_a_b = tk.StringVar(value=info[0] if info else '')
             a_b = tk.Entry(self.frame_input, textvariable=var_a_b, width=5)
             a_b.pack()
             tk.Button(self.frame_button, text="确认").pack()
 
         elif obstacle == "tirail":
-            tk.Label(self.frame_label, text='A-->B:').pack()
+            tk.Label(self.frame_label, text='A-->B(m):').pack()
             var_a_b = tk.StringVar(value=info[0] if info else '')
             a_b = tk.Entry(self.frame_input, textvariable=var_a_b, width=5)
             a_b.pack()
-            tk.Label(self.frame_label, text='B-->C:').pack()
+            tk.Label(self.frame_label, text='B-->C(m):').pack()
             var_b_c = tk.StringVar(value=info[1] if info else '')
             b_c = tk.Entry(self.frame_input, textvariable=var_b_c, width=5)
             b_c.pack()
@@ -127,12 +127,12 @@ class Focus:
                       name="ent_a")
         ent_a.pack()
 
-        Checkbutton(self.frame_label, text="A双横木", variable=checkvar_a, onvalue=1, offvalue=0,
+        Checkbutton(self.frame_label, text="A双横木(cm)", variable=checkvar_a, onvalue=1, offvalue=0,
                     command=partial(self.oxer_a, checkvar_a, checkvar_b, checkvar_c, ent_a, obj, obstacle,
                                     var_a)).pack()
 
-        tk.Label(self.frame_label, text='A-->B:').pack()
-        var_a_b = tk.StringVar(value=info['ent_a_b'] if info else '30')
+        tk.Label(self.frame_label, text='A-->B(m):').pack()
+        var_a_b = tk.StringVar(value=info['ent_a_b'] if info else '3')
         ent_a_b = Entry(self.frame_input, textvariable=var_a_b, width=5, name="ent_a_b")
         ent_a_b.pack()
 
@@ -142,12 +142,12 @@ class Focus:
                       name='ent_b')
         ent_b.pack()
 
-        Checkbutton(self.frame_label, text="B双横木", variable=checkvar_b, onvalue=1, offvalue=0,
+        Checkbutton(self.frame_label, text="B双横木(cm)", variable=checkvar_b, onvalue=1, offvalue=0,
                     command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
                                     var_b)).pack()
         if obstacle == "combination_abc":
-            tk.Label(self.frame_label, text='B-->C:').pack()
-            var_b_c = tk.StringVar(value=info['ent_b_c'] if info else '30')
+            tk.Label(self.frame_label, text='B-->C(m):').pack()
+            var_b_c = tk.StringVar(value=info['ent_b_c'] if info else '3')
             ent_b_c = Entry(self.frame_input, textvariable=var_b_c, width=5, name="ent_b_c")
             ent_b_c.pack()
             var_c = tk.StringVar(value=info['ent_c'] if info else '')
@@ -155,7 +155,7 @@ class Focus:
                           state=state["ent_c"] if state else "disabled",
                           name="ent_c")
             ent_c.pack()
-            Checkbutton(self.frame_label, text="C双横木", variable=checkvar_c, onvalue=1, offvalue=0,
+            Checkbutton(self.frame_label, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
                         command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).pack()
 
         tk.Button(self.frame_button, text="确认").pack()

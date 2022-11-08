@@ -121,8 +121,18 @@ class CreateImg(T):
             val_b = int(self.info[1])
             self.img_updata(val_a, val_b)
         elif self.obstacle == "combination_ab":
-            a, a_b, b = self.com_info.values()
-            a, a_b, b = int(a), int(a_b), int(b)
+            temp = {}
+            for key, val in self.com_info.items():
+                if key.count('_') == 2 and val != '0':
+                    temp[key] = (int(val) * 10)
+                elif key.count('_') == 1 and val != '0':
+                    temp[key] = (int(val) / 10)
+                else:
+                    temp[key] = 0
+            print(temp)
+            a, a_b, b = temp.values()
+            a, a_b, b = round(a), round(a_b), round(b)
+            print(a, a_b, b)
             self.img_path = obs_ab(a, b, a_b)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
@@ -154,7 +164,7 @@ class CreateImg(T):
         var_name = tk.StringVar(value=self.name)
         tk.Entry(win, textvariable=var_name, width=4).place(x=1160, y=20)
         tk.Button(win, text="确认", command=partial(self.set_name, var_name)).place(x=1130, y=50)
-        tk.Button(win, text="放置", command=self.set_state).place(x=1130, y=90)
+        tk.Button(win, text="放置", command=self.set_state).place(x=1130, y=80)
 
     def set_state(self):
         self.app.lower(self.tag)
