@@ -56,7 +56,7 @@ class Focus:
         :return:
         """
         self.frame = tk.Frame(self.win)
-        self.frame.place(x=1250, y=10)
+        self.frame.pack()
         self.frame_button = tk.Frame(self.frame)
         self.frame_button.pack(side="bottom")
         self.frame_label = tk.Frame(self.frame)

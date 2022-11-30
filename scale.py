@@ -1,5 +1,17 @@
+import Commom
 from Tools import is_number, merge, combination, com_abc, oxer_obs_abc, obs_ab
 from Commom import *
+
+current_tag = None
+
+
+def set_cur(cur):
+    global current_tag
+    current_tag = cur
+
+
+def get_cur():
+    return current_tag
 
 
 class T:
@@ -21,6 +33,7 @@ class T:
             self.startx = event.x
             self.starty = event.y
             self.tag = tag
+            set_cur(tag)
             self.app.lift(self.tag)
 
     def drag(self, tag, event):
@@ -82,6 +95,12 @@ class CreateImg(T):
                                                                     state=self.state, com_info=self.com_info)
             button = self.frame_button.winfo_children()[0]
             button.config(command=self.update_img)
+        else:
+            for i in frame_edit.winfo_children():
+                for j in i.winfo_children():
+                    for d in j.winfo_children():
+                        print(d)
+
 
     def update_img(self):
         """
@@ -156,15 +175,21 @@ class CreateImg(T):
         按钮
         :return:
         """
-        tk.Label(win, text="旋转:", font=FONT).place(x=960, y=20)
-        var = tk.StringVar()
-        tk.Entry(win, textvariable=var, width=5).place(x=1010, y=20)
-        tk.Button(win, text="确认", command=partial(self.rotate, self.tag, var)).place(x=1000, y=50)
-        tk.Label(win, text="障碍名称:", font=FONT).place(x=1070, y=20)
+        for i in frame_edit.winfo_children():
+            for j in i.winfo_children():
+                for d in j.winfo_children():
+                    d.destroy()
+
+        tk.Label(frame_focus_x_ladel, text="旋转： ", font=FONT).pack()
+        self.var = tk.StringVar()
+        self.var.set(str(self.angle))
+        tk.Entry(frame_focus_x_ent, textvariable=self.var, width=5).pack()
+        tk.Button(frame_focus_x_but, text="确认", command=partial(self.rotate, self.tag, self.var)).pack()
+        tk.Label(frame_focus_z_ladel, text="备注： ", font=FONT).pack()
         var_name = tk.StringVar(value=self.name)
-        tk.Entry(win, textvariable=var_name, width=4).place(x=1160, y=20)
-        tk.Button(win, text="确认", command=partial(self.set_name, var_name)).place(x=1130, y=50)
-        tk.Button(win, text="放置", command=self.set_state).place(x=1130, y=80)
+        tk.Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
+        tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
+        # tk.Button(frame_edit, text="放置", command=self.set_state).pack()
 
     def set_state(self):
         self.app.lower(self.tag)
@@ -173,16 +198,44 @@ class CreateImg(T):
     def set_name(self, name):
         self.name = name.get()
 
-    def rotate(self, id, angle):
+    def drag(self, tag, event):
+        """
+        拖动旋转
+        :param tag:
+        :param event:
+        :return:
+        """
+        T.drag(self, tag, event)
+        if what.get() == 3:
+            x = event.x - self.startx
+            y = event.y - self.starty
+            if x != 0 and y != 0:
+                if (x < 0 and y >= 0) or (x < 0 and y < 0):
+                    self.angle += (math.sqrt(x * x + y * y))
+                elif (y < 0 and x >= 0) or (y > 0 and x > 0):
+                    self.angle += -(math.sqrt(x * x + y * y))
+            else:
+                self.angle += (x + y)
+            self.rotate(tag, self.angle)
+            self.startx = event.x
+            self.starty = event.y
+
+    def rotate(self, id, var):
         """
         旋转
         :param id:
         :param state:
         :return:
         """
-        self.img = self.rotate_bound(int(angle.get()))
+        try:
+            angle = int(var.get())
+        except:
+            angle = var
+        angle = angle % 360
+        self.img = self.rotate_bound(angle)
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(id, image=self.temp_path)
+        self.var.set(str(int(angle)))
 
     def rotate_bound(self, angle):
         """

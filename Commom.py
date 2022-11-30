@@ -1,3 +1,4 @@
+import math
 import tkinter as tk
 from tkinter import Checkbutton
 from tkinter import messagebox
@@ -22,6 +23,7 @@ FONT = ("微软雅黑", 18)
 X = tk.IntVar(value=0)
 Y = tk.IntVar(value=0)
 what = tk.IntVar(value=0)
+no_what = tk.IntVar(value=0)
 lastDraw = 0
 end = [0]
 size = 1
@@ -30,9 +32,7 @@ remove_size = 1
 state_f = 1
 px = 0
 remove_px = {}
-from focus import Focus
 
-focus = Focus(win)
 index = 0
 index_txt = 0
 index_img = 0
@@ -60,3 +60,71 @@ gate_image = "img/gate.png"
 # icon
 icon_path = "img/ic.png"
 icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
+# 左侧功能栏
+frame_function = tk.Frame(win, relief='ridge', bd=2)
+frame_function.place(x=5, y=170)
+
+# 功能容器
+frame_command = tk.Frame(frame_function)
+frame_command.pack()
+frame_command_left = tk.Frame(frame_command)
+frame_command_right = tk.Frame(frame_command)
+frame_command_left.pack(side="left")
+frame_command_right.pack(side="right")
+
+# 路线图信息主容器
+frame_l_info = tk.Frame(frame_function)
+frame_l_info.pack()
+
+# 路线二级容器
+frame_lable = tk.Frame(frame_l_info)
+frame_input = tk.Frame(frame_l_info)
+frame_button = tk.Frame(frame_l_info)
+frame_button.pack(side='bottom')
+frame_lable.pack(side='left')
+frame_input.pack(side='right')
+
+# 旋转、备注编辑主容器
+frame_edit = tk.Frame(frame_function)
+frame_edit.pack()
+
+# 旋转容器
+frame_x = tk.Frame(frame_edit)
+frame_x.pack()
+frame_focus_x_ladel = tk.Frame(frame_x)
+frame_focus_x_ent = tk.Frame(frame_x)
+frame_focus_x_but = tk.Frame(frame_x)
+frame_focus_x_but.pack(side='bottom')
+frame_focus_x_ladel.pack(side='left')
+frame_focus_x_ent.pack(side='right')
+
+# 备注容器
+frame_z = tk.Frame(frame_edit)
+frame_z.pack()
+frame_focus_z_ladel = tk.Frame(frame_z)
+frame_focus_z_ent = tk.Frame(frame_z)
+frame_focus_z_but = tk.Frame(frame_z)
+frame_focus_z_but.pack(side='bottom')
+frame_focus_z_ladel.pack(side='left')
+frame_focus_z_ent.pack(side='right')
+
+# 障碍按键容器
+frame_create = tk.Frame(win)
+frame_create.place(x=200, y=5)
+frame_temp_1 = tk.Frame(frame_create)
+frame_temp_2 = tk.Frame(frame_create)
+frame_temp_3 = tk.Frame(frame_create)
+frame_temp_4 = tk.Frame(frame_create)
+frame_temp_5 = tk.Frame(frame_create)
+frame_temp_6 = tk.Frame(frame_create)
+
+frame_temp_1.pack(side="left")
+frame_temp_2.pack(side="left")
+frame_temp_3.pack(side="left")
+frame_temp_4.pack(side="left")
+frame_temp_5.pack(side="left")
+frame_temp_6.pack(side="left")
+
+from focus import Focus
+
+focus = Focus(frame_function)

@@ -1,10 +1,9 @@
 import os
 import re
-import math
 import webbrowser
 import subprocess
 import tkinter.simpledialog
-from scale import CreateImg, CreateTxt
+from scale import CreateImg, CreateTxt, set_cur, get_cur
 from Tools import *
 from Commom import *
 
@@ -125,7 +124,7 @@ def title_ok(txt):
     china_list = re.findall(r"[\u4e00-\u9fa5]", txt)
     china = len(china_list) * 20
     letter = (len(txt) - len(china_list)) * 10
-    t_x = (WIDTH // 2) - (china // 2 + letter // 2)
+    t_x = (WIDTH // 2) - (china // 2 + letter // 2) + 150
     if t_x < 0: messagebox.showinfo('INFO', "长度过长")
     title.configure(text=txt)
     title.place(x=t_x, y=120)
@@ -186,9 +185,9 @@ def found():
         HEIGHT = int(h) * 10
         canvas.config(width=WIDTH, height=HEIGHT)
         canvas.pack()
-        but1.place(x=WIDTH + 80, y=790)
-        but2.place(x=WIDTH + 230, y=790)
-        frame_info.place(x=WIDTH + 30, y=200)
+        but1.place(x=WIDTH + 230, y=790)
+        but2.place(x=WIDTH + 330, y=790)
+        frame_info.place(x=WIDTH + 200, y=200)
         canvas.delete(h1, h2, watermark)
         wid = WIDTH / 10
         hei = HEIGHT / 10
@@ -224,7 +223,7 @@ def leftButtonMove(event):
                                       fill='#000000', width=font_size, tags="line")
         x = event.x - X.get()
         y = event.y - Y.get()
-        if x > 0 and y > 0:
+        if x != 0 and y != 0:
             px += (math.sqrt(x * x + y * y)) / 10
             temp_px = (math.sqrt(x * x + y * y)) / 10
         else:
@@ -238,7 +237,7 @@ def leftButtonMove(event):
     # 橡皮擦
     elif what.get() == 2:
         lastDraw = canvas.create_rectangle(event.x - 10, event.y - 10, event.x + 10, event.y + 10,
-                                           outline="#ececec", fill='#ececec', width=remove_size)
+                                           outline="#ececec", fill='#ececec', width=remove_size, tags="rubber")
 
 
 # 松开左键
@@ -247,24 +246,62 @@ def leftButtonUp(event):
     end.append(lastDraw)
 
 
+# 拖动
 def drag():
     what.set(0)
+    set_color()
+    no_what.set(0)
 
 
 # 铅笔
 def pen():
     what.set(1)
+    set_color()
+    no_what.set(1)
 
 
 # 橡皮擦
 def remove():
     what.set(2)
+    set_color()
+    no_what.set(2)
+
+
+# 旋转
+def rotate():
+    what.set(3)
+    set_color()
+    no_what.set(3)
+
+
+def set_color():
+    id = what.get()
+    no_id = no_what.get()
+    if id == 0:
+        but_0.config(fg='red')
+    elif id == 1:
+        but_1.config(fg='red')
+    elif id == 2:
+        but_2.config(fg='red')
+    elif id == 3:
+        but_3.config(fg='red')
+
+    if id != no_id:
+        if no_id == 0:
+            but_0.config(fg='black')
+        elif no_id == 1:
+            but_1.config(fg='black')
+        elif no_id == 2:
+            but_2.config(fg='black')
+        elif no_id == 3:
+            but_3.config(fg='black')
 
 
 # 清屏
 def clear():
     global px, length
     canvas.delete("line")
+    canvas.delete("rubber")
     px = 0
     length.config(text="%.2fm" % px)
 
@@ -350,6 +387,19 @@ def open_file():
     subprocess.call(["open", path])
 
 
+# 置底
+def set_state():
+    cur = get_cur()
+    canvas.lower(cur)
+    canvas.lower("watermark")
+
+
+# 删除
+def pop():
+    cur = get_cur()
+    canvas.delete(cur)
+
+
 # # 清除水印
 # def remove_f():
 #     global state_f
@@ -385,54 +435,56 @@ e_id.place(x=900, y=20)
 tk.Button(win, text='确认', command=insert).place(x=870, y=50)
 
 # 障碍物
-tk.Button(win, text='进出口', command=gate).place(x=170, y=8)
-tk.Button(win, text='指北针', command=compass).place(x=170, y=38)
+tk.Button(frame_temp_1, text='进出口', command=gate).pack()
+tk.Button(frame_temp_1, text='指北针', command=compass).pack()
+#
+tk.Button(frame_temp_2, text='水障', command=water_barrier).pack()
+tk.Button(frame_temp_2, text='砖墙', command=brick_wall).pack()
+#
+tk.Button(frame_temp_3, text='起/终点线', command=line).pack()
+tk.Button(frame_temp_3, text='强制通过点', command=force).pack()
 
-tk.Button(win, text='水障', command=water_barrier).place(x=255, y=8)
-tk.Button(win, text='砖墙', command=brick_wall).place(x=255, y=38)
+tk.Button(frame_temp_4, text='利物浦', command=live).pack()
+tk.Button(frame_temp_4, text='单横木', command=monorail).pack()
 
-tk.Button(win, text='起/终点线', command=line).place(x=332, y=8)
-tk.Button(win, text='强制通过点', command=force).place(x=330, y=38)
+tk.Button(frame_temp_5, text='双横木', command=oxer).pack()
+tk.Button(frame_temp_5, text='三横木', command=tirail).pack()
 
-tk.Button(win, text='利物浦', command=live).place(x=440, y=8)
-tk.Button(win, text='单横木', command=monorail).place(x=440, y=38)
+tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
+tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
 
-tk.Button(win, text='双横木', command=oxer).place(x=520, y=8)
-tk.Button(win, text='三横木', command=tirail).place(x=520, y=38)
-
-tk.Button(win, text='AB组合障碍', command=combination_ab).place(x=605, y=8)
-tk.Button(win, text='ABC组合障碍', command=combination_abc).place(x=600, y=38)
-
-# 路线图信息主容器
-frame_l_info = tk.Frame(win)
-frame_l_info.place(x=10, y=10)
-
-# 路线二级容器
-frame_lable = tk.Frame(frame_l_info)
-frame_input = tk.Frame(frame_l_info)
-frame_button = tk.Frame(frame_l_info)
-frame_button.pack(side='bottom')
-frame_lable.pack(side='left')
-frame_input.pack(side='right')
+# 左侧功能键
+but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red')
+but_0.pack()
+but_3 = tk.Button(frame_command_left, text='旋转', command=rotate)
+but_3.pack()
+but_1 = tk.Button(frame_command_left, text='铅笔', command=pen)
+but_1.pack()
+but_2 = tk.Button(frame_command_left, text='橡皮', command=remove)
+but_2.pack()
+tk.Button(frame_command_right, text='清屏', command=clear).pack()
+tk.Button(frame_command_right, text='撤销', command=back).pack()
+tk.Button(frame_command_right, text='置底', command=set_state).pack()
+tk.Button(frame_command_right, text='删除', command=pop).pack()
 
 # 路线图长度
-tk.Label(frame_lable, text="长度(m):", font=FONT).pack()
+tk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
 var_l_w = tk.StringVar()
 var_l_w.set('90')
-var_l_w_inp = tk.Entry(frame_input, textvariable=var_l_w, width=5)
-var_l_w_inp.pack()
+var_l_w_inp = tk.Entry(win, textvariable=var_l_w, width=5)
+var_l_w_inp.place(x=80, y=10)
 
 # 路线图宽度
-tk.Label(frame_lable, text="宽度(m):", font=FONT).pack()
+tk.Label(win, text="宽度(m):", font=FONT).place(x=10, y=40)
 var_l_h = tk.StringVar()
 var_l_h.set("60")
-var_l_h_inp = tk.Entry(frame_input, textvariable=var_l_h, width=5)
-var_l_h_inp.pack()
-tk.Button(frame_button, text="确认", command=found).pack()
+var_l_h_inp = tk.Entry(win, textvariable=var_l_h, width=5)
+var_l_h_inp.place(x=80, y=40)
+tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
 # 路线图
 f = tk.Frame(win, width=WIDTH, height=HEIGHT, bg="black", border=1)
-f.place(x=5, y=170)
+f.place(x=180, y=170)
 canvas = tk.Canvas(f, width=WIDTH, height=HEIGHT)
 canvas.pack()
 
@@ -450,7 +502,7 @@ canvas.create_line(10, 20, 60, 20, )
 
 # 右下显示，路线长度
 length = tk.Label(win, text=f"{px / 10}m")
-length.place(x=WIDTH - 30, y=140)
+length.place(x=WIDTH + 130, y=140)
 
 # 水印
 watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
@@ -463,7 +515,7 @@ canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 
 # 标题
 title = tk.Label(win, text="比赛名称", font=FONT)
-title.place(x=350, y=120)
+title.place(x=600, y=120)
 
 # 信息
 info = [
@@ -478,7 +530,7 @@ frame_tit = tk.Frame(frame_info)
 # 放赛事信息输入框
 frame_inp = tk.Frame(frame_info)
 
-frame_info.place(x=WIDTH + 30, y=200)
+frame_info.place(x=WIDTH + 200, y=170)
 frame_tit.pack(side='left')
 frame_inp.pack(side='right')
 
@@ -487,9 +539,9 @@ info_var = []
 edit()
 
 but1 = tk.Button(win, text="确认", command=dle)
-but1.place(x=WIDTH + 80, y=790)
+but1.place(x=WIDTH + 250, y=790)
 but2 = tk.Button(win, text="修改", command=edit)
-but2.place(x=WIDTH + 230, y=790)
+but2.place(x=WIDTH + 350, y=790)
 
 # 菜单栏
 menu = tk.Menu(win)
@@ -499,6 +551,7 @@ menuType = tk.Menu(menu, tearoff=0)
 menu_sava = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="工具栏", menu=menuType)
 menuType.add_radiobutton(label="指针拖动", command=drag, variable=what, value=0)
+menuType.add_radiobutton(label="旋转", command=rotate, variable=what, value=3)
 menuType.add_radiobutton(label="铅笔", command=pen, variable=what, value=1)
 menuType.add_radiobutton(label="橡皮擦", command=remove, variable=what, value=2)
 
