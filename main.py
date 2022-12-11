@@ -3,6 +3,7 @@ import re
 import webbrowser
 import subprocess
 import tkinter.simpledialog
+import Commom
 from scale import CreateImg, CreateTxt, set_cur, get_cur
 from Tools import *
 from Commom import *
@@ -29,7 +30,7 @@ def monorail():
 # 双横木
 def oxer():
     global index_img
-    image_path = expand(oxer_image)
+    image_path = merge(10)
     image_path = start_direction(image_path)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='oxer').create_img()
@@ -171,7 +172,7 @@ def edit():
         if temp_:
             var.set(temp_[i])
         info_var.append(var)
-        temp = tk.Entry(frame_inp, textvariable=var)
+        temp = tk.Entry(frame_inp, textvariable=var, width=15)
         temp.pack(padx=1, pady=4)
 
 
@@ -360,7 +361,7 @@ def save_0():
 
 # 保存
 def sava(checkvar):
-    x1 = 5
+    x1 = 180
     y1 = title.winfo_y() + 40
     if checkvar == '1':
         x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
@@ -398,6 +399,7 @@ def set_state():
 def pop():
     cur = get_cur()
     canvas.delete(cur)
+    remove_from_not_com()
 
 
 # # 清除水印
@@ -426,14 +428,6 @@ def open_web():
     webbrowser.open("https://github.com/kaliluying/Route_design/blob/main/README.md")
 
 
-# 障碍号
-tk.Label(win, text="障碍号：", font=FONT).place(x=830, y=20)
-var_id = tk.StringVar()
-e_id = tk.Entry(win, textvariable=var_id, width=4)
-e_id.place(x=900, y=20)
-
-tk.Button(win, text='确认', command=insert).place(x=870, y=50)
-
 # 障碍物
 tk.Button(frame_temp_1, text='进出口', command=gate).pack()
 tk.Button(frame_temp_1, text='指北针', command=compass).pack()
@@ -454,28 +448,36 @@ tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
 tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
 
 # 左侧功能键
-but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red')
+but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red', width=5, height=1)
 but_0.pack()
-but_3 = tk.Button(frame_command_left, text='旋转', command=rotate)
+but_3 = tk.Button(frame_command_left, text='旋转', command=rotate, width=5, height=1)
 but_3.pack()
-but_1 = tk.Button(frame_command_left, text='铅笔', command=pen)
+but_1 = tk.Button(frame_command_left, text='铅笔', command=pen, width=5, height=1)
 but_1.pack()
-but_2 = tk.Button(frame_command_left, text='橡皮', command=remove)
+but_2 = tk.Button(frame_command_left, text='橡皮', command=remove, width=5, height=1)
 but_2.pack()
-tk.Button(frame_command_right, text='清屏', command=clear).pack()
-tk.Button(frame_command_right, text='撤销', command=back).pack()
-tk.Button(frame_command_right, text='置底', command=set_state).pack()
-tk.Button(frame_command_right, text='删除', command=pop).pack()
+tk.Button(frame_command_right, text='清屏', command=clear, width=5, height=1).pack()
+tk.Button(frame_command_right, text='撤销', command=back, width=5, height=1).pack()
+tk.Button(frame_command_right, text='置底', command=set_state, width=5, height=1).pack()
+tk.Button(frame_command_right, text='删除', command=pop, width=5, height=1).pack()
+
+# 障碍号
+tk.Label(win, text="障碍号：", font=("微软雅黑", 15)).place(x=830, y=20)
+var_id = tk.StringVar()
+e_id = tk.Entry(win, textvariable=var_id, width=4)
+e_id.place(x=900, y=20)
+
+tk.Button(win, text='确认', command=insert).place(x=870, y=50)
 
 # 路线图长度
-tk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
+tk.Label(win, text="长度(m):", font=("微软雅黑", 15)).place(x=10, y=10)
 var_l_w = tk.StringVar()
 var_l_w.set('90')
 var_l_w_inp = tk.Entry(win, textvariable=var_l_w, width=5)
 var_l_w_inp.place(x=80, y=10)
 
 # 路线图宽度
-tk.Label(win, text="宽度(m):", font=FONT).place(x=10, y=40)
+tk.Label(win, text="宽度(m):", font=("微软雅黑", 15)).place(x=10, y=40)
 var_l_h = tk.StringVar()
 var_l_h.set("60")
 var_l_h_inp = tk.Entry(win, textvariable=var_l_h, width=5)

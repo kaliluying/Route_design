@@ -1,5 +1,5 @@
 import Commom
-from Tools import is_number, merge, combination, com_abc, oxer_obs_abc, obs_ab
+from Tools import is_number, merge, combination, com_abc, oxer_obs_abc, obs_ab, remove_from_edit
 from Commom import *
 
 current_tag = None
@@ -96,11 +96,8 @@ class CreateImg(T):
             button = self.frame_button.winfo_children()[0]
             button.config(command=self.update_img)
         else:
-            for i in frame_edit.winfo_children():
-                for j in i.winfo_children():
-                    for d in j.winfo_children():
-                        print(d)
-
+            if frame_function.winfo_children()[-1].winfo_name() == '障碍编辑容器':
+                frame_function.winfo_children()[-1].destroy()
 
     def update_img(self):
         """
@@ -127,17 +124,18 @@ class CreateImg(T):
             if is_number(i.get()):
                 self.info.append(i.get())
             elif i.get() == '':
-                pass
+                self.info.append('1')
             else:
                 messagebox.showerror("错误", "请输入数字")
                 i.delete(0, 'end')
                 return
         if self.obstacle == "oxer":
-            val = self.info[0]
-            self.img_updata(int(val))
+            val = int(self.info[0]) * 10
+            print(val)
+            self.img_updata(val)
         elif self.obstacle == "tirail":
-            val_a = int(self.info[0])
-            val_b = int(self.info[1])
+            val_a = int(self.info[0]) * 10
+            val_b = int(self.info[1]) * 10
             self.img_updata(val_a, val_b)
         elif self.obstacle == "combination_ab":
             temp = {}
@@ -148,16 +146,22 @@ class CreateImg(T):
                     temp[key] = (int(val) / 10)
                 else:
                     temp[key] = 0
-            print(temp)
             a, a_b, b = temp.values()
             a, a_b, b = round(a), round(a_b), round(b)
-            print(a, a_b, b)
             self.img_path = obs_ab(a, b, a_b)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == "combination_abc":
-            a, a_b, b, b_c, c = self.com_info.values()
+            temp = {}
+            for key, val in self.com_info.items():
+                if key.count('_') == 2 and val != '0':
+                    temp[key] = (int(val) * 10)
+                elif key.count('_') == 1 and val != '0':
+                    temp[key] = (int(val) / 10)
+                else:
+                    temp[key] = 0
+            a, a_b, b, b_c, c = temp.values()
             a, a_b, b, b_c, c = int(a), int(a_b), int(b), int(b_c), int(c)
             self.img_path = oxer_obs_abc(a, b, c, a_b, b_c)
             self.img = Image.open(self.img_path)
@@ -170,26 +174,49 @@ class CreateImg(T):
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(self.tag, image=self.temp_path)
 
+    def create_frame(self):
+        # 旋转、备注编辑主容器
+        frame_edit = tk.Frame(frame_function, name='旋转、备注')
+        frame_edit.pack()
+
+        # 旋转容器
+        frame_x = tk.Frame(frame_edit, name='旋转')
+        frame_x.pack()
+        frame_focus_x_ladel = tk.Frame(frame_x)
+        frame_focus_x_ent = tk.Frame(frame_x)
+        frame_focus_x_but = tk.Frame(frame_x)
+        frame_focus_x_but.pack(side='bottom')
+        frame_focus_x_ladel.pack(side='left')
+        frame_focus_x_ent.pack(side='right')
+
+        # 备注容器
+        frame_z = tk.Frame(frame_edit, name='备注')
+        frame_z.pack()
+        frame_focus_z_ladel = tk.Frame(frame_z)
+        frame_focus_z_ent = tk.Frame(frame_z)
+        frame_focus_z_but = tk.Frame(frame_z)
+        frame_focus_z_but.pack(side='bottom')
+        frame_focus_z_ladel.pack(side='left')
+        frame_focus_z_ent.pack(side='right')
+
     def butt(self):
         """
         按钮
         :return:
         """
-        for i in frame_edit.winfo_children():
-            for j in i.winfo_children():
-                for d in j.winfo_children():
-                    d.destroy()
+        self.create_frame()
+        remove_from_edit()
 
-        tk.Label(frame_focus_x_ladel, text="旋转： ", font=FONT).pack()
+        tk.Label(frame_focus_x_ladel, text="旋转： ", font=("微软雅黑", 15)).pack()
         self.var = tk.StringVar()
-        self.var.set(str(self.angle))
+        self.var.set(str(int(self.angle)))
         tk.Entry(frame_focus_x_ent, textvariable=self.var, width=5).pack()
         tk.Button(frame_focus_x_but, text="确认", command=partial(self.rotate, self.tag, self.var)).pack()
-        tk.Label(frame_focus_z_ladel, text="备注： ", font=FONT).pack()
+        tk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 15)).pack()
         var_name = tk.StringVar(value=self.name)
+        print(self.name)
         tk.Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
-        # tk.Button(frame_edit, text="放置", command=self.set_state).pack()
 
     def set_state(self):
         self.app.lower(self.tag)
@@ -232,6 +259,7 @@ class CreateImg(T):
         except:
             angle = var
         angle = angle % 360
+        self.angle = angle
         self.img = self.rotate_bound(angle)
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(id, image=self.temp_path)

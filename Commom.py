@@ -61,35 +61,23 @@ gate_image = "img/gate.png"
 icon_path = "img/ic.png"
 icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
 # 左侧功能栏
-frame_function = tk.Frame(win, relief='ridge', bd=2)
+frame_function = tk.Frame(win, relief='ridge', bd=2, name='左侧功能栏')
 frame_function.place(x=5, y=170)
 
 # 功能容器
-frame_command = tk.Frame(frame_function)
+frame_command = tk.Frame(frame_function, name='功能容器')
 frame_command.pack()
 frame_command_left = tk.Frame(frame_command)
 frame_command_right = tk.Frame(frame_command)
 frame_command_left.pack(side="left")
 frame_command_right.pack(side="right")
 
-# 路线图信息主容器
-frame_l_info = tk.Frame(frame_function)
-frame_l_info.pack()
-
-# 路线二级容器
-frame_lable = tk.Frame(frame_l_info)
-frame_input = tk.Frame(frame_l_info)
-frame_button = tk.Frame(frame_l_info)
-frame_button.pack(side='bottom')
-frame_lable.pack(side='left')
-frame_input.pack(side='right')
-
 # 旋转、备注编辑主容器
-frame_edit = tk.Frame(frame_function)
+frame_edit = tk.Frame(frame_function, name='旋转、备注')
 frame_edit.pack()
 
 # 旋转容器
-frame_x = tk.Frame(frame_edit)
+frame_x = tk.Frame(frame_edit, name='旋转')
 frame_x.pack()
 frame_focus_x_ladel = tk.Frame(frame_x)
 frame_focus_x_ent = tk.Frame(frame_x)
@@ -99,7 +87,7 @@ frame_focus_x_ladel.pack(side='left')
 frame_focus_x_ent.pack(side='right')
 
 # 备注容器
-frame_z = tk.Frame(frame_edit)
+frame_z = tk.Frame(frame_edit, name='备注')
 frame_z.pack()
 frame_focus_z_ladel = tk.Frame(frame_z)
 frame_focus_z_ent = tk.Frame(frame_z)
@@ -109,7 +97,7 @@ frame_focus_z_ladel.pack(side='left')
 frame_focus_z_ent.pack(side='right')
 
 # 障碍按键容器
-frame_create = tk.Frame(win)
+frame_create = tk.Frame(win, name='按键')
 frame_create.place(x=200, y=5)
 frame_temp_1 = tk.Frame(frame_create)
 frame_temp_2 = tk.Frame(frame_create)

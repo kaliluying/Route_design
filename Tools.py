@@ -1,4 +1,5 @@
 from PIL import Image, ImageOps
+from Commom import *
 
 # 行进方向
 direction_image = "img/direction2.png"
@@ -204,3 +205,21 @@ def obs_ab(a=0, b=0, a_b=30):
     com_image = "img/obs_ab.png"
     result.save(com_image)
     return com_image
+
+
+# 删除旋转、备注编辑容器
+def remove_from_edit():
+    for i in frame_edit.winfo_children():
+        for j in i.winfo_children():
+            for d in j.winfo_children():
+                d.destroy()
+
+
+# 删除除功能容器的容器
+def remove_from_not_com():
+    for i in frame_function.winfo_children():
+
+        if i.winfo_name() == '功能容器':
+            pass
+        else:
+            i.destroy()

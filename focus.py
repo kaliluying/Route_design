@@ -37,7 +37,6 @@ class Focus:
         self.frame_input = None
         self.frame_label = None
         self.frame_button = None
-        self.frame_select = None
         self.create_frame()  # 初始化生成frame容器
 
     def __new__(cls, *args, **kwargs):
@@ -55,14 +54,14 @@ class Focus:
         初始化生成frame容器
         :return:
         """
-        self.frame = tk.Frame(self.win)
+        self.frame = tk.Frame(self.win, name='障碍编辑容器')
         self.frame.pack()
         self.frame_button = tk.Frame(self.frame)
         self.frame_button.pack(side="bottom")
         self.frame_label = tk.Frame(self.frame)
         self.frame_label.pack(side="left")
-        self.frame_select = tk.Frame(self.frame)
-        self.frame_select.pack(side="right")
+        # self.frame_select = tk.Frame(self.frame)
+        # self.frame_select.pack(side="right")
         self.frame_input = tk.Frame(self.frame)
         self.frame_input.pack(side="right")
 
@@ -76,6 +75,7 @@ class Focus:
         :param com_info:
         :param state:
         """
+        self.create_frame()
         self.remove()
         if obstacle == "oxer":
             tk.Label(self.frame_label, text='A-->B(m):').pack()
@@ -172,8 +172,8 @@ class Focus:
             i.destroy()
         for i in self.frame_button.winfo_children():
             i.destroy()
-        for i in self.frame_select.winfo_children():
-            i.destroy()
+        # for i in self.frame_select.winfo_children():
+        #     i.destroy()
 
     def oxer(self, x1, ent, var):
         """
