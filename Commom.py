@@ -38,6 +38,8 @@ index_txt = 0
 index_img = 0
 temp_txt = None
 
+par_index = 1
+
 # 单横木
 one_path = 'img/one.png'
 # 利物浦

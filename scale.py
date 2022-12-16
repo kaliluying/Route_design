@@ -3,6 +3,7 @@ from Tools import is_number, merge, combination, com_abc, oxer_obs_abc, obs_ab, 
 from Commom import *
 
 current_tag = None
+parameter_list = []
 
 
 def set_cur(cur):
@@ -17,8 +18,8 @@ def get_cur():
 class T:
     def __init__(self, app, index):
         self.tag = None
-        self.startx = 90
-        self.starty = 10
+        self.startx = 200
+        self.starty = 100
         self.angle = 0
         self.app = app
         self.index = str(index)
@@ -51,6 +52,16 @@ class CreateTxt(T):
     def create_txt(self, txt):
         tag = "txt" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=tag)
+        self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
+        self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
+        self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
+
+
+class CreateParameter(T):
+    def create_parameter(self, txt):
+        tag = "parameter" + self.index
+        text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', tag))
+        parameter_list.append(text)
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
         self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -131,7 +142,6 @@ class CreateImg(T):
                 return
         if self.obstacle == "oxer":
             val = int(self.info[0]) * 10
-            print(val)
             self.img_updata(val)
         elif self.obstacle == "tirail":
             val_a = int(self.info[0]) * 10

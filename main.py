@@ -4,7 +4,7 @@ import webbrowser
 import subprocess
 import tkinter.simpledialog
 import Commom
-from scale import CreateImg, CreateTxt, set_cur, get_cur
+from scale import CreateImg, CreateTxt, CreateParameter, set_cur, get_cur
 from Tools import *
 from Commom import *
 
@@ -16,6 +16,28 @@ def insert():
     index_txt += 1
     CreateTxt(canvas, index_txt).create_txt(var)
     e_id.delete(0, 'end')
+
+
+# 障碍参数确认
+def parameter():
+    global index_txt
+    var = var_parameter.get()
+    index_txt += 1
+    CreateParameter(canvas, index_txt).create_parameter(var)
+    e_parameter.delete(0, 'end')
+
+
+# 隐藏障碍参数
+def hidden():
+    global par_index
+    if par_index:
+        canvas.itemconfig('parameter', state='hidden')
+        par_state.config(text='显示')
+        par_index = 0
+    else:
+        canvas.itemconfig('parameter', state='normal')
+        par_state.config(text='隐藏')
+        par_index = 1
 
 
 # 单横木
@@ -237,8 +259,10 @@ def leftButtonMove(event):
 
     # 橡皮擦
     elif what.get() == 2:
-        lastDraw = canvas.create_rectangle(event.x - 10, event.y - 10, event.x + 10, event.y + 10,
-                                           outline="#ececec", fill='#ececec', width=remove_size, tags="rubber")
+        te = canvas.find_overlapping(event.x - 10, event.y - 10, event.x + 10, event.y + 10)
+        for i in te:
+            canvas.delete(i)
+
 
 
 # 松开左键
@@ -468,6 +492,16 @@ e_id = tk.Entry(win, textvariable=var_id, width=4)
 e_id.place(x=900, y=20)
 
 tk.Button(win, text='确认', command=insert).place(x=870, y=50)
+
+# 障碍参数
+tk.Label(win, text="障碍参数：", font=("微软雅黑", 15)).place(x=1000, y=20)
+var_parameter = tk.StringVar()
+e_parameter = tk.Entry(win, textvariable=var_parameter, width=8)
+e_parameter.place(x=1070, y=20)
+
+tk.Button(win, text='确认', command=parameter).place(x=1020, y=50)
+par_state = tk.Button(win, text='隐藏', command=hidden)
+par_state.place(x=1100, y=50)
 
 # 路线图长度
 tk.Label(win, text="长度(m):", font=("微软雅黑", 15)).place(x=10, y=10)
