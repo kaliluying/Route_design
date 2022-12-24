@@ -62,6 +62,10 @@ gate_image = "img/gate.png"
 # icon
 icon_path = "img/ic.png"
 icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
+# 20米圆
+circular_image = "img/circular.png"
+
+
 # 左侧功能栏
 frame_function = tk.Frame(win, relief='ridge', bd=2, name='左侧功能栏')
 frame_function.place(x=5, y=170)
@@ -107,6 +111,7 @@ frame_temp_3 = tk.Frame(frame_create)
 frame_temp_4 = tk.Frame(frame_create)
 frame_temp_5 = tk.Frame(frame_create)
 frame_temp_6 = tk.Frame(frame_create)
+frame_temp_7 = tk.Frame(frame_create)
 
 frame_temp_1.pack(side="left")
 frame_temp_2.pack(side="left")
@@ -114,6 +119,7 @@ frame_temp_3.pack(side="left")
 frame_temp_4.pack(side="left")
 frame_temp_5.pack(side="left")
 frame_temp_6.pack(side="left")
+frame_temp_7.pack(side="left")
 
 from focus import Focus
 

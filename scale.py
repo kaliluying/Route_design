@@ -1,18 +1,25 @@
 import Commom
 from Tools import is_number, merge, combination, com_abc, oxer_obs_abc, obs_ab, remove_from_edit
 from Commom import *
+import math
 
 current_tag = None
+line_tag = None
 parameter_list = []
 
 
 def set_cur(cur):
-    global current_tag
+    global current_tag, line_tag
     current_tag = cur
 
 
+def set_line(line):
+    global line_tag
+    line_tag = line
+
+
 def get_cur():
-    return current_tag
+    return current_tag, line_tag
 
 
 class T:
@@ -20,9 +27,12 @@ class T:
         self.tag = None
         self.startx = 200
         self.starty = 100
+        self.current_x = 200
+        self.current_y = 100
         self.angle = 0
         self.app = app
         self.index = str(index)
+        self.line_tag = None
 
     def mousedown(self, tag, event):
         """
@@ -38,8 +48,18 @@ class T:
             self.app.lift(self.tag)
 
     def drag(self, tag, event):
+        """
+        鼠标拖动
+        :param tag:
+        :param event:
+        :return:
+        """
         if what.get() == 0:
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
+            self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
+            self.current_x += event.x - self.startx
+            self.current_y += event.y - self.starty
+
             self.startx = event.x
             self.starty = event.y
 
@@ -82,12 +102,13 @@ class CreateImg(T):
         self.com_info = {}
         self.state = {}
         self.name = ''
+        self.state_line = 0
 
     def create_img(self):
         self.tag = "img" + self.index
         self.img_file = ImageTk.PhotoImage(self.img_obj)
         img_id = self.app.create_image(self.startx, self.starty, image=self.img_file,
-                                       anchor="n", tag=self.tag)
+                                       tag=self.tag)
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
         self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
@@ -109,6 +130,21 @@ class CreateImg(T):
         else:
             if frame_function.winfo_children()[-1].winfo_name() == '障碍编辑容器':
                 frame_function.winfo_children()[-1].destroy()
+        if self.state_line:
+            self.state_line = 0
+            self.app.delete(self.line_tag)
+        else:
+            self.state_line = 1
+
+            k = math.tan(self.angle * math.pi / 180)
+            b = -self.current_y - k * self.current_x
+            x1 = self.current_x - 100
+            y1 = -(((self.current_x - 100) * k) + b)
+            x2 = self.current_x + 100
+            y2 = -(((self.current_x + 100) * k) + b)
+
+            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3))
+            set_line(self.line_tag)
 
     def update_img(self):
         """
@@ -224,7 +260,6 @@ class CreateImg(T):
         tk.Button(frame_focus_x_but, text="确认", command=partial(self.rotate, self.tag, self.var)).pack()
         tk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 15)).pack()
         var_name = tk.StringVar(value=self.name)
-        print(self.name)
         tk.Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
 

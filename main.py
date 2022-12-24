@@ -140,6 +140,13 @@ def gate():
     CreateImg(canvas, index_img, image_path).create_img()
 
 
+# 20米圆
+def circular():
+    global index_img
+    index_img += 1
+    CreateImg(canvas, index_img, circular_image).create_img()
+
+
 # 赛事标题确认
 def title_ok(txt):
     global temp_txt
@@ -262,7 +269,6 @@ def leftButtonMove(event):
         te = canvas.find_overlapping(event.x - 10, event.y - 10, event.x + 10, event.y + 10)
         for i in te:
             canvas.delete(i)
-
 
 
 # 松开左键
@@ -421,8 +427,10 @@ def set_state():
 
 # 删除
 def pop():
-    cur = get_cur()
+    cur, line = get_cur()
+    print(line)
     canvas.delete(cur)
+    canvas.delete(line)
     remove_from_not_com()
 
 
@@ -470,6 +478,8 @@ tk.Button(frame_temp_5, text='三横木', command=tirail).pack()
 
 tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
 tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
+
+tk.Button(frame_temp_7, text='20米圆', command=circular).pack()
 
 # 左侧功能键
 but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red', width=5, height=1)
