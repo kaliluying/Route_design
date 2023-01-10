@@ -4,7 +4,7 @@ import webbrowser
 import subprocess
 import tkinter.simpledialog
 import Commom
-from scale import CreateImg, CreateTxt, CreateParameter, set_cur, get_cur
+from scale import CreateImg, CreateTxt, CreateParameter, get_cur
 from Tools import *
 from Commom import *
 
@@ -46,7 +46,7 @@ def monorail():
     image_path = expand(one_path)
     image_path = start_direction(image_path)
     index_img += 1
-    CreateImg(canvas, index_img, image_path).create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='monorail').create_img()
 
 
 # 双横木
@@ -144,7 +144,12 @@ def gate():
 def circular():
     global index_img
     index_img += 1
-    CreateImg(canvas, index_img, circular_image).create_img()
+    cir = int(var_cir.get()) * 10
+    img = Image.open(circular_image)
+    img = img.resize((cir, cir))
+    img.save('./img/cir.png')
+    cir_path = './img/cir.png'
+    CreateImg(canvas, index_img, cir_path).create_img()
 
 
 # 赛事标题确认
@@ -240,13 +245,20 @@ def found():
 
 # 鼠标左键按下
 def leftButtonDown(event):
+    # global click_num
     X.set(event.x)
     Y.set(event.y)
 
 
+def create_line(x1, y1, x2, y2):
+    canvas.create_line(x1, y1, x2, y2, tags='line')
+    # canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
+    # canvas.create_rectangle(x1, y1, x2, y2, tags='line')
+
+
 # 鼠标左键滚动事件
 def leftButtonMove(event):
-    global lastDraw, px, length, remove_px
+    global lastDraw, px, length, remove_px, click_num
 
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
@@ -263,6 +275,7 @@ def leftButtonMove(event):
         length.config(text="%.2fm" % px)
         X.set(event.x)
         Y.set(event.y)
+        click_num = 1
 
     # 橡皮擦
     elif what.get() == 2:
@@ -273,8 +286,20 @@ def leftButtonMove(event):
 
 # 松开左键
 def leftButtonUp(event):
-    global lastDraw
+    global lastDraw, click_num
     end.append(lastDraw)
+    if what.get() == 1:
+        if click_num == 1:
+            start_x.set(event.x)
+            start_y.set(event.y)
+            click_num = 2
+        elif click_num == 2:
+            end_x.set(event.x)
+            end_y.set(event.y)
+            # click_num = 1
+            create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get())
+            start_x.set(end_x.get())
+            start_y.set(end_y.get())
 
 
 # 拖动
@@ -286,9 +311,11 @@ def drag():
 
 # 铅笔
 def pen():
+    global click_num
     what.set(1)
     set_color()
     no_what.set(1)
+    click_num = 1
 
 
 # 橡皮擦
@@ -330,11 +357,12 @@ def set_color():
 
 # 清屏
 def clear():
-    global px, length
+    global px, length, click_num
     canvas.delete("line")
     canvas.delete("rubber")
     px = 0
     length.config(text="%.2fm" % px)
+    click_num = 1
 
 
 # 撤销
@@ -420,7 +448,7 @@ def open_file():
 
 # 置底
 def set_state():
-    cur = get_cur()
+    cur, line = get_cur()
     canvas.lower(cur)
     canvas.lower("watermark")
 
@@ -428,7 +456,6 @@ def set_state():
 # 删除
 def pop():
     cur, line = get_cur()
-    print(line)
     canvas.delete(cur)
     canvas.delete(line)
     remove_from_not_com()
@@ -479,8 +506,6 @@ tk.Button(frame_temp_5, text='三横木', command=tirail).pack()
 tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
 tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
 
-tk.Button(frame_temp_7, text='20米圆', command=circular).pack()
-
 # 左侧功能键
 but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red', width=5, height=1)
 but_0.pack()
@@ -495,8 +520,16 @@ tk.Button(frame_command_right, text='撤销', command=back, width=5, height=1).p
 tk.Button(frame_command_right, text='置底', command=set_state, width=5, height=1).pack()
 tk.Button(frame_command_right, text='删除', command=pop, width=5, height=1).pack()
 
+# 圆
+tk.Label(win, text="圆(m)：", font=FONT).place(x=730, y=20)
+var_cir = tk.StringVar()
+e_id = tk.Entry(win, textvariable=var_cir, width=4)
+e_id.place(x=780, y=20)
+
+tk.Button(win, text='确认', command=circular).place(x=755, y=50)
+
 # 障碍号
-tk.Label(win, text="障碍号：", font=("微软雅黑", 15)).place(x=830, y=20)
+tk.Label(win, text="障碍号：", font=FONT).place(x=840, y=20)
 var_id = tk.StringVar()
 e_id = tk.Entry(win, textvariable=var_id, width=4)
 e_id.place(x=900, y=20)
@@ -504,7 +537,7 @@ e_id.place(x=900, y=20)
 tk.Button(win, text='确认', command=insert).place(x=870, y=50)
 
 # 障碍参数
-tk.Label(win, text="障碍参数：", font=("微软雅黑", 15)).place(x=1000, y=20)
+tk.Label(win, text="障碍参数：", font=FONT).place(x=1000, y=20)
 var_parameter = tk.StringVar()
 e_parameter = tk.Entry(win, textvariable=var_parameter, width=8)
 e_parameter.place(x=1070, y=20)
@@ -560,7 +593,7 @@ canvas.bind('<B1-Motion>', leftButtonMove)  # 鼠标左键滚动事件
 canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 
 # 标题
-title = tk.Label(win, text="比赛名称", font=FONT)
+title = tk.Label(win, text="比赛名称", font=("微软雅黑", 18))
 title.place(x=600, y=120)
 
 # 信息

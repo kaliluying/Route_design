@@ -1,5 +1,5 @@
 import Commom
-from Tools import is_number, merge, combination, com_abc, oxer_obs_abc, obs_ab, remove_from_edit
+from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit
 from Commom import *
 import math
 
@@ -56,15 +56,16 @@ class T:
         """
         if what.get() == 0:
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
-            self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
+            if self.line_tag:
+                self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
             self.current_x += event.x - self.startx
             self.current_y += event.y - self.starty
 
             self.startx = event.x
             self.starty = event.y
 
-    def pop(self, tag, event):
-        self.app.delete(tag)
+    # def pop(self, tag, event):
+    #     self.app.delete(tag)
 
 
 class CreateTxt(T):
@@ -74,7 +75,7 @@ class CreateTxt(T):
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=tag)
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
-        self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
+        # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
 
 
 class CreateParameter(T):
@@ -84,7 +85,7 @@ class CreateParameter(T):
         parameter_list.append(text)
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
-        self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
+        # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
 
 
 class CreateImg(T):
@@ -111,7 +112,7 @@ class CreateImg(T):
                                        tag=self.tag)
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
-        self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
+        # self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
 
     def mousedown(self, tag, event):
         """
@@ -130,21 +131,64 @@ class CreateImg(T):
         else:
             if frame_function.winfo_children()[-1].winfo_name() == '障碍编辑容器':
                 frame_function.winfo_children()[-1].destroy()
-        if self.state_line:
-            self.state_line = 0
-            self.app.delete(self.line_tag)
-        else:
-            self.state_line = 1
+        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
+            if self.state_line:
+                self.state_line = 0
+                self.app.delete(self.line_tag)
+            else:
+                self.state_line = 1
 
-            k = math.tan(self.angle * math.pi / 180)
-            b = -self.current_y - k * self.current_x
-            x1 = self.current_x - 100
-            y1 = -(((self.current_x - 100) * k) + b)
-            x2 = self.current_x + 100
-            y2 = -(((self.current_x + 100) * k) + b)
+                # 辅助线
+                self.guide()
+                set_line(self.line_tag)
+
+    def guide(self):
+        if 90 < self.angle < 180 or 270 < self.angle <= 359:
+            ang = 90 - self.angle % 90
+        elif 180 < self.angle < 270:
+            ang = self.angle % 180
+        else:
+            ang = self.angle
+
+        if self.angle == 90:
+            x1 = x2 = self.current_x
+            y1 = self.current_y - 150
+            y2 = self.current_y + 150
 
             self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3))
-            set_line(self.line_tag)
+            return
+        elif self.angle == 180:
+            y1 = y2 = self.current_y
+            x1 = self.current_x - 150
+            x2 = self.current_x + 150
+            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3))
+            return
+
+        k = math.tan(self.angle * math.pi / 180)
+        b = -self.current_y - k * self.current_x
+        if ang <= 45:
+            x1 = self.current_x - 150
+            y1 = -(((self.current_x - 150) * k) + b)
+            x2 = self.current_x + 150
+            y2 = -(((self.current_x + 150) * k) + b)
+        elif ang > 45:
+            y1 = self.current_y - 150
+            y2 = self.current_y + 150
+            m1 = (y2 - b) / k
+            m2 = (y1 - b) / k
+            m = (m1 + m2) / 2
+            n = m - self.current_x
+            x1 = m1 - n
+            x2 = m2 - n
+
+        # k = math.tan(self.angle * math.pi / 180)
+        # b = -self.current_y - k * self.current_x
+        # x1 = self.current_x - 100
+        # y1 = -(((self.current_x - 100) * k) + b)
+        # x2 = self.current_x + 100
+        # y2 = -(((self.current_x + 100) * k) + b)
+
+        self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3))
 
     def update_img(self):
         """
@@ -309,6 +353,11 @@ class CreateImg(T):
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))
+
+        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc",
+                             'monorail'] and self.state_line:
+            self.app.delete(self.line_tag)
+            self.guide()
 
     def rotate_bound(self, angle):
         """

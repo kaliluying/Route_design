@@ -19,11 +19,22 @@ win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
 # 全局变量
 WIDTH = 900
 HEIGHT = 600
-FONT = ("微软雅黑", 18)
+FONT = ("微软雅黑", 15)
 X = tk.IntVar(value=0)
 Y = tk.IntVar(value=0)
 what = tk.IntVar(value=0)
 no_what = tk.IntVar(value=0)
+
+# 初始点
+start_x = tk.IntVar(value=0)
+start_y = tk.IntVar(value=0)
+# 终止点
+end_x = tk.IntVar(value=0)
+end_y = tk.IntVar(value=0)
+# 点击次数
+click_num = 1
+
+
 lastDraw = 0
 end = [0]
 size = 1
