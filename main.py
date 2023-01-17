@@ -3,6 +3,9 @@ import re
 import webbrowser
 import subprocess
 import tkinter.simpledialog
+
+import numpy as np
+
 import Commom
 from scale import CreateImg, CreateTxt, CreateParameter, get_cur
 from Tools import *
@@ -173,6 +176,8 @@ def dle():
             i.destroy()
         for i in frame_inp.winfo_children():
             i.destroy()
+        for i in frame_por.winfo_children():
+            i.destroy()
         for i in range(len(info_var)):
             if info_var[i].get():
                 temp[info[i]] = info_var[i]
@@ -183,6 +188,7 @@ def dle():
                 continue
             tk.Label(frame_tit, text=key + ': ', font=("微软雅黑", 21)).pack(padx=1, pady=4)
             tk.Label(frame_inp, text=value.get(), font=("微软雅黑", 21)).pack(padx=1, pady=4)
+            tk.Label(frame_por, text='').pack(padx=1, pady=7)
 
     except Exception as e:
         print("Error: " + str(e))
@@ -196,18 +202,49 @@ def edit():
         temp_[info[i]] = info_var[i].get()
 
     info_var.clear()
+    pro_var.clear()
     for i in frame_tit.winfo_children():
         i.destroy()
     for i in frame_inp.winfo_children():
         i.destroy()
+    for i in frame_por.winfo_children():
+        i.destroy()
     for i in info:
         tk.Label(frame_tit, text=i + ":", font=("微软雅黑", 21)).pack(padx=1, pady=3)
         var = tk.StringVar()
+        pro_value = tk.StringVar()
         if temp_:
             var.set(temp_[i])
         info_var.append(var)
-        temp = tk.Entry(frame_inp, textvariable=var, width=15)
-        temp.pack(padx=1, pady=4)
+        pro_var.append(pro_value)
+        if i == '允许时间':
+            tk.Entry(frame_inp, textvariable=var, width=15, validate="focusin",
+                     validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=4)
+            tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
+            continue
+        tk.Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=4)
+        tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
+
+
+def allow(info_var, pro_value):
+    try:
+        s = info_var[7].get()
+        l = info_var[8].get()
+        if s.isdigit():
+            s = float(s)
+        else:
+            s = float(s.split('/')[0][:-1])
+        if l.isdigit():
+            l = float(l)
+        else:
+            l = float(l.split('m')[0])
+        t = str(s / l * 60) + 's'
+        pro_value.set(t)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
 
 
 # 生成路线图
@@ -252,7 +289,7 @@ def leftButtonDown(event):
 
 def create_line(x1, y1, x2, y2):
     canvas.create_line(x1, y1, x2, y2, tags='line')
-    # canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
+    # a = canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
     # canvas.create_rectangle(x1, y1, x2, y2, tags='line')
 
 
@@ -286,7 +323,7 @@ def leftButtonMove(event):
 
 # 松开左键
 def leftButtonUp(event):
-    global lastDraw, click_num
+    global lastDraw, click_num, px, length
     end.append(lastDraw)
     if what.get() == 1:
         if click_num == 1:
@@ -298,8 +335,52 @@ def leftButtonUp(event):
             end_y.set(event.y)
             # click_num = 1
             create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get())
+            x = end_x.get() - start_x.get()
+            y = end_y.get() - start_y.get()
+            px += (abs(x + y)) / 10
+            length.config(text="%.2fm" % px)
+            remove_px[lastDraw] = px
             start_x.set(end_x.get())
             start_y.set(end_y.get())
+    elif what.get() == 4:
+        if click_num == 1:
+            start_x.set(event.x)
+            start_y.set(event.y)
+            click_num = 2
+        elif click_num == 2:
+            end_x.set(event.x)
+            end_y.set(event.y)
+            create_arc(start_x.get(), start_y.get(), end_x.get(), end_y.get())
+            start_x.set(end_x.get())
+            start_y.set(end_y.get())
+
+
+def create_arc(x1, y1, x2, y2):
+    x = x1 - x2
+    y = y1 - y2
+    if x != 0 and y != 0:
+        r = (math.sqrt(x * x + y * y)) / 2
+    else:
+        r = (abs(x + y)) / 2
+
+    num_points = 300
+    x0 = (x1 + x2) / 2
+    y0 = (y1 + y2) / 2
+
+    # 生成圆上的点的极角
+    theta = np.linspace(0, 2 * np.pi, num_points)
+
+    # 计算每个极角对应的 x, y 坐标
+    x = x0 + r * np.cos(theta)
+    y = y0 + r * np.sin(theta)
+
+    x = list(map(int, x))
+    y = list(map(int, y))
+
+    index = 0
+    for i in range(len(x) - 1):
+        canvas.create_line(x[index], y[index], x[index + 1], y[index + 1], tags='line')
+        index += 1
 
 
 # 拖动
@@ -332,6 +413,13 @@ def rotate():
     no_what.set(3)
 
 
+# 画弧
+def arc():
+    what.set(4)
+    set_color()
+    no_what.set(4)
+
+
 def set_color():
     id = what.get()
     no_id = no_what.get()
@@ -343,6 +431,8 @@ def set_color():
         but_2.config(fg='red')
     elif id == 3:
         but_3.config(fg='red')
+    elif id == 4:
+        but_4.config(fg='red')
 
     if id != no_id:
         if no_id == 0:
@@ -353,6 +443,8 @@ def set_color():
             but_2.config(fg='black')
         elif no_id == 3:
             but_3.config(fg='black')
+        elif no_id == 4:
+            but_4.config(fg='black')
 
 
 # 清屏
@@ -461,6 +553,30 @@ def pop():
     remove_from_not_com()
 
 
+def grid():
+    global create_grid, grid_start
+    if grid_start:
+        canvas.itemconfig('grid', stat='hidden')
+        grid_start = 0
+    elif create_grid and not grid_start:
+        canvas.itemconfig('grid', stat='normal')
+        grid_start = 1
+
+    if not create_grid:
+        range_x = WIDTH // 50
+        range_y = HEIGHT // 50
+        index_x = 0
+        index_y = 0
+        for i in range(range_x):
+            canvas.create_line(index_x, 0, index_x, HEIGHT, dash=(5, 3), tags='grid')
+            index_x += 50
+        for i in range(range_y):
+            canvas.create_line(0, index_y, WIDTH, index_y, dash=(5, 3), tags='grid')
+            index_y += 50
+        create_grid = True
+        grid_start = 1
+
+
 # # 清除水印
 # def remove_f():
 #     global state_f
@@ -513,12 +629,15 @@ but_3 = tk.Button(frame_command_left, text='旋转', command=rotate, width=5, he
 but_3.pack()
 but_1 = tk.Button(frame_command_left, text='铅笔', command=pen, width=5, height=1)
 but_1.pack()
+but_4 = tk.Button(frame_command_left, text='画弧', command=arc, width=5, height=1)
+but_4.pack()
 but_2 = tk.Button(frame_command_left, text='橡皮', command=remove, width=5, height=1)
 but_2.pack()
 tk.Button(frame_command_right, text='清屏', command=clear, width=5, height=1).pack()
 tk.Button(frame_command_right, text='撤销', command=back, width=5, height=1).pack()
 tk.Button(frame_command_right, text='置底', command=set_state, width=5, height=1).pack()
 tk.Button(frame_command_right, text='删除', command=pop, width=5, height=1).pack()
+tk.Button(frame_command_right, text='网格辅助线', command=grid, width=5, height=1).pack()
 
 # 圆
 tk.Label(win, text="圆(m)：", font=FONT).place(x=730, y=20)
@@ -563,7 +682,7 @@ tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
 # 路线图
 f = tk.Frame(win, width=WIDTH, height=HEIGHT, bg="black", border=1)
-f.place(x=180, y=170)
+f.place(x=180, y=150)
 canvas = tk.Canvas(f, width=WIDTH, height=HEIGHT)
 canvas.pack()
 
@@ -581,7 +700,7 @@ canvas.create_line(10, 20, 60, 20, )
 
 # 右下显示，路线长度
 length = tk.Label(win, text=f"{px / 10}m")
-length.place(x=WIDTH + 130, y=140)
+length.place(x=WIDTH + 130, y=120)
 
 # 水印
 watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
@@ -608,19 +727,23 @@ frame_info = tk.Frame(win)
 frame_tit = tk.Frame(frame_info)
 # 放赛事信息输入框
 frame_inp = tk.Frame(frame_info)
+# 建议信息容器
+frame_por = tk.Frame(frame_info)
 
-frame_info.place(x=WIDTH + 200, y=170)
+frame_info.place(x=WIDTH + 200, y=150)
 frame_tit.pack(side='left')
+frame_por.pack(side='right')
 frame_inp.pack(side='right')
 
 # 生成赛事信息
 info_var = []
+pro_var = []
 edit()
 
 but1 = tk.Button(win, text="确认", command=dle)
-but1.place(x=WIDTH + 250, y=790)
+but1.place(x=WIDTH + 250, y=770)
 but2 = tk.Button(win, text="修改", command=edit)
-but2.place(x=WIDTH + 350, y=790)
+but2.place(x=WIDTH + 350, y=770)
 
 # 菜单栏
 menu = tk.Menu(win)

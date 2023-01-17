@@ -34,6 +34,10 @@ end_y = tk.IntVar(value=0)
 # 点击次数
 click_num = 1
 
+# 网格状态
+grid_start = 0
+# 网格是否创建
+create_grid = False
 
 lastDraw = 0
 end = [0]
@@ -43,6 +47,8 @@ remove_size = 1
 state_f = 1
 px = 0
 remove_px = {}
+
+
 
 index = 0
 index_txt = 0
@@ -79,7 +85,7 @@ circular_image = "img/circular.png"
 
 # 左侧功能栏
 frame_function = tk.Frame(win, relief='ridge', bd=2, name='左侧功能栏')
-frame_function.place(x=5, y=170)
+frame_function.place(x=5, y=150)
 
 # 功能容器
 frame_command = tk.Frame(frame_function, name='功能容器')

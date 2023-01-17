@@ -5,7 +5,6 @@ import math
 
 current_tag = None
 line_tag = None
-parameter_list = []
 
 
 def set_cur(cur):
@@ -37,12 +36,17 @@ class T:
     def mousedown(self, tag, event):
         """
         鼠标左键按下
+        :param tag:
         :param event:
         :return:
         """
         if what.get() == 0:
-            self.startx = event.x
-            self.starty = event.y
+            try:
+                self.startx = event.x
+                self.starty = event.y
+            except:
+                self.startx = event[0]
+                self.starty = event[1]
             self.tag = tag
             set_cur(tag)
             self.app.lift(self.tag)
@@ -82,7 +86,6 @@ class CreateParameter(T):
     def create_parameter(self, txt):
         tag = "parameter" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', tag))
-        parameter_list.append(text)
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -113,6 +116,7 @@ class CreateImg(T):
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
         # self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
+        self.mousedown(self.tag, [200, 100])
 
     def mousedown(self, tag, event):
         """
@@ -129,8 +133,8 @@ class CreateImg(T):
             button = self.frame_button.winfo_children()[0]
             button.config(command=self.update_img)
         else:
-            if frame_function.winfo_children()[-1].winfo_name() == '障碍编辑容器':
-                frame_function.winfo_children()[-1].destroy()
+            if frame_function.winfo_children()[-2].winfo_name() == '障碍编辑容器':
+                frame_function.winfo_children()[-2].destroy()
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
             if self.state_line:
                 self.state_line = 0
@@ -192,7 +196,7 @@ class CreateImg(T):
 
     def update_img(self):
         """
-        从聚焦生成的输入框中获取值更新图片
+        从输入框中获取值更新图片
         :return:
         """
         self.info.clear()
@@ -221,19 +225,19 @@ class CreateImg(T):
                 i.delete(0, 'end')
                 return
         if self.obstacle == "oxer":
-            val = int(self.info[0]) * 10
+            val = int(float(self.info[0]) * 10)
             self.img_updata(val)
         elif self.obstacle == "tirail":
-            val_a = int(self.info[0]) * 10
-            val_b = int(self.info[1]) * 10
+            val_a = float(self.info[0]) * 10
+            val_b = float(self.info[1]) * 10
             self.img_updata(val_a, val_b)
         elif self.obstacle == "combination_ab":
             temp = {}
             for key, val in self.com_info.items():
                 if key.count('_') == 2 and val != '0':
-                    temp[key] = (int(val) * 10)
+                    temp[key] = float(val) * 10
                 elif key.count('_') == 1 and val != '0':
-                    temp[key] = (int(val) / 10)
+                    temp[key] = float(val) / 10
                 else:
                     temp[key] = 0
             a, a_b, b = temp.values()
@@ -257,8 +261,11 @@ class CreateImg(T):
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
             self.app.itemconfig(self.tag, image=self.temp_path)
+        self.rotate(self.tag, self.angle)
 
-    def img_updata(self, m1, m2=0):
+    def img_updata(self, m1, m2=0.0):
+        m1 = int(m1)
+        m2 = int(m2)
         self.img_path = merge(m1, m1=m2)
         self.img = Image.open(self.img_path)
         self.temp_path = ImageTk.PhotoImage(self.img)
@@ -353,11 +360,13 @@ class CreateImg(T):
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))
+        set_cur(self.tag)
 
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc",
                              'monorail'] and self.state_line:
             self.app.delete(self.line_tag)
             self.guide()
+            set_line(self.line_tag)
 
     def rotate_bound(self, angle):
         """

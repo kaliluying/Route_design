@@ -223,3 +223,5 @@ def remove_from_not_com():
             pass
         else:
             i.destroy()
+
+
