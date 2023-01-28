@@ -1,11 +1,9 @@
 import os
-import re
 import webbrowser
 import subprocess
 import tkinter.simpledialog
-
+from tkinter import filedialog
 import numpy as np
-
 import Commom
 from scale import CreateImg, CreateTxt, CreateParameter, get_cur
 from Tools import *
@@ -155,21 +153,9 @@ def circular():
     CreateImg(canvas, index_img, cir_path).create_img()
 
 
-# 赛事标题确认
-def title_ok(txt):
-    global temp_txt
-    temp_txt = txt
-    china_list = re.findall(r"[\u4e00-\u9fa5]", txt)
-    china = len(china_list) * 20
-    letter = (len(txt) - len(china_list)) * 10
-    t_x = (WIDTH // 2) - (china // 2 + letter // 2) + 150
-    if t_x < 0: messagebox.showinfo('INFO', "长度过长")
-    title.configure(text=txt)
-    title.place(x=t_x, y=120)
-
-
 # 赛事信息确认
 def dle():
+    global temp_txt
     try:
         temp = {}
         for i in frame_tit.winfo_children():
@@ -184,7 +170,9 @@ def dle():
 
         for key, value in temp.items():
             if key == '比赛名称':
-                title_ok(value.get())
+                temp_txt = value.get()
+                title.configure(text=temp_txt)
+                title.place()
                 continue
             tk.Label(frame_tit, text=key + ': ', font=("微软雅黑", 21)).pack(padx=1, pady=4)
             tk.Label(frame_inp, text=value.get(), font=("微软雅黑", 21)).pack(padx=1, pady=4)
@@ -238,13 +226,12 @@ def allow(info_var, pro_value):
             l = float(l)
         else:
             l = float(l.split('m')[0])
-        t = str(s / l * 60) + 's'
-        pro_value.set(t)
+        t = s / l * 60
+        pro_value.set('%.2fs' % t)
         return True
     except Exception as e:
         print(e)
         return False
-
 
 
 # 生成路线图
@@ -320,6 +307,10 @@ def leftButtonMove(event):
         for i in te:
             canvas.delete(i)
 
+    else:
+        canvas.delete('choice')
+        canvas.create_rectangle(X.get(), Y.get(), event.x, event.y, tags='choice', dash=(3, 5))
+
 
 # 松开左键
 def leftButtonUp(event):
@@ -353,6 +344,9 @@ def leftButtonUp(event):
             create_arc(start_x.get(), start_y.get(), end_x.get(), end_y.get())
             start_x.set(end_x.get())
             start_y.set(end_y.get())
+    else:
+        canvas.find_enclosed(X.get(), Y.get(), event.x, event.y)
+        canvas.delete('choice')
 
 
 def create_arc(x1, y1, x2, y2):
@@ -511,30 +505,46 @@ def save_0():
 
 # 保存
 def sava(checkvar):
-    x1 = 180
-    y1 = title.winfo_y() + 40
-    if checkvar == '1':
-        x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
-    elif checkvar == '0':
-        x2 = f.winfo_x() + f.winfo_width() + 10
-    y2 = f.winfo_y() + f.winfo_height() + 70
-
+    # x1 = 180
+    # y1 = title.winfo_y() + 40
+    # if checkvar == '1':
+    #     x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
+    # elif checkvar == '0':
+    #     x2 = f.winfo_x() + f.winfo_width() + 10
+    # y2 = f.winfo_y() + f.winfo_height() + 70
+    #
     txt = temp_txt if temp_txt else '路线设计'
-    if not os.path.exists('./download'):
-        os.mkdir('./download')
-    path = os.getcwd() + f'/download/{txt}.png'
-    try:
-        ImageGrab.grab((x1, y1, x2, y2)).save(path)
-        messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
-    except EOFError as e:
-        print('Error saving image:', e)
+    if not os.path.exists('./ms_download'):
+        os.mkdir('./ms_download')
+    # path = os.getcwd() + '/download/路线设计.png'
+    # try:
+    #     ImageGrab.grab((x1, y1, x2, y2)).save(path)
+    #     messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
+    # except EOFError as e:
+    #     print('Error saving image:', e)
+    path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("PNG", ".png")],
+                                        initialdir=os.getcwd() + '/ms_download', initialfile=txt)
+    if path:
+        path = path.split('.')[0]
+        eps_path = path + '.eps'
+        png_path = path + '.png'
+        if checkvar == '1':
+            can.postscript(file=eps_path, colormode='color')
+        elif checkvar == '0':
+            canvas.postscript(file=eps_path, colormode='color')
+
+        # EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.00.0/bin\gswin64.exe'
+        # print(EpsImagePlugin.gs_windows_binary)
+        img = Image.open(eps_path)
+        img.save(png_path)
+        os.remove(eps_path)
 
 
 # 打开文件保存路径
 def open_file():
-    if not os.path.exists('./download'):
-        os.mkdir('./download')
-    path = os.getcwd() + f'/download'
+    if not os.path.exists('./ms_download'):
+        os.mkdir('./ms_download')
+    path = os.getcwd() + f'/ms_download'
     subprocess.call(["open", path])
 
 
@@ -680,11 +690,61 @@ var_l_h_inp = tk.Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
+# # 路线图
+# f = tk.Frame(win, width=WIDTH, height=HEIGHT, bg="black", border=1)
+# f.place(x=180, y=150)
+# canvas = tk.Canvas(f, width=WIDTH, height=HEIGHT)
+# canvas.pack()
+
+# 最外围画布
+can = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 500)
+can.place(x=180, y=120)
+
+# 画布总容器
+cv = tk.Frame(can)
+cv.pack()
+
+# 标题容器
+tit = tk.Frame(cv, relief='ridge', bd=2)
+tit.pack(side="top")
+title = tk.Label(cv, text="比赛名称", font=("微软雅黑", 18))
+title.pack(pady=1)
+
 # 路线图
-f = tk.Frame(win, width=WIDTH, height=HEIGHT, bg="black", border=1)
-f.place(x=180, y=150)
+f = tk.Frame(cv, width=WIDTH, height=HEIGHT, bg="black", border=1)
+f.pack(side='left')
 canvas = tk.Canvas(f, width=WIDTH, height=HEIGHT)
 canvas.pack()
+
+# 信息
+info = [
+    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间', '障碍数量', '跳跃数量', '附加赛',
+    '路线设计师',
+]
+
+# 赛事信息主容器
+frame_info = tk.Frame(cv)
+# 放赛事信息标题
+frame_tit = tk.Frame(frame_info)
+# 放赛事信息输入框
+frame_inp = tk.Frame(frame_info)
+# 建议信息容器
+frame_por = tk.Frame(frame_info)
+
+frame_info.pack(side='right')
+frame_tit.pack(side='left')
+frame_por.pack(side='right')
+frame_inp.pack(side='right')
+
+# 生成赛事信息
+info_var = []
+pro_var = []
+edit()
+
+but1 = tk.Button(win, text="确认", command=dle)
+but1.place(x=WIDTH + 250, y=770)
+but2 = tk.Button(win, text="修改", command=edit)
+but2.place(x=WIDTH + 350, y=770)
 
 # 右上角显示路线长宽
 w = WIDTH / 10
@@ -708,42 +768,42 @@ watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
 
 # 画图
 canvas.bind('<Button-1>', leftButtonDown)  # 鼠标左键点击事件
-canvas.bind('<B1-Motion>', leftButtonMove)  # 鼠标左键滚动事件
+canvas.bind('<B1-Motion>', leftButtonMove)  # 鼠标左键移动事件
 canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 
-# 标题
-title = tk.Label(win, text="比赛名称", font=("微软雅黑", 18))
-title.place(x=600, y=120)
-
-# 信息
-info = [
-    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间', '障碍数量', '跳跃数量', '附加赛',
-    '路线设计师',
-]
-
-# 赛事信息主容器
-frame_info = tk.Frame(win)
-# 放赛事信息标题
-frame_tit = tk.Frame(frame_info)
-# 放赛事信息输入框
-frame_inp = tk.Frame(frame_info)
-# 建议信息容器
-frame_por = tk.Frame(frame_info)
-
-frame_info.place(x=WIDTH + 200, y=150)
-frame_tit.pack(side='left')
-frame_por.pack(side='right')
-frame_inp.pack(side='right')
-
-# 生成赛事信息
-info_var = []
-pro_var = []
-edit()
-
-but1 = tk.Button(win, text="确认", command=dle)
-but1.place(x=WIDTH + 250, y=770)
-but2 = tk.Button(win, text="修改", command=edit)
-but2.place(x=WIDTH + 350, y=770)
+# # 标题
+# title = tk.Label(win, text="比赛名称", font=("微软雅黑", 18))
+# title.place(x=600, y=120)
+#
+# # 信息
+# info = [
+#     '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间', '障碍数量', '跳跃数量', '附加赛',
+#     '路线设计师',
+# ]
+#
+# # 赛事信息主容器
+# frame_info = tk.Frame(win)
+# # 放赛事信息标题
+# frame_tit = tk.Frame(frame_info)
+# # 放赛事信息输入框
+# frame_inp = tk.Frame(frame_info)
+# # 建议信息容器
+# frame_por = tk.Frame(frame_info)
+#
+# frame_info.place(x=WIDTH + 200, y=150)
+# frame_tit.pack(side='left')
+# frame_por.pack(side='right')
+# frame_inp.pack(side='right')
+#
+# # 生成赛事信息
+# info_var = []
+# pro_var = []
+# edit()
+#
+# but1 = tk.Button(win, text="确认", command=dle)
+# but1.place(x=WIDTH + 250, y=770)
+# but2 = tk.Button(win, text="修改", command=edit)
+# but2.place(x=WIDTH + 350, y=770)
 
 # 菜单栏
 menu = tk.Menu(win)

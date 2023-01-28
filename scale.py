@@ -1,7 +1,7 @@
 import Commom
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit
 from Commom import *
-import math
+# import math
 
 current_tag = None
 line_tag = None

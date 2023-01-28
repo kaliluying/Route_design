@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import Checkbutton
 from tkinter import messagebox
 from functools import partial
-from PIL import Image, ImageTk, ImageOps, ImageGrab
+from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
 
 # 创建窗口
 win = tk.Tk()
@@ -39,6 +39,9 @@ grid_start = 0
 # 网格是否创建
 create_grid = False
 
+# 比赛名
+temp_txt = None
+
 lastDraw = 0
 end = [0]
 size = 1
@@ -48,12 +51,9 @@ state_f = 1
 px = 0
 remove_px = {}
 
-
-
 index = 0
 index_txt = 0
 index_img = 0
-temp_txt = None
 
 par_index = 1
 
@@ -81,7 +81,6 @@ icon_path = "img/ic.png"
 icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
 # 20米圆
 circular_image = "img/circular.png"
-
 
 # 左侧功能栏
 frame_function = tk.Frame(win, relief='ridge', bd=2, name='左侧功能栏')
