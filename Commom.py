@@ -42,6 +42,15 @@ create_grid = False
 # 比赛名
 temp_txt = None
 
+# 当前多选框状态
+current_frame_stare = True
+
+# 多选选中id
+choice_tup = []
+
+# 辅助信息状态
+aux_stare = True
+
 lastDraw = 0
 end = [0]
 size = 1

@@ -1,9 +1,10 @@
 import Commom
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit
 from Commom import *
-# import math
 
+# 当前标签
 current_tag = None
+# 线段标签
 line_tag = None
 
 
@@ -19,6 +20,15 @@ def set_line(line):
 
 def get_cur():
     return current_tag, line_tag
+
+
+def set_frame_stare(frame_stare):
+    global current_frame_stare
+    current_frame_stare = frame_stare
+
+
+def get_frame_stare():
+    return current_frame_stare
 
 
 class T:
@@ -40,6 +50,8 @@ class T:
         :param event:
         :return:
         """
+        self.app.delete('choice')
+        set_frame_stare(False)
         if what.get() == 0:
             try:
                 self.startx = event.x
@@ -58,7 +70,8 @@ class T:
         :param event:
         :return:
         """
-        if what.get() == 0:
+        global choice_tup
+        if what.get() == 0 and not choice_tup:
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
             if self.line_tag:
                 self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
@@ -70,6 +83,8 @@ class T:
 
     # def pop(self, tag, event):
     #     self.app.delete(tag)
+    def mouseup(self, event):
+        set_frame_stare(True)
 
 
 class CreateTxt(T):
@@ -80,6 +95,7 @@ class CreateTxt(T):
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
+        self.app.tag_bind(tag, "<ButtonRelease-1>", self.mouseup)
 
 
 class CreateParameter(T):
@@ -89,6 +105,7 @@ class CreateParameter(T):
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
+        self.app.tag_bind(tag, "<ButtonRelease-1>", self.mouseup)
 
 
 class CreateImg(T):
@@ -117,6 +134,8 @@ class CreateImg(T):
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
         # self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
         self.mousedown(self.tag, [200, 100])
+        set_frame_stare(True)
+        self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
 
     def mousedown(self, tag, event):
         """

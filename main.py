@@ -5,7 +5,7 @@ import tkinter.simpledialog
 from tkinter import filedialog
 import numpy as np
 import Commom
-from scale import CreateImg, CreateTxt, CreateParameter, get_cur
+from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_stare
 from Tools import *
 from Commom import *
 
@@ -89,7 +89,7 @@ def live():
     index_img += 1
     image_path = expand(live_image)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path).create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='live').create_img()
 
 
 # 强制通过点
@@ -246,7 +246,7 @@ def found():
         canvas.pack()
         but1.place(x=WIDTH + 230, y=790)
         but2.place(x=WIDTH + 330, y=790)
-        frame_info.place(x=WIDTH + 200, y=200)
+        # frame_info.place(x=WIDTH + 200, y=200)
         canvas.delete(h1, h2, watermark)
         wid = WIDTH / 10
         hei = HEIGHT / 10
@@ -257,7 +257,7 @@ def found():
                                            font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc",
                                            tags="watermark")
             canvas.lower("watermark")
-        length.place(x=WIDTH - 30, y=140)
+        length.place(x=WIDTH + 130, y=120)
 
     else:
         messagebox.showerror('错误', '请输入正整数')
@@ -269,7 +269,12 @@ def found():
 
 # 鼠标左键按下
 def leftButtonDown(event):
-    # global click_num
+    global choice_tup
+    if choice_tup and not (min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
+                           and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3])):
+        canvas.delete('choice')
+        choice_tup.clear()
+        canvas.dtag('choice_start', 'choice_start')
     X.set(event.x)
     Y.set(event.y)
 
@@ -282,7 +287,7 @@ def create_line(x1, y1, x2, y2):
 
 # 鼠标左键滚动事件
 def leftButtonMove(event):
-    global lastDraw, px, length, remove_px, click_num
+    global lastDraw, px, length, remove_px, click_num, choice_tup
 
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
@@ -307,14 +312,22 @@ def leftButtonMove(event):
         for i in te:
             canvas.delete(i)
 
+    # 多选框移动
+    elif what.get() == 0 and choice_tup:
+        if min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2]) \
+                and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3]):
+            canvas.move('choice_start', event.x - X.get(), event.y - Y.get())
+            X.set(event.x)
+            Y.set(event.y)
     else:
-        canvas.delete('choice')
-        canvas.create_rectangle(X.get(), Y.get(), event.x, event.y, tags='choice', dash=(3, 5))
+        if get_frame_stare():
+            canvas.delete('choice')
+            canvas.create_rectangle(X.get(), Y.get(), event.x, event.y, tags='choice', dash=(3, 5))
 
 
 # 松开左键
 def leftButtonUp(event):
-    global lastDraw, click_num, px, length
+    global lastDraw, click_num, px, length, choice_id, choice_tup
     end.append(lastDraw)
     if what.get() == 1:
         if click_num == 1:
@@ -345,8 +358,12 @@ def leftButtonUp(event):
             start_x.set(end_x.get())
             start_y.set(end_y.get())
     else:
-        canvas.find_enclosed(X.get(), Y.get(), event.x, event.y)
-        canvas.delete('choice')
+        # canvas.find_overlapping(X.get(), Y.get(), event.x, event.y)
+        canvas.addtag_overlapping('choice_start', X.get(), Y.get(), event.x, event.y)
+        choice_tup.append(X.get())
+        choice_tup.append(Y.get())
+        choice_tup.append(event.x)
+        choice_tup.append(event.y)
 
 
 def create_arc(x1, y1, x2, y2):
@@ -530,8 +547,10 @@ def sava(checkvar):
         png_path = path + '.png'
         if checkvar == '1':
             can.postscript(file=eps_path, colormode='color')
+            messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
         elif checkvar == '0':
             canvas.postscript(file=eps_path, colormode='color')
+            messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
 
         # EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.00.0/bin\gswin64.exe'
         # print(EpsImagePlugin.gs_windows_binary)
@@ -573,18 +592,28 @@ def grid():
         grid_start = 1
 
     if not create_grid:
-        range_x = WIDTH // 50
-        range_y = HEIGHT // 50
+        range_x = WIDTH // 100
+        range_y = HEIGHT // 100
         index_x = 0
         index_y = 0
         for i in range(range_x):
             canvas.create_line(index_x, 0, index_x, HEIGHT, dash=(5, 3), tags='grid')
-            index_x += 50
+            index_x += 100
         for i in range(range_y):
             canvas.create_line(0, index_y, WIDTH, index_y, dash=(5, 3), tags='grid')
-            index_y += 50
+            index_y += 100
         create_grid = True
         grid_start = 1
+
+
+def info():
+    global aux_stare
+    if aux_stare:
+        canvas.itemconfig('辅助信息', stat='hidden')
+        aux_stare = False
+    else:
+        canvas.itemconfig('辅助信息', stat='normal')
+        aux_stare = True
 
 
 # # 清除水印
@@ -648,32 +677,34 @@ tk.Button(frame_command_right, text='撤销', command=back, width=5, height=1).p
 tk.Button(frame_command_right, text='置底', command=set_state, width=5, height=1).pack()
 tk.Button(frame_command_right, text='删除', command=pop, width=5, height=1).pack()
 tk.Button(frame_command_right, text='网格辅助线', command=grid, width=5, height=1).pack()
+aux_info = tk.Button(frame_command_right, text='隐藏辅助信息', command=info, width=5, height=1)
+aux_info.pack()
 
 # 圆
-tk.Label(win, text="圆(m)：", font=FONT).place(x=730, y=20)
+tk.Label(win, text="圆(m)：", font=FONT).place(x=730, y=10)
 var_cir = tk.StringVar()
 e_id = tk.Entry(win, textvariable=var_cir, width=4)
-e_id.place(x=780, y=20)
+e_id.place(x=780, y=10)
 
-tk.Button(win, text='确认', command=circular).place(x=755, y=50)
+tk.Button(win, text='确认', command=circular).place(x=755, y=40)
 
 # 障碍号
-tk.Label(win, text="障碍号：", font=FONT).place(x=840, y=20)
+tk.Label(win, text="障碍号：", font=FONT).place(x=840, y=10)
 var_id = tk.StringVar()
 e_id = tk.Entry(win, textvariable=var_id, width=4)
-e_id.place(x=900, y=20)
+e_id.place(x=900, y=10)
 
-tk.Button(win, text='确认', command=insert).place(x=870, y=50)
+tk.Button(win, text='确认', command=insert).place(x=870, y=40)
 
 # 障碍参数
-tk.Label(win, text="障碍参数：", font=FONT).place(x=1000, y=20)
+tk.Label(win, text="障碍参数：", font=FONT).place(x=1000, y=10)
 var_parameter = tk.StringVar()
 e_parameter = tk.Entry(win, textvariable=var_parameter, width=8)
-e_parameter.place(x=1070, y=20)
+e_parameter.place(x=1070, y=10)
 
-tk.Button(win, text='确认', command=parameter).place(x=1020, y=50)
+tk.Button(win, text='确认', command=parameter).place(x=1020, y=40)
 par_state = tk.Button(win, text='隐藏', command=hidden)
-par_state.place(x=1100, y=50)
+par_state.place(x=1100, y=40)
 
 # 路线图长度
 tk.Label(win, text="长度(m):", font=("微软雅黑", 15)).place(x=10, y=10)
@@ -749,22 +780,23 @@ but2.place(x=WIDTH + 350, y=770)
 # 右上角显示路线长宽
 w = WIDTH / 10
 h = HEIGHT / 10
-h1 = canvas.create_text(WIDTH - 40, 10, text=f"长：{w}m")
-h2 = canvas.create_text(WIDTH - 40, 30, text=f"宽：{h}m")
+h1 = canvas.create_text(WIDTH - 40, 10, text=f"长：{w}m", tags='辅助信息')
+h2 = canvas.create_text(WIDTH - 40, 30, text=f"宽：{h}m", tags='辅助信息')
 
 # 左上角显示 5m的距离
-canvas.create_text(35, 10, text="5m")
-canvas.create_line(10, 15, 10, 20)
-canvas.create_line(60, 15, 60, 20)
-canvas.create_line(10, 20, 60, 20, )
+canvas.create_text(35, 10, text="5m", tags='辅助信息')
+canvas.create_line(10, 15, 10, 20, tags='辅助信息')
+canvas.create_line(60, 15, 60, 20, tags='辅助信息')
+canvas.create_line(10, 20, 60, 20, tags='辅助信息')
 
-# 右下显示，路线长度
+# 右上显示，路线长度
 length = tk.Label(win, text=f"{px / 10}m")
 length.place(x=WIDTH + 130, y=120)
 
 # 水印
 watermark = canvas.create_text(WIDTH / 2, HEIGHT / 2, text="山东体育学院",
-                               font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc", tags="watermark")
+                               font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc",
+                               tags="watermark", state='disabled')
 
 # 画图
 canvas.bind('<Button-1>', leftButtonDown)  # 鼠标左键点击事件
