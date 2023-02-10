@@ -92,11 +92,22 @@ icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
 circular_image = "img/circular.png"
 
 # 左侧功能栏
-frame_function = tk.Frame(win, relief='ridge', bd=2, name='左侧功能栏')
+frame_function = tk.Frame(win, name='左侧功能栏')
 frame_function.place(x=5, y=150)
 
+# 工作模块容器
+frame_job = tk.Frame(frame_function, relief='ridge', bd=2, name='工作模块')
+# 辅助模块容器
+frame_aux = tk.Frame(frame_function, relief='ridge', bd=2, name='辅助模块')
+# 测量模块容器
+frame_mea = tk.Frame(frame_function, relief='ridge', bd=2, name='测量模块')
+
+frame_job.pack()
+frame_aux.pack()
+frame_mea.pack()
+
 # 功能容器
-frame_command = tk.Frame(frame_function, name='功能容器')
+frame_command = tk.Frame(frame_job, name='功能容器')
 frame_command.pack()
 frame_command_left = tk.Frame(frame_command)
 frame_command_right = tk.Frame(frame_command)
@@ -104,7 +115,7 @@ frame_command_left.pack(side="left")
 frame_command_right.pack(side="right")
 
 # 旋转、备注编辑主容器
-frame_edit = tk.Frame(frame_function, name='旋转、备注')
+frame_edit = tk.Frame(frame_job, name='旋转、备注')
 frame_edit.pack()
 
 # 旋转容器
@@ -127,6 +138,30 @@ frame_focus_z_but.pack(side='bottom')
 frame_focus_z_ladel.pack(side='left')
 frame_focus_z_ent.pack(side='right')
 
+# 辅助功能容器
+frame_aux_com = tk.Frame(frame_aux, name='辅助功能容器')
+frame_aux_com.pack()
+frame_aux_com_lef = tk.Frame(frame_aux_com)
+frame_aux_com_rig = tk.Frame(frame_aux_com)
+frame_aux_com_lef.pack(side='left')
+frame_aux_com_rig.pack(side='right')
+
+# 辅助信息容器
+frame_aux_info = tk.Frame(frame_aux, name='辅助信息容器')
+frame_aux_info.pack()
+frame_aux_tit = tk.Frame(frame_aux_info)
+frame_aux_inp = tk.Frame(frame_aux_info)
+frame_aux_tit.pack(side='left')
+frame_aux_inp.pack(side='right')
+
+# 测量功能容器
+frame_mea_com = tk.Frame(frame_mea, name='测量功能容器')
+frame_mea_com.pack()
+frame_mea_com_lef = tk.Frame(frame_mea_com)
+frame_mea_com_rig = tk.Frame(frame_mea_com)
+frame_mea_com_lef.pack(side='left')
+frame_mea_com_rig.pack(side='right')
+
 # 障碍按键容器
 frame_create = tk.Frame(win, name='按键')
 frame_create.place(x=200, y=5)
@@ -148,4 +183,4 @@ frame_temp_7.pack(side="left")
 
 from focus import Focus
 
-focus = Focus(frame_function)
+focus = Focus(frame_job)

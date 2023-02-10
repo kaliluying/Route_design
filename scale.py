@@ -34,10 +34,10 @@ def get_frame_stare():
 class T:
     def __init__(self, app, index):
         self.tag = None
-        self.startx = 200
-        self.starty = 100
-        self.current_x = 200
-        self.current_y = 100
+        self.startx = 160
+        self.starty = 25
+        self.current_x = 160
+        self.current_y = 25
         self.angle = 0
         self.app = app
         self.index = str(index)
@@ -50,7 +50,16 @@ class T:
         :param event:
         :return:
         """
-        self.app.delete('choice')
+        global choice_tup
+        set_frame_stare(False)
+        try:
+            if choice_tup and not (min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
+                                   and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3])):
+                self.app.delete('choice')
+                choice_tup.clear()
+                self.app.dtag('choice_start', 'choice_start')
+        except Exception as e:
+            print(e)
         set_frame_stare(False)
         if what.get() == 0:
             try:
@@ -71,7 +80,11 @@ class T:
         :return:
         """
         global choice_tup
+        print('鼠标移动',choice_tup)
         if what.get() == 0 and not choice_tup:
+            print('start',current_frame_stare)
+            set_frame_stare(False)
+            print('end',current_frame_stare)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
             if self.line_tag:
                 self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
@@ -90,7 +103,7 @@ class T:
 class CreateTxt(T):
 
     def create_txt(self, txt):
-        tag = "txt" + self.index
+        tag = "txt-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=tag)
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
@@ -100,7 +113,7 @@ class CreateTxt(T):
 
 class CreateParameter(T):
     def create_parameter(self, txt):
-        tag = "parameter" + self.index
+        tag = "parameter-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', tag))
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
@@ -126,7 +139,7 @@ class CreateImg(T):
         self.state_line = 0
 
     def create_img(self):
-        self.tag = "img" + self.index
+        self.tag = "img-" + self.index
         self.img_file = ImageTk.PhotoImage(self.img_obj)
         img_id = self.app.create_image(self.startx, self.starty, image=self.img_file,
                                        tag=self.tag)
@@ -154,16 +167,6 @@ class CreateImg(T):
         else:
             if frame_function.winfo_children()[-2].winfo_name() == '障碍编辑容器':
                 frame_function.winfo_children()[-2].destroy()
-        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
-            if self.state_line:
-                self.state_line = 0
-                self.app.delete(self.line_tag)
-            else:
-                self.state_line = 1
-
-                # 辅助线
-                self.guide()
-                set_line(self.line_tag)
 
     def guide(self):
         if 90 < self.angle < 180 or 270 < self.angle <= 359:
@@ -292,7 +295,7 @@ class CreateImg(T):
 
     def create_frame(self):
         # 旋转、备注编辑主容器
-        frame_edit = tk.Frame(frame_function, name='旋转、备注')
+        frame_edit = tk.Frame(frame_job, name='旋转、备注')
         frame_edit.pack()
 
         # 旋转容器
@@ -329,9 +332,29 @@ class CreateImg(T):
         tk.Entry(frame_focus_x_ent, textvariable=self.var, width=5).pack()
         tk.Button(frame_focus_x_but, text="确认", command=partial(self.rotate, self.tag, self.var)).pack()
         tk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 15)).pack()
-        var_name = tk.StringVar(value=self.name)
+        var_name = tk.StringVar(value=self.name if self.name else self.tag)
         tk.Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
+
+        # 障碍辅助线
+        # for i in frame_aux_com_rig.winfo_children():
+        #     print(i.winfo_name())
+        tk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=5, height=1).pack()
+
+    def bar_aux(self):
+        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
+            if self.state_line:
+                self.state_line = 0
+                self.app.delete(self.line_tag)
+            else:
+                self.state_line = 1
+
+                # 辅助线
+                bbox = self.app.bbox(self.tag)
+                self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
+                self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
+                self.guide()
+                set_line(self.line_tag)
 
     def set_state(self):
         self.app.lower(self.tag)

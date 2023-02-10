@@ -218,10 +218,12 @@ def remove_from_edit():
 # 删除除功能容器的容器
 def remove_from_not_com():
     for i in frame_function.winfo_children():
-
-        if i.winfo_name() == '功能容器':
-            pass
-        else:
-            i.destroy()
-
-
+        # print(i.winfo_name())
+        if i.winfo_name() == '工作模块':
+            for j in i.winfo_children():
+                if j.winfo_name() == '功能容器':
+                    pass
+                else:
+                    j.destroy()
+        # else:
+        #     i.destroy()
