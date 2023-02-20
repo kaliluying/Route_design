@@ -97,7 +97,61 @@ class Focus:
 
         elif obstacle == "combination_ab" or obstacle == "combination_abc":
             self.combination(obj, com_info, obstacle, state)
+        elif obstacle == "water":
+            self.water(info)
+        elif obstacle == "live":
+            self.live(info, obj)
         return self.frame_input, self.frame_button
+
+    def live(self, info, obj):
+        """
+        利物浦聚焦输入框
+        :param info:
+        :return:
+        """
+        check = tk.StringVar(value='0')
+        tk.Label(self.frame_label, text='宽(m)：').pack()
+        water_width_var = tk.StringVar(value=info[0] if info else '2')
+        water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5, name='water_w')
+        water_width_ent.pack()
+        tk.Label(self.frame_label, text='长(m)：').pack()
+        water_height_var = tk.StringVar(value=info[0] if info else '4')
+        water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5, name='water_h')
+        water_height_ent.pack()
+
+        tk.Button(self.frame_button, text="确认").pack()
+        Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
+                    command=partial(self.live_two, obj, check)).pack()
+
+    def live_two(self, obj, check):
+        check = check.get()
+        set_live(check)
+        if check == '1':
+            obj.img_path = live_two_tool()
+            obj.img = Image.open(obj.img_path)
+            obj.temp_path = ImageTk.PhotoImage(obj.img)
+            obj.app.itemconfig(obj.tag, image=obj.temp_path)
+        elif check == '0':
+            obj.img_path = live_one_tool()
+            obj.img = Image.open(obj.img_path)
+            obj.temp_path = ImageTk.PhotoImage(obj.img)
+            obj.app.itemconfig(obj.tag, image=obj.temp_path)
+
+    def water(self, info):
+        """
+        水障聚焦框
+        :param info:
+        :return:
+        """
+        tk.Label(self.frame_label, text='宽(m)：').pack()
+        water_width_var = tk.StringVar(value=info[0] if info else '3')
+        water_width_ent = tk.Entry(self.frame_input, textvariable=water_width_var, width=5)
+        water_width_ent.pack()
+        tk.Label(self.frame_label, text='长(m)：').pack()
+        water_height_var = tk.StringVar(value=info[0] if info else '4')
+        water_height_ent = tk.Entry(self.frame_input, textvariable=water_height_var, width=5)
+        water_height_ent.pack()
+        tk.Button(self.frame_button, text="确认").pack()
 
     def combination(self, obj, info, obstacle, state):
         """

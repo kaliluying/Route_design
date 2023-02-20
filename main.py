@@ -44,7 +44,7 @@ def hidden():
 # 单横木
 def monorail():
     global index_img
-    image_path = expand(one_path)
+    image_path = expand(get_one_path())
     image_path = start_direction(image_path)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='monorail').create_img()
@@ -87,7 +87,7 @@ def combination_abc():
 def live():
     global index_img
     index_img += 1
-    image_path = expand(live_image)
+    image_path = expand(get_live_path())
     image_path = start_direction(image_path)
     CreateImg(canvas, index_img, image_path, obstacle='live').create_img()
 
@@ -113,7 +113,7 @@ def water_barrier():
     index_img += 1
     image_path = expand(water_barrier_iamge)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path).create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='water').create_img()
 
 
 # 砖墙
@@ -332,7 +332,6 @@ def leftButtonMove(event):
                 print('多选框移动出错', e)
     else:
         if get_frame_stare():
-            print('main', get_frame_stare())
             canvas.delete('choice')
             canvas.create_rectangle(X.get(), Y.get(), event.x, event.y, tags='choice', dash=(3, 5))
             # current_frame_stare = True
@@ -693,9 +692,9 @@ but_3.pack()
 # but_4.pack()
 # but_2 = tk.Button(frame_command_left, text='橡皮', command=remove, width=5, height=1)
 # but_2.pack()
-tk.Button(frame_command_right, text='清屏', command=clear, width=5, height=1).pack()
+tk.Button(frame_mea_com_rig, text='清屏', command=clear, width=5, height=1).pack()
 # tk.Button(frame_command_right, text='撤销', command=back, width=5, height=1).pack()
-# tk.Button(frame_command_right, text='置底', command=set_state, width=5, height=1).pack()
+tk.Button(frame_command_right, text='置底', command=set_state, width=5, height=1).pack()
 tk.Button(frame_command_right, text='删除', command=pop, width=5, height=1).pack()
 
 # 辅助模块
@@ -732,6 +731,13 @@ e_id = tk.Entry(win, textvariable=var_id, width=4)
 e_id.place(x=900, y=10)
 
 tk.Button(win, text='确认', command=insert).place(x=870, y=40)
+
+tk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=1000, y=10)
+var_len = tk.StringVar(value='4')
+len_entt = tk.Entry(win, textvariable=var_len, width=4)
+len_entt.place(x=1130, y=10)
+
+tk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=1070, y=40)
 
 # 路线图长度
 tk.Label(win, text="长度(m):", font=("微软雅黑", 15)).place(x=10, y=10)
@@ -901,5 +907,22 @@ app_help.add_command(label="关于软件", command=about)
 app_help.add_command(label="帮助文档", command=open_web)
 
 win.config(menu=menu)
+
+
+def get_all_widgets(root):
+    widgets = []
+    for widget in root.winfo_children():
+        widgets.append(widget)
+        widgets.extend(get_all_widgets(widget))
+    return widgets
+
+
+def save():
+    widgets = get_all_widgets(win)
+    print(widgets)
+    win.destroy()
+
+
+win.protocol("WM_DELETE_WINDOW", save)
 
 win.mainloop()

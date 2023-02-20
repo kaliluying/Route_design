@@ -4,6 +4,7 @@ from tkinter import Checkbutton
 from tkinter import messagebox
 from functools import partial
 from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
+from Middleware import *
 
 # 创建窗口
 win = tk.Tk()
@@ -42,9 +43,6 @@ create_grid = False
 # 比赛名
 temp_txt = None
 
-# 当前多选框状态
-current_frame_stare = True
-
 # 多选选中id
 choice_tup = []
 
@@ -66,12 +64,56 @@ index_img = 0
 
 par_index = 1
 
-# 单横木
-one_path = 'img/one.png'
-# 利物浦
-live_image = "img/liverpool.png"
-# 双横木
-oxer_image = "img/oxer.png"
+
+# 拓展方法
+def adjust_image_size(image_path):
+    image = Image.open(image_path)
+    w, h = image.size
+    h = int(get_len()) * 10
+    image = image.resize((w, h))
+    path = image_path.replace('.', '-adj.')
+    image.save(path)
+
+    return path
+
+
+# 装饰器
+def load_image(func):
+    def wrapper(*args, **kwargs):
+        image = func(*args, **kwargs)
+        adjusted_image = adjust_image_size(image)
+        return adjusted_image
+
+    return wrapper
+
+
+@load_image
+def get_one_path():
+    """
+    获取单横木
+    :return:
+    """
+    return 'img/one.png'
+
+
+@load_image
+def get_live_path():
+    """
+    获取利物浦
+    :return:
+    """
+    return "img/liverpool.png"
+
+
+@load_image
+def get_oxer_path():
+    """
+    获取双横木
+    :return:
+    """
+    return "img/oxer.png"
+
+
 # 强制通过点
 force_image = "img/force.png"
 force_obj = ImageTk.PhotoImage(Image.open(force_image))

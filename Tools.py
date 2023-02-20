@@ -1,17 +1,6 @@
 from PIL import Image, ImageOps
 from Commom import *
 
-# 行进方向
-direction_image = "img/direction2.png"
-# 单横木
-one_path = 'img/one.png'
-# 组合障碍
-com_image = "img/com.png"
-# 单横木行进方向
-one_exp_dir_path = "img/one-exp-dir.png"
-# 双横木行进方向
-oxer_exp_dir_path = "img/oxer-exp-dir.png"
-
 
 # 检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
 def is_number(s):
@@ -31,13 +20,14 @@ def is_number(s):
 
 # 合并图片
 def merge(m, m1=0, state=1):
-    img_obj = Image.open(one_path)
-    img_obj2 = Image.open(one_path)
-    result = Image.new(img_obj.mode, (m + m1 + 10, 40))
+    img_obj = Image.open(get_one_path())
+    img_obj2 = Image.open(get_one_path())
+    w, h = img_obj.size
+    result = Image.new(img_obj.mode, (m + m1 + 10, h))
     result.paste(img_obj, box=(0, 0))
     result.paste(img_obj2, box=(m + m1, 0))
     if m1:
-        image3 = Image.open(one_path)
+        image3 = Image.open(get_one_path())
         result.paste(image3, box=(m, 0))
         result.save("img/com2.png")
         com_image = "img/com2.png"
@@ -88,10 +78,10 @@ def start_direction(image_path):
 
 
 def combination(m1, m2, m3):
-    img_obj = Image.open(one_path)
-    img_obj2 = Image.open(one_path)
-    img_obj3 = Image.open(one_path)
-    img_obj4 = Image.open(one_path)
+    img_obj = Image.open(get_one_path())
+    img_obj2 = Image.open(get_one_path())
+    img_obj3 = Image.open(get_one_path())
+    img_obj4 = Image.open(get_one_path())
 
     result = Image.new(img_obj.mode, (m1 + m2 + m3 + 20, 40))
     result.paste(img_obj, box=(0, 0))
@@ -104,7 +94,7 @@ def combination(m1, m2, m3):
 
 
 def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
-    img_obj1 = img_obj2 = img_obj3 = img_obj4 = img_obj5 = img_obj6 = Image.open(one_path)
+    img_obj1 = img_obj2 = img_obj3 = img_obj4 = img_obj5 = img_obj6 = Image.open(get_one_path())
     result = Image.new(img_obj1.mode, (m1 + m2 + m3 + m4 + m5 + 30, 40))
 
     if m1:
@@ -124,9 +114,9 @@ def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
 
 def merge_ab(state, m1=0, m2=0):
     if state == 1:
-        path = one_exp_dir_path
+        path = start_direction(expand(get_one_path()))
     if state == 2:
-        path = oxer_exp_dir_path
+        path = start_direction(merge(10))
     img_obj = Image.open(path)
     img_obj2 = Image.open(path)
     var = 45
@@ -207,6 +197,52 @@ def obs_ab(a=0, b=0, a_b=30):
     return com_image
 
 
+def water_wh(w, h):
+    """
+    水障调整
+    :param w:
+    :param h:
+    :return:
+    """
+    img = Image.open(water_barrier_iamge)
+    img = img.resize((w, h))
+    img.save("img/water_wh.png")
+    return start_direction(expand("img/water_wh.png"))
+
+
+def live_two_tool(path='img/liverpool.png'):
+    """
+    利物浦单横木变双横木
+    :return:
+    """
+    img = Image.open(path)
+    img2 = Image.open('img/one.png')
+    w, h = img.size
+    result = Image.new(img.mode, (w, h))
+    result.paste(img, box=(0, 0))
+    result.paste(img2, box=(0, 0))
+    result.paste(img2, box=(w - 5, 0))
+    result.save("img/live_two.png")
+    return start_direction(expand("img/live_two.png"))
+
+
+def live_one_tool(path=get_live_path()):
+    return start_direction(expand(path))
+
+
+def live_edit(w, h):
+    img = Image.open(get_live_path())
+    img = img.resize((w, h))
+    img.save("img/live_wh.png")
+    id = get_live()
+    if id == '1':
+        return live_two_tool("img/live_wh.png")
+    elif id == 0:
+        a = live_one_tool("img/live_wh.png")
+        print(a)
+        return a
+
+
 # 删除旋转、备注编辑容器
 def remove_from_edit():
     for i in frame_edit.winfo_children():
@@ -227,3 +263,13 @@ def remove_from_not_com():
                     j.destroy()
         # else:
         #     i.destroy()
+
+
+# 行进方向
+direction_image = "img/direction2.png"
+# 组合障碍
+com_image = "img/com.png"
+# 单横木行进方向
+one_exp_dir_path = start_direction(expand(get_one_path()))
+# 双横木行进方向
+oxer_exp_dir_path = "img/oxer-exp-dir.png"

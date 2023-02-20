@@ -1,34 +1,6 @@
 import Commom
-from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit
+from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit
 from Commom import *
-
-# 当前标签
-current_tag = None
-# 线段标签
-line_tag = None
-
-
-def set_cur(cur):
-    global current_tag, line_tag
-    current_tag = cur
-
-
-def set_line(line):
-    global line_tag
-    line_tag = line
-
-
-def get_cur():
-    return current_tag, line_tag
-
-
-def set_frame_stare(frame_stare):
-    global current_frame_stare
-    current_frame_stare = frame_stare
-
-
-def get_frame_stare():
-    return current_frame_stare
 
 
 class T:
@@ -60,7 +32,6 @@ class T:
                 self.app.dtag('choice_start', 'choice_start')
         except Exception as e:
             print(e)
-        set_frame_stare(False)
         if what.get() == 0:
             try:
                 self.startx = event.x
@@ -80,11 +51,8 @@ class T:
         :return:
         """
         global choice_tup
-        print('鼠标移动',choice_tup)
         if what.get() == 0 and not choice_tup:
-            print('start',current_frame_stare)
             set_frame_stare(False)
-            print('end',current_frame_stare)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
             if self.line_tag:
                 self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
@@ -94,8 +62,6 @@ class T:
             self.startx = event.x
             self.starty = event.y
 
-    # def pop(self, tag, event):
-    #     self.app.delete(tag)
     def mouseup(self, event):
         set_frame_stare(True)
 
@@ -159,7 +125,8 @@ class CreateImg(T):
         """
         T.mousedown(self, tag, event)
         self.butt()
-        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc"]:
+
+        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'water', 'live']:
             self.frame_input, self.frame_button = self.focus.update(self, self.obstacle, info=self.info,
                                                                     state=self.state, com_info=self.com_info)
             button = self.frame_button.winfo_children()[0]
@@ -238,6 +205,22 @@ class CreateImg(T):
                     messagebox.showerror("错误", "请输入数字")
                     i.delete(0, 'end')
                     return
+            elif self.obstacle == 'live':
+                if is_number(i.get()):
+                    self.com_info[i.winfo_name()] = i.get()
+                    self.state[i.winfo_name()] = i.getstate()
+                    if self.state[i.winfo_name()] == "disabled":
+                        self.com_info[i.winfo_name()] = "0"
+                    continue
+                elif i.get() == '':
+                    self.com_info[i.winfo_name()] = '0'
+                    self.state[i.winfo_name()] = i.getstate()
+                    continue
+                else:
+                    messagebox.showerror("错误", "请输入数字")
+                    i.delete(0, 'end')
+                    return
+
             if is_number(i.get()):
                 self.info.append(i.get())
             elif i.get() == '':
@@ -280,6 +263,20 @@ class CreateImg(T):
             a, a_b, b, b_c, c = temp.values()
             a, a_b, b, b_c, c = int(a), int(a_b), int(b), int(b_c), int(c)
             self.img_path = oxer_obs_abc(a, b, c, a_b, b_c)
+            self.img = Image.open(self.img_path)
+            self.temp_path = ImageTk.PhotoImage(self.img)
+            self.app.itemconfig(self.tag, image=self.temp_path)
+        elif self.obstacle == 'water':
+            w = int(float(self.info[0]) * 10)
+            h = int(float(self.info[1]) * 10)
+            self.img_path = water_wh(w, h)
+            self.img = Image.open(self.img_path)
+            self.temp_path = ImageTk.PhotoImage(self.img)
+            self.app.itemconfig(self.tag, image=self.temp_path)
+        elif self.obstacle == 'live':
+            w = int(float(self.com_info['water_w']) * 10)
+            h = int(float(self.com_info['water_h']) * 10)
+            self.img_path = live_edit(w, h)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
             self.app.itemconfig(self.tag, image=self.temp_path)
