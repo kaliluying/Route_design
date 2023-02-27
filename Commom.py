@@ -43,11 +43,21 @@ create_grid = False
 # 比赛名
 temp_txt = None
 
-# 多选选中id
+# 多选框坐标
 choice_tup = []
 
 # 辅助信息状态
 aux_stare = True
+
+# 撤销栈
+stack = []
+
+# 撤销移动的还原点
+move_x = tk.IntVar(value=0)
+move_y = tk.IntVar(value=0)
+
+# 多选框框中的状态
+choice_start = False
 
 lastDraw = 0
 end = [0]

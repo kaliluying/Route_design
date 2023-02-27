@@ -8,6 +8,7 @@ import Commom
 from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_stare
 from Tools import *
 from Commom import *
+import time
 
 
 # 障碍号确认
@@ -279,6 +280,8 @@ def leftButtonDown(event):
         canvas.dtag('choice_start', 'choice_start')
     X.set(event.x)
     Y.set(event.y)
+    move_x.set(event.x)
+    move_y.set(event.y)
 
 
 def create_line(x1, y1, x2, y2):
@@ -290,7 +293,6 @@ def create_line(x1, y1, x2, y2):
 # 鼠标左键滚动事件
 def leftButtonMove(event):
     global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare
-
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
                                       fill='#000000', width=font_size, tags=("line", '不框选'))
@@ -315,13 +317,11 @@ def leftButtonMove(event):
             canvas.delete(i)
 
     # 多选框移动
+
     elif what.get() == 0 and choice_tup:
         if min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2]) \
                 and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3]):
             bbox = canvas.bbox('choice')
-            # # 再次将多选框中的组件添加tag，防止在鼠标松开后再次在多选框中生成组件
-            # canvas.addtag_overlapping('choice_start', bbox[0], bbox[1], bbox[2], bbox[3])
-            # canvas.dtag('辅助信息', 'choice_start')
             canvas.move('choice_start', event.x - X.get(), event.y - Y.get())
             X.set(event.x)
             Y.set(event.y)
@@ -339,7 +339,7 @@ def leftButtonMove(event):
 
 # 松开左键
 def leftButtonUp(event):
-    global lastDraw, click_num, px, choice_tup
+    global lastDraw, click_num, px, choice_tup, choice_start
     end.append(lastDraw)
     if what.get() == 1:
         if click_num == 1:
@@ -377,6 +377,10 @@ def leftButtonUp(event):
         choice_tup.append(Y.get())
         choice_tup.append(event.x)
         choice_tup.append(event.y)
+    if canvas.find_withtag('choice'):
+        # TODO
+        items = canvas.find_withtag('choice_start')
+        stack.append(('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
 
 
 def create_arc(x1, y1, x2, y2):
@@ -543,7 +547,8 @@ def sava(checkvar):
     #     x2 = f.winfo_x() + f.winfo_width() + 10
     # y2 = f.winfo_y() + f.winfo_height() + 70
     #
-    txt = temp_txt if temp_txt else '路线设计'
+    current_time = time.strftime("%Y%m%d-%H%M%S")
+    txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
     # path = os.getcwd() + '/download/路线设计.png'
@@ -589,14 +594,40 @@ def set_state():
 
 
 # 删除
-def pop():
-    if choice_tup:
-        canvas.delete('choice_start')
+def pop(id=None):
+    if id:
+        cur, line = get_cur()
+        canvas.delete(id)
+        if id == cur:
+            remove_from_not_com()
+        return
+    # if choice_tup:
+    #     print(choice_tup)
+    #     # canvas.delete('choice_start')
+    #     canvas.itemconfig('choice_start', state='hidden')
+    #     items = canvas.find_withtag("choice_start")[:-1]
+    #     print(items)
+    #     stack.append(('删除', items))
+    #     choice_tup.clear()
+    # else:
+    #     cur, line = get_cur()
+    #     canvas.itemconfig(cur, stare='hidden')
+    #     canvas.itemconfig(line, stare='hidden')
+    #     stack.append(
+    #         ('删除', (cur, line))
+    #     )
+    #     remove_from_not_com()
+    items = canvas.find_withtag("choice_start")[:-1]
+    if items:
+        canvas.itemconfig('choice_start', state='hidden')
         choice_tup.clear()
+        stack.append(('删除', items))
     else:
         cur, line = get_cur()
-        canvas.delete(cur)
-        canvas.delete(line)
+        canvas.itemconfig(cur, state='hidden')
+        canvas.itemconfig(line, state='hidden')
+        stack.append(('删除', (cur, line)))
+
     remove_from_not_com()
 
 
@@ -873,7 +904,7 @@ menu = tk.Menu(win)
 
 # 工具栏
 menuType = tk.Menu(menu, tearoff=0)
-menu_sava = tk.Menu(menu, tearoff=0)
+# menu_sava = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="工具栏", menu=menuType)
 menuType.add_radiobutton(label="指针拖动", command=drag, variable=what, value=0)
 menuType.add_radiobutton(label="旋转", command=rotate, variable=what, value=3)
@@ -887,11 +918,12 @@ function_menuType.add_command(label="清屏", command=clear)
 # function_menuType.add_command(label="撤销", command=back)
 # function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件保存位置", command=open_file)
+function_menuType.add_command(label="保存", command=save_1)
 
-menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
-menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)
-
-function_menuType.add_cascade(label="保存", menu=menu_sava)
+# menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
+# menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)
+#
+# function_menuType.add_cascade(label="保存", menu=menu_sava)
 
 # 字号
 font_menuType = tk.Menu(menu, tearoff=0)
@@ -907,6 +939,25 @@ app_help.add_command(label="关于软件", command=about)
 app_help.add_command(label="帮助文档", command=open_web)
 
 win.config(menu=menu)
+
+
+# 撤销
+def undo(event):
+    if stack:
+        item = stack.pop()
+        if item[0] == '创建':
+            pop(id=item[1])
+        elif item[0] == '移动':
+            for i in item[1]:
+                canvas.move(i, -item[2][0], -item[2][1])
+        elif item[0] == '删除':
+            for i in item[1]:
+                canvas.itemconfig(i, state='normal')
+
+
+# 绑定ctrl+z兼容Mac和win
+win.bind("<Command-KeyPress-z>", undo)
+win.bind("<Control-KeyPress-z>", undo)
 
 
 def get_all_widgets(root):

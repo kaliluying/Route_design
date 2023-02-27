@@ -239,7 +239,6 @@ def live_edit(w, h):
         return live_two_tool("img/live_wh.png")
     elif id == 0:
         a = live_one_tool("img/live_wh.png")
-        print(a)
         return a
 
 
@@ -254,7 +253,6 @@ def remove_from_edit():
 # 删除除功能容器的容器
 def remove_from_not_com():
     for i in frame_function.winfo_children():
-        # print(i.winfo_name())
         if i.winfo_name() == '工作模块':
             for j in i.winfo_children():
                 if j.winfo_name() == '功能容器':

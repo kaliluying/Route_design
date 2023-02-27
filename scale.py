@@ -14,6 +14,7 @@ class T:
         self.app = app
         self.index = str(index)
         self.line_tag = None
+        self.id = None
 
     def mousedown(self, tag, event):
         """
@@ -36,11 +37,13 @@ class T:
             try:
                 self.startx = event.x
                 self.starty = event.y
+                move_x.set(event.x)
+                move_y.set(event.y)
             except:
                 self.startx = event[0]
                 self.starty = event[1]
             self.tag = tag
-            set_cur(tag)
+            set_cur(self.id)
             self.app.lift(self.tag)
 
     def drag(self, tag, event):
@@ -64,6 +67,10 @@ class T:
 
     def mouseup(self, event):
         set_frame_stare(True)
+        dx = event.x - move_x.get()
+        dy = event.y - move_y.get()
+        if dx or dy:
+            stack.append(('移动', (self.id,), (dx, dy)))
 
 
 class CreateTxt(T):
@@ -71,6 +78,8 @@ class CreateTxt(T):
     def create_txt(self, txt):
         tag = "txt-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=tag)
+        self.id = text
+        stack.append(('创建', text))
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -81,6 +90,8 @@ class CreateParameter(T):
     def create_parameter(self, txt):
         tag = "parameter-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', tag))
+        self.id = text
+        stack.append(('创建', text))
         self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
         self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -109,6 +120,8 @@ class CreateImg(T):
         self.img_file = ImageTk.PhotoImage(self.img_obj)
         img_id = self.app.create_image(self.startx, self.starty, image=self.img_file,
                                        tag=self.tag)
+        self.id = img_id
+        stack.append(('创建', img_id))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
         # self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
@@ -396,10 +409,11 @@ class CreateImg(T):
         angle = angle % 360
         self.angle = angle
         self.img = self.rotate_bound(angle)
+        stack.append(("旋转", id, self.angle))
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))
-        set_cur(self.tag)
+        set_cur(self.id)
 
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc",
                              'monorail'] and self.state_line:
