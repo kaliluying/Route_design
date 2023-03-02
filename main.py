@@ -198,7 +198,7 @@ def edit():
     for i in frame_por.winfo_children():
         i.destroy()
     for i in info:
-        tk.Label(frame_tit, text=i + ":", font=("微软雅黑", 21)).pack(padx=1, pady=3)
+        tk.Label(frame_tit, text=i + ":", font=("微软雅黑", 20)).pack(padx=1, pady=3)
         var = tk.StringVar()
         pro_value = tk.StringVar()
         if temp_:
@@ -206,11 +206,11 @@ def edit():
         info_var.append(var)
         pro_var.append(pro_value)
         if i == '允许时间':
-            tk.Entry(frame_inp, textvariable=var, width=15, validate="focusin",
-                     validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=4)
+            Entry(frame_inp, textvariable=var, width=15, validate="focusin",
+                  validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=4)
             tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
             continue
-        tk.Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=4)
+        Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=4)
         tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
 
 
@@ -285,9 +285,10 @@ def leftButtonDown(event):
 
 
 def create_line(x1, y1, x2, y2):
-    canvas.create_line(x1, y1, x2, y2, tags=("line", '不框选'))
+    id = canvas.create_line(x1, y1, x2, y2, tags=("line", '不框选'))
     # a = canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
     # canvas.create_rectangle(x1, y1, x2, y2, tags='line')
+    return id
 
 
 # 鼠标左键滚动事件
@@ -350,10 +351,13 @@ def leftButtonUp(event):
             end_x.set(event.x)
             end_y.set(event.y)
             # click_num = 1
-            create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get())
+            id = create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get())
+
             x = end_x.get() - start_x.get()
             y = end_y.get() - start_y.get()
-            px += (abs(x + y)) / 10
+            temp_px = (abs(x + y)) / 10
+            px += temp_px
+            stack.append(('长度测量', (id, temp_px)))
             canvas.itemconfig('实时路线', text="%.2fm" % px)
             remove_px[lastDraw] = px
             start_x.set(end_x.get())
@@ -377,7 +381,7 @@ def leftButtonUp(event):
         choice_tup.append(Y.get())
         choice_tup.append(event.x)
         choice_tup.append(event.y)
-    if canvas.find_withtag('choice'):
+    if canvas.find_withtag('choice') and what.get() != '3':
         # TODO
         items = canvas.find_withtag('choice_start')
         stack.append(('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
@@ -568,14 +572,24 @@ def sava(checkvar):
         #
         # elif checkvar == '0':
         #     canvas.postscript(file=eps_path, colormode='color')
-        canvas.postscript(file=eps_path, colormode='color')
+        canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
-        # EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.00.0/bin\gswin64.exe'
-        # print(EpsImagePlugin.gs_windows_binary)
+        # Win
+        # EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.00.0\bin\gswin64.exe'
+        # startupinfo = subprocess.STARTUPINFO()
+        # startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        # cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
+        #       f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
+        # # os.system(cmd)
+        # subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW,
+        #                 startupinfo=startupinfo)
+
+        # Mac
         img = Image.open(eps_path)
         img.save(png_path)
+
         os.remove(eps_path)
-        messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
+        messagebox.showinfo("成功", f"保存成功,\n路径:{png_path}")
 
 
 # 打开文件保存路径
@@ -583,7 +597,10 @@ def open_file():
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
     path = os.getcwd() + f'/ms_download'
+    # Mac
     subprocess.call(["open", path])
+    # Win
+    # subprocess.Popen(["explorer", path])
 
 
 # 置底
@@ -713,30 +730,31 @@ tk.Button(frame_temp_5, text='三横木', command=tirail).pack()
 tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
 tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
 
+width = 5
 # 工作模块
-but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red', width=5, height=1)
+but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red', width=width, height=1)
 but_0.pack()
-but_3 = tk.Button(frame_command_left, text='旋转', command=rotate, width=5, height=1)
+but_3 = tk.Button(frame_command_left, text='旋转', command=rotate, width=width, height=1)
 but_3.pack()
 
-# but_4 = tk.Button(frame_command_left, text='画弧', command=arc, width=5, height=1)
+# but_4 = tk.Button(frame_command_left, text='画弧', command=arc, width=width, height=1)
 # but_4.pack()
-# but_2 = tk.Button(frame_command_left, text='橡皮', command=remove, width=5, height=1)
+# but_2 = tk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
 # but_2.pack()
-tk.Button(frame_mea_com_rig, text='清屏', command=clear, width=5, height=1).pack()
-# tk.Button(frame_command_right, text='撤销', command=back, width=5, height=1).pack()
-tk.Button(frame_command_right, text='置底', command=set_state, width=5, height=1).pack()
-tk.Button(frame_command_right, text='删除', command=pop, width=5, height=1).pack()
+tk.Button(frame_mea_com_rig, text='清屏', command=clear, width=width, height=1).pack()
+# tk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
+tk.Button(frame_command_right, text='置底', command=set_state, width=width, height=1).pack()
+tk.Button(frame_command_right, text='删除', command=pop, width=width, height=1).pack()
 
 # 辅助模块
-tk.Button(frame_aux_com_lef, text='网格辅助线', command=grid, width=5, height=1).pack()
-aux_info = tk.Button(frame_aux_com_rig, text='隐藏辅助信息', command=info, width=5, height=1)
+tk.Button(frame_aux_com_lef, text='网格辅助线', command=grid, width=width, height=1).pack()
+aux_info = tk.Button(frame_aux_com_rig, text='隐藏辅助信息', command=info, width=width, height=1)
 aux_info.pack()
 
 # 障碍参数
 tk.Label(frame_aux_tit, text="障碍参数：", font=FONT).pack(pady=5)
 var_parameter = tk.StringVar()
-e_parameter = tk.Entry(frame_aux_inp, textvariable=var_parameter, width=8)
+e_parameter = Entry(frame_aux_inp, textvariable=var_parameter, width=8)
 e_parameter.pack(pady=5)
 
 tk.Button(frame_aux_tit, text='确认', command=parameter).pack()
@@ -744,13 +762,13 @@ par_state = tk.Button(frame_aux_inp, text='隐藏', command=hidden)
 par_state.pack()
 
 # 测量模块
-but_1 = tk.Button(frame_mea_com_lef, text='铅笔', command=pen, width=5, height=1)
+but_1 = tk.Button(frame_mea_com_lef, text='长度测量', command=pen, width=width, height=1)
 but_1.pack()
 
 # 圆
 tk.Label(win, text="圆(m)：", font=FONT).place(x=730, y=10)
 var_cir = tk.StringVar()
-e_id = tk.Entry(win, textvariable=var_cir, width=4)
+e_id = Entry(win, textvariable=var_cir, width=4)
 e_id.place(x=780, y=10)
 
 tk.Button(win, text='确认', command=circular).place(x=755, y=40)
@@ -758,30 +776,30 @@ tk.Button(win, text='确认', command=circular).place(x=755, y=40)
 # 障碍号
 tk.Label(win, text="障碍号：", font=FONT).place(x=840, y=10)
 var_id = tk.StringVar()
-e_id = tk.Entry(win, textvariable=var_id, width=4)
+e_id = Entry(win, textvariable=var_id, width=4)
 e_id.place(x=900, y=10)
 
 tk.Button(win, text='确认', command=insert).place(x=870, y=40)
 
 tk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=1000, y=10)
 var_len = tk.StringVar(value='4')
-len_entt = tk.Entry(win, textvariable=var_len, width=4)
+len_entt = Entry(win, textvariable=var_len, width=4)
 len_entt.place(x=1130, y=10)
 
 tk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=1070, y=40)
 
 # 路线图长度
-tk.Label(win, text="长度(m):", font=("微软雅黑", 15)).place(x=10, y=10)
+tk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
 var_l_w = tk.StringVar()
 var_l_w.set('90')
-var_l_w_inp = tk.Entry(win, textvariable=var_l_w, width=5)
+var_l_w_inp = Entry(win, textvariable=var_l_w, width=5)
 var_l_w_inp.place(x=80, y=10)
 
 # 路线图宽度
-tk.Label(win, text="宽度(m):", font=("微软雅黑", 15)).place(x=10, y=40)
+tk.Label(win, text="宽度(m):", font=FONT).place(x=10, y=40)
 var_l_h = tk.StringVar()
 var_l_h.set("60")
-var_l_h_inp = tk.Entry(win, textvariable=var_l_h, width=5)
+var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
@@ -943,7 +961,8 @@ win.config(menu=menu)
 
 # 撤销
 def undo(event):
-    if stack:
+    global px
+    if stack and event.widget == win:
         item = stack.pop()
         if item[0] == '创建':
             pop(id=item[1])
@@ -953,6 +972,15 @@ def undo(event):
         elif item[0] == '删除':
             for i in item[1]:
                 canvas.itemconfig(i, state='normal')
+        elif item[0] == '长度测量':
+            id, temp_px = item[1]
+            pop(id)
+            px -= temp_px
+            canvas.itemconfig('实时路线', text="%.2fm" % px)
+        elif item[0] == '旋转':
+            obj = item[1]
+            rotate_.pop()
+            obj.rotate(obj.id, rotate_[-1])
 
 
 # 绑定ctrl+z兼容Mac和win
@@ -974,6 +1002,16 @@ def save():
     win.destroy()
 
 
+# def unfocus_click(event):
+#     if 'entry' not in str(event.widget):
+#         for i in win.winfo_children():
+#             if isinstance(i, Entry):
+#                 win.focus_set()
+#     else:
+#         event.widget.focus_set()
+#
+#
+# win.bind('<Button-1>', unfocus_click)
 win.protocol("WM_DELETE_WINDOW", save)
 
 win.mainloop()

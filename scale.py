@@ -1,5 +1,5 @@
 import Commom
-from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit
+from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
 from Commom import *
 
 
@@ -11,6 +11,7 @@ class T:
         self.current_x = 160
         self.current_y = 25
         self.angle = 0
+        self.temp_angle = 0
         self.app = app
         self.index = str(index)
         self.line_tag = None
@@ -71,6 +72,9 @@ class T:
         dy = event.y - move_y.get()
         if dx or dy:
             stack.append(('移动', (self.id,), (dx, dy)))
+        if what.get() == 3 and self.temp_angle != self.angle:
+            rotate_.append(self.angle)
+            stack.append(("旋转", self))
 
 
 class CreateTxt(T):
@@ -138,7 +142,8 @@ class CreateImg(T):
         """
         T.mousedown(self, tag, event)
         self.butt()
-
+        if what.get() == '3':
+            self.temp_angle = self.angle
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'water', 'live']:
             self.frame_input, self.frame_button = self.focus.update(self, self.obstacle, info=self.info,
                                                                     state=self.state, com_info=self.com_info)
@@ -293,7 +298,7 @@ class CreateImg(T):
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
             self.app.itemconfig(self.tag, image=self.temp_path)
-        self.rotate(self.tag, self.angle)
+        self.to_rotate(self.tag, self.angle)
 
     def img_updata(self, m1, m2=0.0):
         m1 = int(m1)
@@ -339,11 +344,12 @@ class CreateImg(T):
         tk.Label(frame_focus_x_ladel, text="旋转： ", font=("微软雅黑", 15)).pack()
         self.var = tk.StringVar()
         self.var.set(str(int(self.angle)))
-        tk.Entry(frame_focus_x_ent, textvariable=self.var, width=5).pack()
-        tk.Button(frame_focus_x_but, text="确认", command=partial(self.rotate, self.tag, self.var)).pack()
+        Entry(frame_focus_x_ent, textvariable=self.var, width=5, undo=True).pack()
+
+        tk.Button(frame_focus_x_but, text="确认", command=partial(self.to_rotate, self.tag, self.var)).pack()
         tk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 15)).pack()
         var_name = tk.StringVar(value=self.name if self.name else self.tag)
-        tk.Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
+        Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
 
         # 障碍辅助线
@@ -391,25 +397,30 @@ class CreateImg(T):
                     self.angle += -(math.sqrt(x * x + y * y))
             else:
                 self.angle += (x + y)
-            self.rotate(tag, self.angle)
+            self.to_rotate(tag, self.angle, state=False)
             self.startx = event.x
             self.starty = event.y
 
-    def rotate(self, id, var):
-        """
-        旋转
-        :param id:
-        :param state:
-        :return:
-        """
+    def to_rotate(self, id, var, state=True):
         try:
             angle = int(var.get())
         except:
             angle = var
         angle = angle % 360
         self.angle = angle
+        self.rotate(id, angle)
+        if state:
+            rotate_.append(angle)
+            stack.append(("旋转", self))
+
+    def rotate(self, id, angle):
+        """
+        旋转
+        :param id:
+        :param state:
+        :return:
+        """
         self.img = self.rotate_bound(angle)
-        stack.append(("旋转", id, self.angle))
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))

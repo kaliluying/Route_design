@@ -2,6 +2,52 @@ from PIL import Image, ImageOps
 from Commom import *
 
 
+class Entry(tk.Entry):
+    def __init__(self, master=None, undo=True, cnf={}, **kw):
+        tk.Entry.__init__(self, master, cnf, **kw)
+        self.con = None
+        self.kw = kw
+        self.undo_stack = []
+        self.current_value = ''
+        self.undo_ = undo
+        self.bind('<Key>', self.on_key)
+        self.bind("<Command-KeyPress-z>", self.undo if self.undo_ else '')
+        self.bind("<Control-KeyPress-z>", self.undo if self.undo_ else '')
+
+    def config(self, cnf=None, **kw):
+        tk.Entry.configure(self, cnf, **kw)
+        self.con = kw
+
+    def getname(self):
+        return self.kw['name']
+
+    def getstate(self):
+        try:
+            try:
+                return self.con['state']
+            except:
+                return self.kw['state']
+        except:
+            return ''
+
+    def on_key(self, event):
+        if event.keysym in ('Return', 'KP_Enter'):
+            self.undo_stack.append(self.current_value)
+        elif event.keysym == 'BackSpace':
+            self.current_value = self.get()
+        elif event.keysym == 'Delete':
+            self.current_value = self.get()
+        else:
+            self.undo_stack.append(self.current_value)
+            self.current_value = self.get()
+
+    def undo(self, event):
+        if self.undo_stack:
+            self.current_value = self.undo_stack.pop()
+            self.delete(0, tk.END)
+            self.insert(0, self.current_value)
+
+
 # 检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
 def is_number(s):
     try:  # 如果能运行float(s)语句，返回True（字符串s是浮点数）

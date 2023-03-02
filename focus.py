@@ -2,29 +2,6 @@ from Commom import *
 from Tools import *
 
 
-class Entry(tk.Entry):
-    def __init__(self, master=None, cnf={}, **kw):
-        tk.Entry.__init__(self, master, cnf, **kw)
-        self.con = None
-        self.kw = kw
-
-    def config(self, cnf=None, **kw):
-        tk.Entry.configure(self, cnf, **kw)
-        self.con = kw
-
-    def getname(self):
-        return self.kw['name']
-
-    def getstate(self):
-        try:
-            try:
-                return self.con['state']
-            except:
-                return self.kw['state']
-        except:
-            return ''
-
-
 class Focus:
     """
     组件聚焦后
@@ -68,7 +45,7 @@ class Focus:
     def update(self, obj, obstacle, info=None, state=None, com_info=None):
         """
         点击组件后生成信息框
-        :param obj: scale类对像
+        :param obj: scale类对象
         :param obstacle: 标识
         :param info: 输入框中的内容
         :return: 返回input和button容器
@@ -80,18 +57,19 @@ class Focus:
         if obstacle == "oxer":
             tk.Label(self.frame_label, text='A-->B(m):').pack()
             var_a_b = tk.StringVar(value=info[0] if info else '')
-            a_b = tk.Entry(self.frame_input, textvariable=var_a_b, width=5)
+            a_b = Entry(self.frame_input, textvariable=var_a_b, width=5)
             a_b.pack()
             tk.Button(self.frame_button, text="确认").pack()
+
 
         elif obstacle == "tirail":
             tk.Label(self.frame_label, text='A-->B(m):').pack()
             var_a_b = tk.StringVar(value=info[0] if info else '')
-            a_b = tk.Entry(self.frame_input, textvariable=var_a_b, width=5)
+            a_b = Entry(self.frame_input, textvariable=var_a_b, width=5, )
             a_b.pack()
             tk.Label(self.frame_label, text='B-->C(m):').pack()
             var_b_c = tk.StringVar(value=info[1] if info else '')
-            b_c = tk.Entry(self.frame_input, textvariable=var_b_c, width=5)
+            b_c = Entry(self.frame_input, textvariable=var_b_c, width=5)
             b_c.pack()
             tk.Button(self.frame_button, text="确认").pack()
 
@@ -118,6 +96,7 @@ class Focus:
         water_height_var = tk.StringVar(value=info[0] if info else '4')
         water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5, name='water_h')
         water_height_ent.pack()
+        water_height_ent.bind("<Command-KeyPress-z>", water_width_ent.undo)
 
         tk.Button(self.frame_button, text="确认").pack()
         Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
@@ -145,11 +124,11 @@ class Focus:
         """
         tk.Label(self.frame_label, text='宽(m)：').pack()
         water_width_var = tk.StringVar(value=info[0] if info else '3')
-        water_width_ent = tk.Entry(self.frame_input, textvariable=water_width_var, width=5)
+        water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5)
         water_width_ent.pack()
         tk.Label(self.frame_label, text='长(m)：').pack()
         water_height_var = tk.StringVar(value=info[0] if info else '4')
-        water_height_ent = tk.Entry(self.frame_input, textvariable=water_height_var, width=5)
+        water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5)
         water_height_ent.pack()
         tk.Button(self.frame_button, text="确认").pack()
 

@@ -59,6 +59,12 @@ move_y = tk.IntVar(value=0)
 # 多选框框中的状态
 choice_start = False
 
+# 记录长度测量时每一次点击的值
+click = []
+
+# 记录每次旋转的角度
+rotate_ = [0]
+
 lastDraw = 0
 end = [0]
 size = 1
