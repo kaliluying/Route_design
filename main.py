@@ -381,7 +381,6 @@ def leftButtonUp(event):
             start_x.set(end_x.get())
             start_y.set(end_y.get())
     if current_frame_stare:
-        # canvas.find_overlapping(X.get(), Y.get(), event.x, event.y)
         canvas.addtag_overlapping('choice_start', X.get(), Y.get(), event.x, event.y)
         canvas.dtag('不框选', 'choice_start')
         choice_tup.append(X.get())
@@ -550,35 +549,16 @@ def save_0():
 
 # 保存
 def sava(checkvar):
-    # x1 = 180
-    # y1 = title.winfo_y() + 40
-    # if checkvar == '1':
-    #     x2 = f.winfo_x() + f.winfo_width() + frame_info.winfo_width() + 30
-    # elif checkvar == '0':
-    #     x2 = f.winfo_x() + f.winfo_width() + 10
-    # y2 = f.winfo_y() + f.winfo_height() + 70
-    #
     current_time = time.strftime("%Y%m%d-%H%M%S")
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
-    # path = os.getcwd() + '/download/路线设计.png'
-    # try:
-    #     ImageGrab.grab((x1, y1, x2, y2)).save(path)
-    #     messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
-    # except EOFError as e:
-    #     print('Error saving image:', e)
     path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("PNG", ".png")],
                                         initialdir=os.getcwd() + '/ms_download', initialfile=txt)
     if path:
         path = path.split('.')[0]
         eps_path = path + '.eps'
         png_path = path + '.png'
-        # if checkvar == '1':
-        #     can.postscript(file=eps_path, colormode='color')
-        #
-        # elif checkvar == '0':
-        #     canvas.postscript(file=eps_path, colormode='color')
         canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
         # Win
@@ -811,56 +791,9 @@ var_l_h_inp.place(x=80, y=40)
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
 canvas = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 40, highlightthickness=0)
-# canvas = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 40, relief='solid', bd=2)
 canvas.place(x=175, y=100)
 
 canvas.create_rectangle(15, 50, WIDTH + 10, HEIGHT + 20, state='disabled', tags=('不框选', '实际画布'))
-
-# # 画布总容器
-# cv = tk.Frame(win)
-# cv.place(x=180, y=80)
-#
-# # 标题容器
-# tit = tk.Frame(cv, relief='ridge', bd=2)
-# tit.pack(side="top")
-# title = tk.Label(cv, text="比赛名称", font=("微软雅黑", 18))
-# title.pack(pady=1)
-#
-# # 路线图
-# f = tk.Frame(cv, width=WIDTH, height=HEIGHT, bg="black", border=1)
-# f.pack(side='left')
-# canvas = tk.Canvas(f, width=WIDTH, height=HEIGHT)
-# canvas.pack()
-#
-# # 信息
-# info = [
-#     '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间', '障碍数量', '跳跃数量', '附加赛',
-#     '路线设计师',
-# ]
-#
-# # 赛事信息主容器
-# frame_info = tk.Frame(cv)
-# # 放赛事信息标题
-# frame_tit = tk.Frame(frame_info)
-# # 放赛事信息输入框
-# frame_inp = tk.Frame(frame_info)
-# # 建议信息容器
-# frame_por = tk.Frame(frame_info)
-#
-# frame_info.pack(side='right')
-# frame_tit.pack(side='left')
-# frame_por.pack(side='right')
-# frame_inp.pack(side='right')
-#
-# # 生成赛事信息
-# info_var = []
-# pro_var = []
-# edit()
-#
-# but1 = tk.Button(win, text="确认", command=dle)
-# but1.place(x=WIDTH + 250, y=770)
-# but2 = tk.Button(win, text="修改", command=edit)
-# but2.place(x=WIDTH + 350, y=770)
 
 # 右上角显示路线长宽
 w = WIDTH / 10
@@ -875,8 +808,6 @@ canvas.create_line(70, 65, 70, 70, tags=('辅助信息', '不框选'))
 canvas.create_line(20, 70, 70, 70, tags=('辅助信息', '不框选'))
 
 # 右上显示，路线长度
-# length = tk.Label(win, text=f"{px / 10}m")
-# length.place(x=WIDTH + 130, y=120)
 canvas.create_text(WIDTH - 40, 30, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
 
 # 水印
@@ -890,8 +821,6 @@ canvas.bind('<B1-Motion>', leftButtonMove)  # 鼠标左键移动事件
 canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 
 # 标题
-# title = tk.Label(win, text="比赛名称", font=("微软雅黑", 18))
-# title.place(x=600, y=120)
 canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称', font=("微软雅黑", 18), tags=('比赛名称', '不框选'))
 
 # 信息
@@ -1018,7 +947,12 @@ def unfocus_click(event):
         win.focus_set()
 
 
+def delete(event):
+    pop()
+
+
 win.bind('<Button-1>', unfocus_click)
+win.bind('<BackSpace>', delete)
 win.protocol("WM_DELETE_WINDOW", save)
 
 win.mainloop()

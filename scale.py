@@ -80,26 +80,28 @@ class T:
 class CreateTxt(T):
 
     def create_txt(self, txt):
-        tag = "txt-" + self.index
-        text = self.app.create_text(self.startx, self.starty, text=txt, tags=tag)
+        self.tag = "txt-" + self.index
+        text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
         self.id = text
         stack.append(('创建', text))
-        self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
-        self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
+        self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
+        self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
-        self.app.tag_bind(tag, "<ButtonRelease-1>", self.mouseup)
+        self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
+        self.mousedown(self.tag, [200, 100])
 
 
 class CreateParameter(T):
     def create_parameter(self, txt):
-        tag = "parameter-" + self.index
-        text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', tag))
+        self.tag = "parameter-" + self.index
+        text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', self.tag))
         self.id = text
         stack.append(('创建', text))
-        self.app.tag_bind(tag, "<Button-1>", partial(self.mousedown, tag))
-        self.app.tag_bind(tag, "<B1-Motion>", partial(self.drag, text))
+        self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
+        self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
-        self.app.tag_bind(tag, "<ButtonRelease-1>", self.mouseup)
+        self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
+        self.mousedown(self.tag, [200, 100])
 
 
 class CreateImg(T):
