@@ -32,6 +32,8 @@ start_y = tk.IntVar(value=0)
 # 终止点
 end_x = tk.IntVar(value=0)
 end_y = tk.IntVar(value=0)
+# 路线测量每一次点击的位置
+route_click = []
 # 点击次数
 click_num = 1
 

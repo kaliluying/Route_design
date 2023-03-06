@@ -75,8 +75,8 @@ def merge(m, m1=0, state=1):
     if m1:
         image3 = Image.open(get_one_path())
         result.paste(image3, box=(m, 0))
-        result.save("img/com2.png")
-        com_image = "img/com2.png"
+        result.save("img/com_2.png")
+        com_image = "img/com_2.png"
         return start_direction(expand(com_image, state))
     com_image = "img/com.png"
     result.save(com_image)
@@ -134,8 +134,8 @@ def combination(m1, m2, m3):
     result.paste(img_obj2, box=(m1 + 5, 0))
     result.paste(img_obj3, box=(m1 + m2 + 10, 0))
     result.paste(img_obj4, box=(m1 + m2 + m3 + 15, 0))
-    result.save("img/com3.png")
-    com_image = "img/com3.png"
+    result.save("img/com_3.png")
+    com_image = "img/com_3.png"
     return start_direction(expand(com_image))
 
 
@@ -307,6 +307,9 @@ def remove_from_not_com():
                     j.destroy()
         # else:
         #     i.destroy()
+
+
+
 
 
 # 行进方向

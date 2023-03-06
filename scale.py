@@ -132,6 +132,9 @@ class CreateImg(T):
         self.mousedown(self.tag, [200, 100])
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
+        what.set(0)
+        # no_what.set(0)
+        # set_color()
 
     def mousedown(self, tag, event):
         """
@@ -150,8 +153,8 @@ class CreateImg(T):
             button = self.frame_button.winfo_children()[0]
             button.config(command=self.update_img)
         else:
-            if frame_function.winfo_children()[-2].winfo_name() == '障碍编辑容器':
-                frame_function.winfo_children()[-2].destroy()
+            if frame_function.winfo_children()[0].winfo_children()[1].winfo_name() == '障碍编辑容器':
+                frame_function.winfo_children()[0].winfo_children()[1].destroy()
 
     def guide(self):
         if 90 < self.angle < 180 or 270 < self.angle <= 359:
@@ -390,16 +393,19 @@ class CreateImg(T):
         if what.get() == 3:
             x = event.x - self.startx
             y = event.y - self.starty
-            if x != 0 and y != 0:
-                if (x < 0 and y >= 0) or (x < 0 and y < 0):
-                    self.angle += (math.sqrt(x * x + y * y))
-                elif (y < 0 and x >= 0) or (y > 0 and x > 0):
-                    self.angle += -(math.sqrt(x * x + y * y))
-            else:
-                self.angle += (x + y)
+            # if x != 0 and y != 0:
+            #     if (x < 0 and y >= 0) or (x < 0 and y < 0):
+            #         self.angle += (math.sqrt(x * x + y * y))
+            #     elif (y < 0 and x >= 0) or (y > 0 and x > 0):
+            #         self.angle += -(math.sqrt(x * x + y * y))
+            # else:
+            #     self.angle += (x + y)
+            if x < 0:
+                x = -x
+            self.angle += x / 15
             self.to_rotate(tag, self.angle, state=False)
-            self.startx = event.x
-            self.starty = event.y
+            # self.startx = event.x
+            # self.starty = event.y
 
     def to_rotate(self, id, var, state=True):
         try:

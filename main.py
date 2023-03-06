@@ -340,10 +340,16 @@ def leftButtonMove(event):
 
 # 松开左键
 def leftButtonUp(event):
-    global lastDraw, click_num, px, choice_tup, choice_start
+    global lastDraw, click_num, px, choice_tup, choice_start, remove_px
     end.append(lastDraw)
     if what.get() == 1:
         if click_num == 1:
+            if move_x.get() != event.x or move_y.get() != event.y:
+                id = remove_px.keys()
+                total = sum(remove_px.values())
+                route_click.append((start_x.get(), start_y.get()))
+                stack.append(('长度测量', (id, total)))
+                remove_px = {}
             start_x.set(event.x)
             start_y.set(event.y)
             click_num = 2
@@ -357,9 +363,10 @@ def leftButtonUp(event):
             y = end_y.get() - start_y.get()
             temp_px = (abs(x + y)) / 10
             px += temp_px
-            stack.append(('长度测量', (id, temp_px)))
+            route_click.append((start_x.get(), start_y.get()))
+            stack.append(('长度测量', ([id], temp_px)))
             canvas.itemconfig('实时路线', text="%.2fm" % px)
-            remove_px[lastDraw] = px
+            # remove_px[lastDraw] = px
             start_x.set(end_x.get())
             start_y.set(end_y.get())
     elif what.get() == 4:
@@ -664,10 +671,10 @@ def grid():
         index_x = 15
         index_y = 50
         for i in range(range_x):
-            canvas.create_line(index_x, 50, index_x, HEIGHT + 20, dash=(5, 3), tags='grid')
+            canvas.create_line(index_x, 50, index_x, HEIGHT + 20, dash=(5, 3), tags=('grid', '不框选'))
             index_x += 100
         for i in range(range_y):
-            canvas.create_line(15, index_y, WIDTH + 10, index_y, dash=(5, 3), tags='grid')
+            canvas.create_line(15, index_y, WIDTH + 10, index_y, dash=(5, 3), tags=('grid', '不框选'))
             index_y += 100
         create_grid = True
         grid_start = 1
@@ -803,7 +810,7 @@ var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
-canvas = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 40)
+canvas = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 40, highlightthickness=0)
 # canvas = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 40, relief='solid', bd=2)
 canvas.place(x=175, y=100)
 
@@ -961,7 +968,7 @@ win.config(menu=menu)
 
 # 撤销
 def undo(event):
-    global px
+    global px, route_click
     if stack and event.widget == win:
         item = stack.pop()
         if item[0] == '创建':
@@ -974,9 +981,13 @@ def undo(event):
                 canvas.itemconfig(i, state='normal')
         elif item[0] == '长度测量':
             id, temp_px = item[1]
-            pop(id)
+            for i in id:
+                pop(i)
             px -= temp_px
             canvas.itemconfig('实时路线', text="%.2fm" % px)
+            x, y = route_click.pop()
+            start_x.set(x)
+            start_y.set(y)
         elif item[0] == '旋转':
             obj = item[1]
             rotate_.pop()
@@ -1002,16 +1013,12 @@ def save():
     win.destroy()
 
 
-# def unfocus_click(event):
-#     if 'entry' not in str(event.widget):
-#         for i in win.winfo_children():
-#             if isinstance(i, Entry):
-#                 win.focus_set()
-#     else:
-#         event.widget.focus_set()
-#
-#
-# win.bind('<Button-1>', unfocus_click)
+def unfocus_click(event):
+    if 'ent' not in str(event.widget):
+        win.focus_set()
+
+
+win.bind('<Button-1>', unfocus_click)
 win.protocol("WM_DELETE_WINDOW", save)
 
 win.mainloop()
