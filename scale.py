@@ -134,7 +134,6 @@ class CreateImg(T):
         self.mousedown(self.tag, [200, 100])
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
-        what.set(0)
         # no_what.set(0)
         # set_color()
 
@@ -357,9 +356,6 @@ class CreateImg(T):
         Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
 
-        # 障碍辅助线
-        # for i in frame_aux_com_rig.winfo_children():
-        #     print(i.winfo_name())
         tk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=5, height=1).pack()
 
     def bar_aux(self):

@@ -209,10 +209,23 @@ frame_aux_com_rig.pack(side='right')
 # 辅助信息容器
 frame_aux_info = tk.Frame(frame_aux, name='辅助信息容器')
 frame_aux_info.pack()
-frame_aux_tit = tk.Frame(frame_aux_info)
-frame_aux_inp = tk.Frame(frame_aux_info)
+frame_aux_info_1 = tk.Frame(frame_aux_info)
+frame_aux_info_2 = tk.Frame(frame_aux_info)
+frame_aux_tit = tk.Frame(frame_aux_info_1)
+frame_aux_inp = tk.Frame(frame_aux_info_1)
+frame_aux_tit2 = tk.Frame(frame_aux_info)
+frame_aux_inp2 = tk.Frame(frame_aux_info)
+frame_aux_but = tk.Frame(frame_aux_info)
+
+frame_aux_info_1.pack()
+frame_aux_info_2.pack()
+
 frame_aux_tit.pack(side='left')
 frame_aux_inp.pack(side='right')
+
+frame_aux_tit2.pack(side='left')
+frame_aux_inp2.pack(side='left')
+frame_aux_but.pack(side='bottom')
 
 # 测量功能容器
 frame_mea_com = tk.Frame(frame_mea, name='测量功能容器')
@@ -223,8 +236,8 @@ frame_mea_com_lef.pack(side='left')
 frame_mea_com_rig.pack(side='right')
 
 # 障碍按键容器
-frame_create = tk.Frame(win, name='按键')
-frame_create.place(x=200, y=5)
+frame_create = tk.Frame(win, name='按键', relief='ridge', bd=2)
+frame_create.place(x=400, y=5)
 frame_temp_1 = tk.Frame(frame_create)
 frame_temp_2 = tk.Frame(frame_create)
 frame_temp_3 = tk.Frame(frame_create)
@@ -232,6 +245,8 @@ frame_temp_4 = tk.Frame(frame_create)
 frame_temp_5 = tk.Frame(frame_create)
 frame_temp_6 = tk.Frame(frame_create)
 frame_temp_7 = tk.Frame(frame_create)
+frame_temp_8 = tk.Frame(frame_create)
+frame_temp_9 = tk.Frame(frame_create)
 
 frame_temp_1.pack(side="left")
 frame_temp_2.pack(side="left")
@@ -240,6 +255,8 @@ frame_temp_4.pack(side="left")
 frame_temp_5.pack(side="left")
 frame_temp_6.pack(side="left")
 frame_temp_7.pack(side="left")
+frame_temp_8.pack(side="bottom")
+frame_temp_9.pack(side="top")
 
 from focus import Focus
 

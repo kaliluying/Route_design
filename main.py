@@ -18,6 +18,7 @@ def insert():
     index_txt += 1
     CreateTxt(canvas, index_txt).create_txt(var)
     e_id.delete(0, 'end')
+    drag()
 
 
 # 障碍参数确认
@@ -27,6 +28,7 @@ def parameter():
     index_txt += 1
     CreateParameter(canvas, index_txt).create_parameter(var)
     e_parameter.delete(0, 'end')
+    drag()
 
 
 # 隐藏障碍参数
@@ -49,6 +51,8 @@ def monorail():
     image_path = start_direction(image_path)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='monorail').create_img()
+    drag()
+
 
 
 # 双横木
@@ -58,6 +62,7 @@ def oxer():
     image_path = start_direction(image_path)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='oxer').create_img()
+    drag()
 
 
 # 三横木
@@ -66,6 +71,7 @@ def tirail():
     image_path = merge(10, 10)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='tirail').create_img()
+    drag()
 
 
 # AB组合障碍
@@ -74,6 +80,7 @@ def combination_ab():
     image_path = merge_ab(state=1, m1=30)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create_img()
+    drag()
 
 
 # ABC组合障碍
@@ -82,6 +89,7 @@ def combination_abc():
     image_path = merge_ab(state=1, m1=30, m2=30)
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create_img()
+    drag()
 
 
 # 利物浦
@@ -91,6 +99,7 @@ def live():
     image_path = expand(get_live_path())
     image_path = start_direction(image_path)
     CreateImg(canvas, index_img, image_path, obstacle='live').create_img()
+    drag()
 
 
 # 强制通过点
@@ -98,6 +107,7 @@ def force():
     global index_img
     index_img += 1
     CreateImg(canvas, index_img, force_image).create_img()
+    drag()
 
 
 # 指北针
@@ -106,6 +116,7 @@ def compass():
     index_img += 1
     image_path = expand(compass_image)
     CreateImg(canvas, index_img, image_path).create_img()
+    drag()
 
 
 # 水障
@@ -115,6 +126,7 @@ def water_barrier():
     image_path = expand(water_barrier_iamge)
     image_path = start_direction(image_path)
     CreateImg(canvas, index_img, image_path, obstacle='water').create_img()
+    drag()
 
 
 # 砖墙
@@ -123,6 +135,7 @@ def brick_wall():
     index_img += 1
     image_path = expand(brick_wall_image)
     CreateImg(canvas, index_img, image_path).create_img()
+    drag()
 
 
 # 起/终点线
@@ -132,6 +145,7 @@ def line():
     image_path = expand(line_image)
     image_path = start_direction(image_path)
     CreateImg(canvas, index_img, image_path).create_img()
+    drag()
 
 
 # 进出口
@@ -140,9 +154,10 @@ def gate():
     index_img += 1
     image_path = expand(gate_image)
     CreateImg(canvas, index_img, image_path).create_img()
+    drag()
 
 
-# 20米圆
+# 圆
 def circular():
     global index_img
     index_img += 1
@@ -152,6 +167,7 @@ def circular():
     img.save('./img/cir.png')
     cir_path = './img/cir.png'
     CreateImg(canvas, index_img, cir_path).create_img()
+    drag()
 
 
 # 赛事信息确认
@@ -605,22 +621,6 @@ def pop(id=None):
         if id == cur:
             remove_from_not_com()
         return
-    # if choice_tup:
-    #     print(choice_tup)
-    #     # canvas.delete('choice_start')
-    #     canvas.itemconfig('choice_start', state='hidden')
-    #     items = canvas.find_withtag("choice_start")[:-1]
-    #     print(items)
-    #     stack.append(('删除', items))
-    #     choice_tup.clear()
-    # else:
-    #     cur, line = get_cur()
-    #     canvas.itemconfig(cur, stare='hidden')
-    #     canvas.itemconfig(line, stare='hidden')
-    #     stack.append(
-    #         ('删除', (cur, line))
-    #     )
-    #     remove_from_not_com()
     items = canvas.find_withtag("choice_start")[:-1]
     if items:
         canvas.itemconfig('choice_start', state='hidden')
@@ -748,32 +748,32 @@ tk.Button(frame_aux_tit, text='确认', command=parameter).pack()
 par_state = tk.Button(frame_aux_inp, text='隐藏', command=hidden)
 par_state.pack()
 
+# 圆
+tk.Label(frame_aux_tit2, text="圆(m)：", font=FONT).pack()
+var_cir = tk.StringVar()
+e_id = Entry(frame_aux_inp2, textvariable=var_cir, width=3)
+e_id.pack()
+
+tk.Button(frame_aux_but, text='确认', command=circular).pack()
+
 # 测量模块
 but_1 = tk.Button(frame_mea_com_lef, text='长度测量', command=pen, width=width, height=1)
 but_1.pack()
 
-# 圆
-tk.Label(win, text="圆(m)：", font=FONT).place(x=730, y=10)
-var_cir = tk.StringVar()
-e_id = Entry(win, textvariable=var_cir, width=4)
-e_id.place(x=780, y=10)
-
-tk.Button(win, text='确认', command=circular).place(x=755, y=40)
-
 # 障碍号
-tk.Label(win, text="障碍号：", font=FONT).place(x=840, y=10)
+tk.Label(frame_temp_9, text="障碍号：", font=FONT).pack(side="left")
 var_id = tk.StringVar()
-e_id = Entry(win, textvariable=var_id, width=4)
-e_id.place(x=900, y=10)
+e_id = Entry(frame_temp_9, textvariable=var_id, width=4)
+e_id.pack(side="left")
 
-tk.Button(win, text='确认', command=insert).place(x=870, y=40)
+tk.Button(frame_temp_8, text='确认', command=insert).pack(padx=1)
 
-tk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=1000, y=10)
+tk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=200, y=10)
 var_len = tk.StringVar(value='4')
 len_entt = Entry(win, textvariable=var_len, width=4)
-len_entt.place(x=1130, y=10)
+len_entt.place(x=330, y=10)
 
-tk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=1070, y=40)
+tk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=270, y=40)
 
 # 路线图长度
 tk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
@@ -849,9 +849,9 @@ pro_var = []
 edit()
 
 but1 = tk.Button(win, text="确认", command=dle)
-but1.place(x=WIDTH + 250, y=770)
+but1.place(x=WIDTH + 260, y=700)
 but2 = tk.Button(win, text="修改", command=edit)
-but2.place(x=WIDTH + 350, y=770)
+but2.place(x=WIDTH + 360, y=700)
 
 # 菜单栏
 menu = tk.Menu(win)
@@ -862,8 +862,8 @@ menuType = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="工具栏", menu=menuType)
 menuType.add_radiobutton(label="指针拖动", command=drag, variable=what, value=0)
 menuType.add_radiobutton(label="旋转", command=rotate, variable=what, value=3)
-menuType.add_radiobutton(label="铅笔", command=pen, variable=what, value=1)
-menuType.add_radiobutton(label="橡皮擦", command=remove, variable=what, value=2)
+menuType.add_radiobutton(label="长度测量", command=pen, variable=what, value=1)
+# menuType.add_radiobutton(label="橡皮擦", command=remove, variable=what, value=2)
 
 # 功能
 function_menuType = tk.Menu(menu, tearoff=0)
@@ -884,7 +884,7 @@ font_menuType = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="字号", menu=font_menuType)
 font_menuType.add_command(label="通用", command=currency_font)
 font_menuType.add_command(label="铅笔", command=currency_pen)
-font_menuType.add_command(label="橡皮擦", command=currency_remove)
+# font_menuType.add_command(label="橡皮擦", command=currency_remove)
 
 # 帮助
 app_help = tk.Menu(menu, tearoff=0)
@@ -948,7 +948,8 @@ def unfocus_click(event):
 
 
 def delete(event):
-    pop()
+    if 'ent' not in str(event.widget):
+        pop()
 
 
 win.bind('<Button-1>', unfocus_click)
