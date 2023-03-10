@@ -90,11 +90,11 @@ class Focus:
         check = tk.StringVar(value='0')
         tk.Label(self.frame_label, text='宽(m)：').pack()
         water_width_var = tk.StringVar(value=info[0] if info else '2')
-        water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5, name='water_w')
+        water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5, name='water_w_ent')
         water_width_ent.pack()
         tk.Label(self.frame_label, text='长(m)：').pack()
         water_height_var = tk.StringVar(value=info[0] if info else '4')
-        water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5, name='water_h')
+        water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5, name='water_h_ent')
         water_height_ent.pack()
         water_height_ent.bind("<Command-KeyPress-z>", water_width_ent.undo)
 

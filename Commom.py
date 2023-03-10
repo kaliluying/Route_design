@@ -1,5 +1,6 @@
 import math
 import tkinter as tk
+import platform
 from tkinter import Checkbutton
 from tkinter import messagebox
 from functools import partial
@@ -17,14 +18,22 @@ win.geometry(f"{W}x{H}")
 win.state("zoomed")
 win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
 
+# 当前系统
+sys_name = platform.system()
+
 # 全局变量
 WIDTH = 900
 HEIGHT = 600
-FONT = ("微软雅黑", 15)
+if sys_name == 'Darwin':
+    FONT = ("微软雅黑", 15)
+elif sys_name == 'Windows':
+    FONT = ("微软雅黑", 12)
 X = tk.IntVar(value=0)
 Y = tk.IntVar(value=0)
 what = tk.IntVar(value=0)
 no_what = tk.IntVar(value=0)
+
+
 
 # 初始点
 start_x = tk.IntVar(value=0)

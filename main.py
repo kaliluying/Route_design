@@ -54,7 +54,6 @@ def monorail():
     drag()
 
 
-
 # 双横木
 def oxer():
     global index_img
@@ -190,8 +189,9 @@ def dle():
                 temp_txt = value.get()
                 canvas.itemconfig('比赛名称', text=temp_txt)
                 continue
-            tk.Label(frame_tit, text=key + ': ', font=("微软雅黑", 21)).pack(padx=1, pady=4)
-            tk.Label(frame_inp, text=value.get(), font=("微软雅黑", 21)).pack(padx=1, pady=4)
+            font = 21 if sys_name == 'Darwin' else 15
+            tk.Label(frame_tit, text=key + ': ', font=("微软雅黑", font)).pack(padx=1, pady=4)
+            tk.Label(frame_inp, text=value.get(), font=("微软雅黑", font)).pack(padx=1, pady=4)
             tk.Label(frame_por, text='').pack(padx=1, pady=7)
 
     except Exception as e:
@@ -214,19 +214,21 @@ def edit():
     for i in frame_por.winfo_children():
         i.destroy()
     for i in info:
-        tk.Label(frame_tit, text=i + ":", font=("微软雅黑", 20)).pack(padx=1, pady=3)
+        font = 20 if sys_name == 'Darwin' else 13
+        tk.Label(frame_tit, text=i + ":", font=("微软雅黑", font)).pack(padx=1, pady=3)
         var = tk.StringVar()
         pro_value = tk.StringVar()
         if temp_:
             var.set(temp_[i])
         info_var.append(var)
         pro_var.append(pro_value)
+        y = 4 if sys_name == 'Darwin' else 7
         if i == '允许时间':
             Entry(frame_inp, textvariable=var, width=15, validate="focusin",
-                  validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=4)
+                  validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=y)
             tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
             continue
-        Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=4)
+        Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=y)
         tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
 
 
@@ -261,8 +263,8 @@ def found():
         canvas.config(width=WIDTH + 20, height=HEIGHT + 40)
         canvas.coords('实际画布', 15, 50, WIDTH + 10, HEIGHT + 20)
         # canvas.place(x=175, y=130)
-        but1.place(x=WIDTH + 230, y=790)
-        but2.place(x=WIDTH + 330, y=790)
+        but1.place(x=WIDTH + 260, y=700)
+        but2.place(x=WIDTH + 360, y=700)
         frame_info.place(x=WIDTH + 200, y=150)
         canvas.delete(watermark)
         wid = WIDTH / 10
@@ -273,8 +275,9 @@ def found():
         canvas.coords('宽', WIDTH - 40, 80)
         canvas.coords('实时路线', WIDTH - 40, 30)
         if state_f:
-            watermark = canvas.create_text((WIDTH + 40) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
-                                           font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc",
+            font = 0.16 if sys_name == 'Darwin' else 0.12
+            watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+                                           font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                            tags=("watermark", '不框选'))
             canvas.lower("watermark")
 
@@ -600,10 +603,12 @@ def open_file():
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
     path = os.getcwd() + f'/ms_download'
-    # Mac
-    subprocess.call(["open", path])
+    if sys_name == 'Windows':
+        subprocess.Popen(["explorer", path])
+    else:
+        subprocess.call(["open", path])
     # Win
-    # subprocess.Popen(["explorer", path])
+    #
 
 
 # 置底
@@ -717,7 +722,10 @@ tk.Button(frame_temp_5, text='三横木', command=tirail).pack()
 tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
 tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
 
-width = 5
+if sys_name == 'Darwin':
+    width = 5
+elif sys_name == 'Windows':
+    width = 10
 # 工作模块
 but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red', width=width, height=1)
 but_0.pack()
@@ -788,6 +796,7 @@ var_l_h = tk.StringVar()
 var_l_h.set("60")
 var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
+
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
 canvas = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 40, highlightthickness=0)
@@ -811,8 +820,9 @@ canvas.create_line(20, 70, 70, 70, tags=('辅助信息', '不框选'))
 canvas.create_text(WIDTH - 40, 30, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
 
 # 水印
-watermark = canvas.create_text((WIDTH + 40) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
-                               font=("行楷", int(WIDTH * 0.16), "bold", "italic"), fill="#e4e4dc",
+font = 0.16 if sys_name == 'Darwin' else 0.12
+watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+                               font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                tags=("watermark", '不框选'), state='disabled')
 
 # 画图

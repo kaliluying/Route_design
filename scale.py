@@ -296,8 +296,8 @@ class CreateImg(T):
             self.temp_path = ImageTk.PhotoImage(self.img)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == 'live':
-            w = int(float(self.com_info['water_w']) * 10)
-            h = int(float(self.com_info['water_h']) * 10)
+            w = int(float(self.com_info['water_w_ent']) * 10)
+            h = int(float(self.com_info['water_h_ent']) * 10)
             self.img_path = live_edit(w, h)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
@@ -355,23 +355,23 @@ class CreateImg(T):
         var_name = tk.StringVar(value=self.name if self.name else self.tag)
         Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
-
-        tk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=5, height=1).pack()
+        w = 5 if sys_name == 'Darwin' else 10
+        tk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w, height=1).pack()
 
     def bar_aux(self):
-        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
-            if self.state_line:
-                self.state_line = 0
-                self.app.delete(self.line_tag)
-            else:
-                self.state_line = 1
+        # if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
+        if self.state_line:
+            self.state_line = 0
+            self.app.delete(self.line_tag)
+        else:
+            self.state_line = 1
 
-                # 辅助线
-                bbox = self.app.bbox(self.tag)
-                self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
-                self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
-                self.guide()
-                set_line(self.line_tag)
+            # 辅助线
+            bbox = self.app.bbox(self.tag)
+            self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
+            self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
+            self.guide()
+            set_line(self.line_tag)
 
     def set_state(self):
         self.app.lower(self.tag)
@@ -429,6 +429,7 @@ class CreateImg(T):
         self.app.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))
         set_cur(self.id)
+        self.angle = angle
 
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc",
                              'monorail'] and self.state_line:
