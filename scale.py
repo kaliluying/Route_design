@@ -54,7 +54,7 @@ class T:
         :param event:
         :return:
         """
-        global choice_tup
+        # global choice_tup
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
@@ -67,7 +67,7 @@ class T:
             self.starty = event.y
 
     def mouseup(self, event):
-        set_frame_stare(True)
+        # set_frame_stare(True)
         dx = event.x - move_x.get()
         dy = event.y - move_y.get()
         if dx or dy:

@@ -337,7 +337,6 @@ def leftButtonMove(event):
             canvas.delete(i)
 
     # 多选框移动
-
     elif what.get() == 0 and choice_tup:
         if min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2]) \
                 and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3]):
@@ -347,7 +346,7 @@ def leftButtonMove(event):
             Y.set(event.y)
             try:
                 choice_tup.clear()
-                choice_tup = list(bbox).copy()
+                choice_tup.extend(list(bbox))
             except TypeError as e:
                 print('多选框移动出错', e)
     else:
@@ -361,6 +360,7 @@ def leftButtonMove(event):
 def leftButtonUp(event):
     global lastDraw, click_num, px, choice_tup, choice_start, remove_px
     end.append(lastDraw)
+    current_frame_stare = get_frame_stare()
     if what.get() == 1:
         if click_num == 1:
             if move_x.get() != event.x or move_y.get() != event.y:
@@ -406,6 +406,8 @@ def leftButtonUp(event):
         choice_tup.append(Y.get())
         choice_tup.append(event.x)
         choice_tup.append(event.y)
+    else:
+        set_frame_stare(True)
     if canvas.find_withtag('choice') and what.get() != '3':
         # TODO
         items = canvas.find_withtag('choice_start')
