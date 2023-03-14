@@ -256,7 +256,7 @@ def water_wh(w, h):
     return start_direction(expand("img/water_wh.png"))
 
 
-def live_two_tool(path='img/liverpool.png'):
+def live_two_tool(path='img/liverpool3.png'):
     """
     利物浦单横木变双横木
     :return:
@@ -273,7 +273,14 @@ def live_two_tool(path='img/liverpool.png'):
 
 
 def live_one_tool(path=get_live_path()):
-    return start_direction(expand(path))
+    img = Image.open(path)
+    img2 = Image.open('img/one.png')
+    w, h = img.size
+    result = Image.new(img.mode, (w, h))
+    result.paste(img, box=(0, 0))
+    result.paste(img2, box=(int(w/2-1), 0))
+    result.save("img/live_one.png")
+    return start_direction(expand("img/live_one.png"))
 
 
 def live_edit(w, h):
@@ -281,9 +288,9 @@ def live_edit(w, h):
     img = img.resize((w, h))
     img.save("img/live_wh.png")
     id = get_live()
-    if id == '1':
+    if id == '1' or id == 1:
         return live_two_tool("img/live_wh.png")
-    elif id == 0:
+    elif id == 0 or id == '0':
         a = live_one_tool("img/live_wh.png")
         return a
 

@@ -95,8 +95,8 @@ def combination_abc():
 def live():
     global index_img
     index_img += 1
-    image_path = expand(get_live_path())
-    image_path = start_direction(image_path)
+    # image_path = expand(get_live_path())
+    image_path = live_one_tool()
     CreateImg(canvas, index_img, image_path, obstacle='live').create_img()
     drag()
 
@@ -702,7 +702,7 @@ def about():
 
 # 帮助文档
 def open_web():
-    webbrowser.open("https://github.com/kaliluying/Route_design/blob/main/README.md")
+    webbrowser.open("https://gitee.com/gmlwb/ms/blob/master/README.md")
 
 
 # 障碍物
@@ -894,8 +894,8 @@ function_menuType.add_command(label="保存", command=save_1)
 # 字号
 font_menuType = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="字号", menu=font_menuType)
-font_menuType.add_command(label="通用", command=currency_font)
-font_menuType.add_command(label="铅笔", command=currency_pen)
+# font_menuType.add_command(label="通用", command=currency_font)
+font_menuType.add_command(label="长度测量", command=currency_pen)
 # font_menuType.add_command(label="橡皮擦", command=currency_remove)
 
 # 帮助

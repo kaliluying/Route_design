@@ -129,7 +129,7 @@ def get_live_path():
     获取利物浦
     :return:
     """
-    return "img/liverpool.png"
+    return "img/liverpool3.png"
 
 
 @load_image

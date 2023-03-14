@@ -81,7 +81,7 @@ def set_len(len):
     :return:
     """
     global bar_len
-    bar_len = len.get()
+    bar_len = int(len.get())
 
 
 def get_len():
