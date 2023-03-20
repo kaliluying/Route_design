@@ -33,8 +33,6 @@ Y = tk.IntVar(value=0)
 what = tk.IntVar(value=0)
 no_what = tk.IntVar(value=0)
 
-
-
 # 初始点
 start_x = tk.IntVar(value=0)
 start_y = tk.IntVar(value=0)
@@ -172,6 +170,13 @@ frame_aux = tk.Frame(frame_function, relief='ridge', bd=2, name='辅助模块')
 frame_mea = tk.Frame(frame_function, relief='ridge', bd=2, name='测量模块')
 
 frame_job.pack()
+
+frame_aux_mea = tk.Frame(win, relief='ridge', bd=2, name='辅助模块')
+frame_aux_mea.place(x=5, y=530)
+# 辅助模块容器
+frame_aux = tk.Frame(frame_aux_mea, name='辅助模块')
+# 测量模块容器
+frame_mea = tk.Frame(frame_aux_mea, name='测量模块')
 frame_aux.pack()
 frame_mea.pack()
 
@@ -180,6 +185,7 @@ frame_command = tk.Frame(frame_job, name='功能容器')
 frame_command.pack()
 frame_command_left = tk.Frame(frame_command)
 frame_command_right = tk.Frame(frame_command)
+tk.Label(frame_command, text='操作模块').pack()
 frame_command_left.pack(side="left")
 frame_command_right.pack(side="right")
 
@@ -209,7 +215,9 @@ frame_focus_z_ent.pack(side='right')
 
 # 辅助功能容器
 frame_aux_com = tk.Frame(frame_aux, name='辅助功能容器')
+# frame_aux_com = tk.Frame(frame_aux, name='辅助功能容器')
 frame_aux_com.pack()
+tk.Label(frame_aux_com, text='辅助模块').pack()
 frame_aux_com_lef = tk.Frame(frame_aux_com)
 frame_aux_com_rig = tk.Frame(frame_aux_com)
 frame_aux_com_lef.pack(side='left')
@@ -218,6 +226,7 @@ frame_aux_com_rig.pack(side='right')
 # 辅助信息容器
 frame_aux_info = tk.Frame(frame_aux, name='辅助信息容器')
 frame_aux_info.pack()
+
 frame_aux_info_1 = tk.Frame(frame_aux_info)
 frame_aux_info_2 = tk.Frame(frame_aux_info)
 frame_aux_tit = tk.Frame(frame_aux_info_1)
@@ -238,6 +247,7 @@ frame_aux_but.pack(side='bottom')
 
 # 测量功能容器
 frame_mea_com = tk.Frame(frame_mea, name='测量功能容器')
+# frame_mea_com = tk.Frame(frame_mea, name='测量功能容器')
 frame_mea_com.pack()
 frame_mea_com_lef = tk.Frame(frame_mea_com)
 frame_mea_com_rig = tk.Frame(frame_mea_com)
@@ -247,6 +257,7 @@ frame_mea_com_rig.pack(side='right')
 # 障碍按键容器
 frame_create = tk.Frame(win, name='按键', relief='ridge', bd=2)
 frame_create.place(x=400, y=5)
+tk.Label(frame_create, text='生产模块').pack()
 frame_temp_1 = tk.Frame(frame_create)
 frame_temp_2 = tk.Frame(frame_create)
 frame_temp_3 = tk.Frame(frame_create)

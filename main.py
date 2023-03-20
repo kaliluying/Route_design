@@ -89,6 +89,8 @@ def combination_abc():
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create_img()
     drag()
+    print(frame_aux_com.winfo_x())
+    print(frame_aux_com.winfo_y())
 
 
 # 利物浦
@@ -583,18 +585,18 @@ def sava(checkvar):
         canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
         # Win
-        # EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.00.0\bin\gswin64.exe'
-        # startupinfo = subprocess.STARTUPINFO()
-        # startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        # cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
-        #       f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
-        # # os.system(cmd)
-        # subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW,
-        #                 startupinfo=startupinfo)
-
-        # Mac
-        img = Image.open(eps_path)
-        img.save(png_path)
+        if sys_name == 'Windows':
+            EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.00.0\bin\gswin64.exe'
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
+                  f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
+            # os.system(cmd)
+            subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW,
+                            startupinfo=startupinfo)
+        else:
+            img = Image.open(eps_path)
+            img.save(png_path)
 
         os.remove(eps_path)
         messagebox.showinfo("成功", f"保存成功,\n路径:{png_path}")
