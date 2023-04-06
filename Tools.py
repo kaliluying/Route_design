@@ -71,10 +71,14 @@ def merge(m, m1=0, state=1):
     w, h = img_obj.size
     result = Image.new(img_obj.mode, (m + m1 + 10, h))
     result.paste(img_obj, box=(0, 0))
-    result.paste(img_obj2, box=(m + m1, 0))
+    if m1:
+        a = 10
+    else:
+        a = 5
+    result.paste(img_obj2, box=(m + m1 - a, 0))
     if m1:
         image3 = Image.open(get_one_path())
-        result.paste(image3, box=(m, 0))
+        result.paste(image3, box=(m - 5, 0))
         result.save("img/com_2.png")
         com_image = "img/com_2.png"
         return start_direction(expand(com_image, state))
@@ -213,11 +217,11 @@ def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
 
 
 def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
-    a_img = merge(a + 5 if a else 0, state=0)
+    a_img = merge(a if a else 0, state=0)
     img_obj = Image.open(a_img)
-    b_img = merge(b + 5 if b else 0, state=0)
+    b_img = merge(b if b else 0, state=0)
     img_obj2 = Image.open(b_img)
-    c_img = merge(c + 5 if c else 0, state=0)
+    c_img = merge(c if c else 0, state=0)
     image3 = Image.open(c_img)
     result = Image.new(img_obj.mode, (a + b + c + a_b + b_c + 50, 40))
     result.paste(img_obj, box=(0, 0))
@@ -230,9 +234,9 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
 
 
 def obs_ab(a=0, b=0, a_b=30):
-    a_img = merge(a + 5 if a else 0, state=0)
+    a_img = merge(a if a else 0, state=0)
     img_obj = Image.open(a_img)
-    b_img = merge(b + 5 if b else 0, state=0)
+    b_img = merge(b if b else 0, state=0)
     img_obj2 = Image.open(b_img)
     result = Image.new(img_obj.mode, (a + b + a_b + 45, 40))
     result.paste(img_obj, box=(0, 0))
@@ -278,7 +282,7 @@ def live_one_tool(path=get_live_path()):
     w, h = img.size
     result = Image.new(img.mode, (w, h))
     result.paste(img, box=(0, 0))
-    result.paste(img2, box=(int(w/2-1), 0))
+    result.paste(img2, box=(int(w / 2 - 1), 0))
     result.save("img/live_one.png")
     return start_direction(expand("img/live_one.png"))
 
@@ -314,9 +318,6 @@ def remove_from_not_com():
                     j.destroy()
         # else:
         #     i.destroy()
-
-
-
 
 
 # 行进方向

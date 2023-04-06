@@ -277,9 +277,9 @@ class CreateImg(T):
             temp = {}
             for key, val in self.com_info.items():
                 if key.count('_') == 2 and val != '0':
-                    temp[key] = (int(val) * 10)
+                    temp[key] = float(val) * 10
                 elif key.count('_') == 1 and val != '0':
-                    temp[key] = (int(val) / 10)
+                    temp[key] = float(val) / 10
                 else:
                     temp[key] = 0
             a, a_b, b, b_c, c = temp.values()

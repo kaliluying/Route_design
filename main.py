@@ -262,8 +262,8 @@ def found():
     if w.isdigit() and h.isdigit():
         WIDTH = int(w) * 10
         HEIGHT = int(h) * 10
-        canvas.config(width=WIDTH + 20, height=HEIGHT + 40)
-        canvas.coords('实际画布', 15, 50, WIDTH + 10, HEIGHT + 20)
+        canvas.config(width=WIDTH + 30, height=HEIGHT + 70)
+        canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT + 50)
         # canvas.place(x=175, y=130)
         but1.place(x=WIDTH + 260, y=700)
         but2.place(x=WIDTH + 360, y=700)
@@ -317,15 +317,18 @@ def leftButtonMove(event):
     global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
-                                      fill='#000000', width=font_size, tags=("line", '不框选'))
-        x = event.x - X.get()
-        y = event.y - Y.get()
-        if x != 0 and y != 0:
-            px += (math.sqrt(x * x + y * y)) / 10
-            temp_px = (math.sqrt(x * x + y * y)) / 10
-        else:
-            px += (abs(x + y)) / 10
-            temp_px = (abs(x + y)) / 10
+                                      fill='#000000', width=font_size, tags=("line", '不框选'), smooth=True)
+        x1, y1, x2, y2 = canvas.coords(lastDraw)
+        px += (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
+        temp_px = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
+        # x = abs(event.x - X.get())
+        # y = abs(event.y - Y.get())
+        # if x != 0 and y != 0:
+        #     px += (math.sqrt(x * x + y * y)) / 10
+        #     temp_px = (math.sqrt(x * x + y * y)) / 10
+        # else:
+        #     px += (abs(x + y)) / 10
+        #     temp_px = (abs(x + y)) / 10
         remove_px[lastDraw] = temp_px
         canvas.itemconfig('实时路线', text="%.2fm" % px)
         X.set(event.x)
@@ -380,12 +383,14 @@ def leftButtonUp(event):
             # click_num = 1
             id = create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get())
 
-            x = end_x.get() - start_x.get()
-            y = end_y.get() - start_y.get()
-            temp_px = (abs(x + y)) / 10
-            px += temp_px
+            # x = abs(end_x.get() - start_x.get())
+            # y = abs(end_y.get() - start_y.get())
+            # temp_px = (abs(x + y)) / 10
+            x1, y1, x2, y2 = canvas.coords(id)
+            distance = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
+            px += distance
             route_click.append((start_x.get(), start_y.get()))
-            stack.append(('长度测量', ([id], temp_px)))
+            stack.append(('长度测量', ([id], distance)))
             canvas.itemconfig('实时路线', text="%.2fm" % px)
             # remove_px[lastDraw] = px
             start_x.set(end_x.get())
@@ -510,12 +515,18 @@ def set_color():
 
 # 清屏
 def clear():
-    global px, click_num
+    global px, click_num, stack
     canvas.delete("line")
     canvas.delete("rubber")
     px = 0
     canvas.itemconfig('实时路线', text="%.2fm" % px)
     click_num = 1
+    to_be_deleted = []
+    for i in range(len(stack)):
+        if stack[i][0] == '长度测量':
+            to_be_deleted.append(i)
+    for idx in reversed(to_be_deleted):
+        stack.pop(idx)
 
 
 # 撤销
@@ -592,7 +603,8 @@ def sava(checkvar):
             cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
                   f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
             # os.system(cmd)
-            subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW,
+            subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            creationflags=subprocess.CREATE_NO_WINDOW,
                             startupinfo=startupinfo)
         else:
             img = Image.open(eps_path)
@@ -611,8 +623,6 @@ def open_file():
         subprocess.Popen(["explorer", path])
     else:
         subprocess.call(["open", path])
-    # Win
-    #
 
 
 # 置底
@@ -655,15 +665,15 @@ def grid():
         grid_start = 1
 
     if not create_grid:
-        range_x = (WIDTH + 20) // 100
-        range_y = (HEIGHT + 40) // 100
+        range_x = (WIDTH + 30) // 100
+        range_y = (HEIGHT + 70) // 100
         index_x = 15
         index_y = 50
         for i in range(range_x):
-            canvas.create_line(index_x, 50, index_x, HEIGHT + 20, dash=(5, 3), tags=('grid', '不框选'))
+            canvas.create_line(index_x, 50, index_x, HEIGHT + 50, dash=(5, 3), tags=('grid', '不框选'))
             index_x += 100
         for i in range(range_y):
-            canvas.create_line(15, index_y, WIDTH + 10, index_y, dash=(5, 3), tags=('grid', '不框选'))
+            canvas.create_line(15, index_y, WIDTH + 15, index_y, dash=(5, 3), tags=('grid', '不框选'))
             index_y += 100
         create_grid = True
         grid_start = 1
@@ -681,11 +691,11 @@ def info():
         aux_stare = True
 
 
-# # 清除水印
-# def remove_f():
-#     global state_f
-#     canvas.delete(watermark)
-#     state_f = 0
+# 清除水印
+def remove_f():
+    global state_f
+    canvas.delete(watermark)
+    state_f = 0
 
 
 # 关于软件
@@ -751,7 +761,7 @@ aux_info = tk.Button(frame_aux_com_rig, text='隐藏辅助信息', command=info,
 aux_info.pack()
 
 # 障碍参数
-tk.Label(frame_aux_tit, text="障碍参数：", font=FONT).pack(pady=5)
+tk.Label(frame_aux_tit, text="障碍备注：", font=FONT).pack(pady=5)
 var_parameter = tk.StringVar()
 e_parameter = Entry(frame_aux_inp, textvariable=var_parameter, width=8)
 e_parameter.pack(pady=5)
@@ -785,7 +795,9 @@ var_len = tk.StringVar(value='4')
 len_entt = Entry(win, textvariable=var_len, width=4)
 len_entt.place(x=330, y=10)
 
-tk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=270, y=40)
+tk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
+
+tk.Button(win, text="清除水印", command=remove_f).place(x=180, y=40)
 
 # 路线图长度
 tk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
@@ -803,10 +815,9 @@ var_l_h_inp.place(x=80, y=40)
 
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
-canvas = tk.Canvas(win, width=WIDTH + 20, height=HEIGHT + 40, highlightthickness=0)
+canvas = tk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 70, highlightthickness=0)
 canvas.place(x=175, y=100)
-
-canvas.create_rectangle(15, 50, WIDTH + 10, HEIGHT + 20, state='disabled', tags=('不框选', '实际画布'))
+canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
 # 右上角显示路线长宽
 w = WIDTH / 10
@@ -839,8 +850,8 @@ canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称', font=("微软雅�
 
 # 信息
 info = [
-    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间', '障碍数量', '跳跃数量', '附加赛',
-    '路线设计师',
+    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间',
+    '障碍数量', '跳跃数量', '附加赛', '路线设计师',
 ]
 
 # 赛事信息主容器
@@ -884,13 +895,13 @@ function_menuType = tk.Menu(menu, tearoff=0)
 menu.add_cascade(label="功能", menu=function_menuType)
 function_menuType.add_command(label="清屏", command=clear)
 # function_menuType.add_command(label="撤销", command=back)
-# function_menuType.add_command(label="清除水印", command=remove_f)
+function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件保存位置", command=open_file)
 function_menuType.add_command(label="保存", command=save_1)
 
 # menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
 # menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)
-#
+
 # function_menuType.add_cascade(label="保存", menu=menu_sava)
 
 # 字号
