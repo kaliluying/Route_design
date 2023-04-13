@@ -3,12 +3,14 @@ import webbrowser
 import subprocess
 import tkinter.simpledialog
 from tkinter import filedialog
-import numpy as np
+# import numpy as np
 import Commom
-from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_stare
+from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_stare, T
 from Tools import *
 from Commom import *
 import time
+# import pickle
+import dill
 
 
 # 障碍号确认
@@ -16,7 +18,7 @@ def insert():
     global index_txt
     var = var_id.get()
     index_txt += 1
-    CreateTxt(canvas, index_txt).create_txt(var)
+    CreateTxt(canvas, index_txt).create(var)
     e_id.delete(0, 'end')
     drag()
 
@@ -26,7 +28,7 @@ def parameter():
     global index_txt
     var = var_parameter.get()
     index_txt += 1
-    CreateParameter(canvas, index_txt).create_parameter(var)
+    CreateParameter(canvas, index_txt).create(var)
     e_parameter.delete(0, 'end')
     drag()
 
@@ -50,7 +52,7 @@ def monorail():
     image_path = expand(get_one_path())
     image_path = start_direction(image_path)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle='monorail').create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='monorail').create()
     drag()
 
 
@@ -60,7 +62,7 @@ def oxer():
     image_path = merge(10)
     image_path = start_direction(image_path)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle='oxer').create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='oxer').create()
     drag()
 
 
@@ -69,7 +71,7 @@ def tirail():
     global index_img
     image_path = merge(10, 10)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle='tirail').create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='tirail').create()
     drag()
 
 
@@ -78,7 +80,7 @@ def combination_ab():
     global index_img
     image_path = merge_ab(state=1, m1=30)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create_img()
+    CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create()
     drag()
 
 
@@ -87,7 +89,7 @@ def combination_abc():
     global index_img
     image_path = merge_ab(state=1, m1=30, m2=30)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create_img()
+    CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create()
     drag()
     print(frame_aux_com.winfo_x())
     print(frame_aux_com.winfo_y())
@@ -99,7 +101,7 @@ def live():
     index_img += 1
     # image_path = expand(get_live_path())
     image_path = live_one_tool()
-    CreateImg(canvas, index_img, image_path, obstacle='live').create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='live').create()
     drag()
 
 
@@ -107,7 +109,7 @@ def live():
 def force():
     global index_img
     index_img += 1
-    CreateImg(canvas, index_img, force_image).create_img()
+    CreateImg(canvas, index_img, force_image).create()
     drag()
 
 
@@ -116,7 +118,7 @@ def compass():
     global index_img
     index_img += 1
     image_path = expand(compass_image)
-    CreateImg(canvas, index_img, image_path).create_img()
+    CreateImg(canvas, index_img, image_path).create()
     drag()
 
 
@@ -126,7 +128,7 @@ def water_barrier():
     index_img += 1
     image_path = expand(water_barrier_iamge)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path, obstacle='water').create_img()
+    CreateImg(canvas, index_img, image_path, obstacle='water').create()
     drag()
 
 
@@ -135,7 +137,7 @@ def brick_wall():
     global index_img
     index_img += 1
     image_path = expand(brick_wall_image)
-    CreateImg(canvas, index_img, image_path).create_img()
+    CreateImg(canvas, index_img, image_path).create()
     drag()
 
 
@@ -145,7 +147,7 @@ def line():
     index_img += 1
     image_path = expand(line_image)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path).create_img()
+    CreateImg(canvas, index_img, image_path).create()
     drag()
 
 
@@ -154,7 +156,7 @@ def gate():
     global index_img
     index_img += 1
     image_path = expand(gate_image)
-    CreateImg(canvas, index_img, image_path).create_img()
+    CreateImg(canvas, index_img, image_path).create()
     drag()
 
 
@@ -167,7 +169,7 @@ def circular():
     img = img.resize((cir, cir))
     img.save('./img/cir.png')
     cir_path = './img/cir.png'
-    CreateImg(canvas, index_img, cir_path).create_img()
+    CreateImg(canvas, index_img, cir_path).create()
     drag()
 
 
@@ -403,7 +405,7 @@ def leftButtonUp(event):
         elif click_num == 2:
             end_x.set(event.x)
             end_y.set(event.y)
-            create_arc(start_x.get(), start_y.get(), end_x.get(), end_y.get())
+            # create_arc(start_x.get(), start_y.get(), end_x.get(), end_y.get())
             start_x.set(end_x.get())
             start_y.set(end_y.get())
     if current_frame_stare:
@@ -421,32 +423,32 @@ def leftButtonUp(event):
         stack.append(('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
 
 
-def create_arc(x1, y1, x2, y2):
-    x = x1 - x2
-    y = y1 - y2
-    if x != 0 and y != 0:
-        r = (math.sqrt(x * x + y * y)) / 2
-    else:
-        r = (abs(x + y)) / 2
-
-    num_points = 300
-    x0 = (x1 + x2) / 2
-    y0 = (y1 + y2) / 2
-
-    # 生成圆上的点的极角
-    theta = np.linspace(0, 2 * np.pi, num_points)
-
-    # 计算每个极角对应的 x, y 坐标
-    x = x0 + r * np.cos(theta)
-    y = y0 + r * np.sin(theta)
-
-    x = list(map(int, x))
-    y = list(map(int, y))
-
-    index = 0
-    while len(x) >= index:
-        canvas.create_line(x[index], y[index], x[index + 1], y[index + 1], tags='line')
-        index += 10
+# def create_arc(x1, y1, x2, y2):
+#     x = x1 - x2
+#     y = y1 - y2
+#     if x != 0 and y != 0:
+#         r = (math.sqrt(x * x + y * y)) / 2
+#     else:
+#         r = (abs(x + y)) / 2
+#
+#     num_points = 300
+#     x0 = (x1 + x2) / 2
+#     y0 = (y1 + y2) / 2
+#
+#     # 生成圆上的点的极角
+#     theta = np.linspace(0, 2 * np.pi, num_points)
+#
+#     # 计算每个极角对应的 x, y 坐标
+#     x = x0 + r * np.cos(theta)
+#     y = y0 + r * np.sin(theta)
+#
+#     x = list(map(int, x))
+#     y = list(map(int, y))
+#
+#     index = 0
+#     while len(x) >= index:
+#         canvas.create_line(x[index], y[index], x[index + 1], y[index + 1], tags='line')
+#         index += 10
 
 
 # 拖动
@@ -815,8 +817,7 @@ var_l_h_inp.place(x=80, y=40)
 
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
 
-canvas = tk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 70, highlightthickness=0)
-canvas.place(x=175, y=100)
+
 canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
 # 右上角显示路线长宽
@@ -897,7 +898,25 @@ function_menuType.add_command(label="清屏", command=clear)
 # function_menuType.add_command(label="撤销", command=back)
 function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件保存位置", command=open_file)
-function_menuType.add_command(label="保存", command=save_1)
+function_menuType.add_command(label="下载", command=save_1)
+
+
+def save():
+    with open('ms.pkl', 'wb') as f:
+        for i in T.all_instances:
+            print(i.__dict__)
+            dill.dump(i.__dict__, f)
+            
+    # dill.dump_session('ms.pkl')
+
+function_menuType.add_command(label="保存", command=save)
+
+def load():
+    with open('ms.pkl', 'rb') as f:
+        circle_data = dill.load(f)
+        circle = T(**circle_data)
+    # dill.load_session('ms.pkl')
+function_menuType.add_command(label="加载", command=load)
 
 # menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
 # menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)
@@ -963,7 +982,7 @@ def get_all_widgets(root):
 
 def save():
     widgets = get_all_widgets(win)
-    print(widgets)
+    # print(widgets)
     win.destroy()
 
 

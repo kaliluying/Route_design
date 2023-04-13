@@ -4,7 +4,10 @@ from Commom import *
 
 
 class T:
+    all_instances = []
+
     def __init__(self, app, index):
+        self.__class__.all_instances.append(self)
         self.tag = None
         self.startx = 160
         self.starty = 25
@@ -79,7 +82,7 @@ class T:
 
 class CreateTxt(T):
 
-    def create_txt(self, txt):
+    def create(self, txt):
         self.tag = "txt-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
         self.id = text
@@ -92,7 +95,7 @@ class CreateTxt(T):
 
 
 class CreateParameter(T):
-    def create_parameter(self, txt):
+    def create(self, txt):
         self.tag = "parameter-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', self.tag))
         self.id = text
@@ -121,7 +124,7 @@ class CreateImg(T):
         self.name = ''
         self.state_line = 0
 
-    def create_img(self):
+    def create(self):
         self.tag = "img-" + self.index
         self.img_file = ImageTk.PhotoImage(self.img_obj)
         img_id = self.app.create_image(self.startx, self.starty, image=self.img_file,
