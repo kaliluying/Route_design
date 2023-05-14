@@ -1,4 +1,3 @@
-import os
 import webbrowser
 import subprocess
 import tkinter.simpledialog
@@ -719,6 +718,35 @@ def open_web():
     webbrowser.open("https://gitee.com/gmlwb/ms/blob/master/README.md")
 
 
+# 自定义障碍
+def custom():
+    global index_img
+
+    img_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+
+    # image_path = expand(adjust_image_size(img_path))
+    # image_path = start_direction(image_path)
+    # image_path = start_direction(img_path)
+    index_img += 1
+    CreateImg(canvas, index_img, img_path).create()
+    drag()
+
+
+# 设置背景图
+def fg():
+    global fg_img
+    image_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+    img = Image.open(image_path)
+    img = img.resize((WIDTH, HEIGHT))
+    fg_img = ImageTk.PhotoImage(img)
+    canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
+
+
+# 删除背景图
+def del_fg():
+    canvas.delete('bg')
+
+
 # 障碍物
 tk.Button(frame_temp_1, text='进出口', command=gate).pack()
 tk.Button(frame_temp_1, text='指北针', command=compass).pack()
@@ -737,6 +765,9 @@ tk.Button(frame_temp_5, text='三横木', command=tirail).pack()
 
 tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
 tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
+
+tk.Button(frame_temp_7, text='自定义障碍', command=custom).pack()
+tk.Button(frame_temp_7, text='导入背景图', command=fg).pack()
 
 if sys_name == 'Darwin':
     width = 5
@@ -816,7 +847,6 @@ var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
 
 tk.Button(win, text="确认", command=found).place(x=50, y=70)
-
 
 canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
@@ -906,17 +936,23 @@ def save():
         for i in T.all_instances:
             print(i.__dict__)
             dill.dump(i.__dict__, f)
-            
+
     # dill.dump_session('ms.pkl')
 
+
 function_menuType.add_command(label="保存", command=save)
+
 
 def load():
     with open('ms.pkl', 'rb') as f:
         circle_data = dill.load(f)
         circle = T(**circle_data)
+        circle.create()
     # dill.load_session('ms.pkl')
+
+
 function_menuType.add_command(label="加载", command=load)
+function_menuType.add_command(label="删除背景", command=del_fg)
 
 # menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
 # menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)

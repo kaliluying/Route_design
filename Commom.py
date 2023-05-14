@@ -1,3 +1,4 @@
+import os
 import math
 import tkinter as tk
 import platform
@@ -33,10 +34,22 @@ Y = tk.IntVar(value=0)
 what = tk.IntVar(value=0)
 no_what = tk.IntVar(value=0)
 
-
-canvas = tk.Canvas(win, width=WIDTH + 30, height=HEIGHT +
-                   70, highlightthickness=0)
+canvas = tk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 70, highlightthickness=0)
 canvas.place(x=175, y=100)
+
+# img = Image.open('./img/bg1.png')
+# img = img.resize((900, 600))
+# img_obj = ImageTk.PhotoImage(img)
+# canvas.create_image(15, 50, image=img_obj, anchor='nw', tags=('不框选', 'bg'))
+
+#
+# def d():
+#     canvas.delete('bg')
+#
+#
+# tk.Button(win, text='del', command=d).place(x=0, y=0)
+
+fg_img = None
 
 # 初始点
 start_x = tk.IntVar(value=0)
@@ -99,12 +112,16 @@ par_index = 1
 def adjust_image_size(image_path):
     image = Image.open(image_path)
     w, h = image.size
-    h = int(get_len()) * 10
+    h = int(get_len() * 10)
     image = image.resize((w, h))
-    path = image_path.replace('.', '-adj.')
-    image.save(path)
+    if not os.path.exists('./temp_img'):
+        os.mkdir('./temp_img')
+    file_name = os.path.basename(image_path)
+    name = file_name.replace('.', '-adj.')
+    file_path = "./temp_img/" + name
+    image.save(file_path)
 
-    return path
+    return file_path
 
 
 # 装饰器

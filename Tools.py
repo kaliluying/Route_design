@@ -108,7 +108,10 @@ def expand(path, state=1):
 
     padding = (left_pad, top_pad, right_pad, bottom_pad)
     img2 = ImageOps.expand(img, padding, fill=(236, 236, 236, 0))
-    image_path = path.replace('.', '-exp.')
+    directory = os.path.dirname(path)
+    file_name = os.path.basename(path)
+    image_name = file_name.replace('.', '-exp.')
+    image_path = directory + "/" + image_name
     img2.save(image_path)
     return image_path
 
@@ -122,7 +125,10 @@ def start_direction(image_path):
     img2 = img2.resize((w, h1))
     r, g, b, alpha = img2.split()
     img1.paste(img2, (0, h // 2 - 5), alpha)
-    image_path = image_path.replace('.', '-dir.')
+    directory = os.path.dirname(image_path)
+    file_name = os.path.basename(image_path)
+    image_name = file_name.replace('.', '-dir.')
+    image_path = directory + "/" + image_name
     img1.save(image_path)
     return image_path
 
