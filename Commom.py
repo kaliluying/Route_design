@@ -50,6 +50,7 @@ canvas.place(x=175, y=100)
 # tk.Button(win, text='del', command=d).place(x=0, y=0)
 
 fg_img = None
+fg_path = None
 
 # 初始点
 start_x = tk.IntVar(value=0)

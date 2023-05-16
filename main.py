@@ -257,7 +257,7 @@ def allow(info_var, pro_value):
 
 # 生成路线图
 def found():
-    global WIDTH, HEIGHT, h1, h2, watermark
+    global WIDTH, HEIGHT, h1, h2, watermark, fg_img, fg_path
     w = var_l_w.get()
     h = var_l_h.get()
     if w.isdigit() and h.isdigit():
@@ -277,13 +277,17 @@ def found():
         canvas.coords('长', WIDTH - 40, 60)
         canvas.coords('宽', WIDTH - 40, 80)
         canvas.coords('实时路线', WIDTH - 40, 30)
+        canvas.delete('bg')
+        img = Image.open(fg_path)
+        img = img.resize((WIDTH, HEIGHT))
+        fg_img = ImageTk.PhotoImage(img)
+        canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
         if state_f:
             font = 0.16 if sys_name == 'Darwin' else 0.12
             watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
                                            font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                            tags=("watermark", '不框选'))
             canvas.lower("watermark")
-
     else:
         messagebox.showerror('错误', '请输入正整数')
         if w.isdigit():
@@ -734,9 +738,9 @@ def custom():
 
 # 设置背景图
 def fg():
-    global fg_img
-    image_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
-    img = Image.open(image_path)
+    global fg_img, fg_path
+    fg_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+    img = Image.open(fg_path)
     img = img.resize((WIDTH, HEIGHT))
     fg_img = ImageTk.PhotoImage(img)
     canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
