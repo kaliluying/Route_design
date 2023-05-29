@@ -602,15 +602,18 @@ def sava(checkvar):
 
         # Win
         if sys_name == 'Windows':
-            EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.00.0\bin\gswin64.exe'
+            EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.01.1-32bit\bin\gswin32.exe'
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
                   f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
             # os.system(cmd)
+            print(1)
+            # subprocess.call(cmd)
             subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             creationflags=subprocess.CREATE_NO_WINDOW,
                             startupinfo=startupinfo)
+            print(2)
         else:
             img = Image.open(eps_path)
             img.save(png_path)
@@ -931,7 +934,7 @@ menu.add_cascade(label="功能", menu=function_menuType)
 function_menuType.add_command(label="清屏", command=clear)
 # function_menuType.add_command(label="撤销", command=back)
 function_menuType.add_command(label="清除水印", command=remove_f)
-function_menuType.add_command(label="打开文件保存位置", command=open_file)
+function_menuType.add_command(label="打开文件下载位置", command=open_file)
 function_menuType.add_command(label="下载", command=save_1)
 
 
@@ -944,7 +947,7 @@ def save():
     # dill.dump_session('ms.pkl')
 
 
-function_menuType.add_command(label="保存", command=save)
+# function_menuType.add_command(label="保存", command=save)
 
 
 def load():
@@ -955,7 +958,7 @@ def load():
     # dill.load_session('ms.pkl')
 
 
-function_menuType.add_command(label="加载", command=load)
+# function_menuType.add_command(label="加载", command=load)
 function_menuType.add_command(label="删除背景", command=del_fg)
 
 # menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
