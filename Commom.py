@@ -22,7 +22,7 @@ win.state("zoomed")
 win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
 
 logging.basicConfig(
-    format='%(asctime)s -  %(levelname)s: %(message)s',
+    format='%(asctime)s.%(msecs)03d [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
     filename='logging.log',
 )
 
