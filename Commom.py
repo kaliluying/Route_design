@@ -2,6 +2,8 @@ import os
 import math
 import tkinter as tk
 import platform
+import logging
+import traceback
 from tkinter import Checkbutton
 from tkinter import messagebox
 from functools import partial
@@ -18,6 +20,22 @@ H = win.winfo_screenheight()
 win.geometry(f"{W}x{H}")
 win.state("zoomed")
 win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
+
+logging.basicConfig(
+    format='%(asctime)s -  %(levelname)s: %(message)s',
+    filename='logging.log',
+)
+
+
+# 设置异常处理函数
+def log_error(exctype, value, tb):
+    # 打印错误日志
+    error_msg = ''.join(traceback.format_exception(exctype, value, tb))
+    print(error_msg)
+    logging.error("预料之外的错误", error_msg)
+
+
+win.report_callback_exception = log_error
 
 # 当前系统
 sys_name = platform.system()

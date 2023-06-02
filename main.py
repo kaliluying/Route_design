@@ -1,3 +1,4 @@
+import logging
 import webbrowser
 import subprocess
 import tkinter.simpledialog
@@ -8,8 +9,6 @@ from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_star
 from Tools import *
 from Commom import *
 import time
-# import pickle
-import dill
 
 
 # 障碍号确认
@@ -200,6 +199,7 @@ def dle():
     except Exception as e:
         print("Error: " + str(e))
         messagebox.showerror("Error", "出错了")
+        logging.warning("赛事信息确认", e)
 
 
 # 修改赛事信息
@@ -252,6 +252,7 @@ def allow(info_var, pro_value):
         return True
     except Exception as e:
         print('赛事信息出错：', e)
+        logging.warning('赛事信息出错：', e)
         return False
 
 
@@ -359,6 +360,7 @@ def leftButtonMove(event):
                 choice_tup.extend(list(bbox))
             except TypeError as e:
                 print('多选框移动出错', e)
+                logging.warning('多选框移动出错', e)
     else:
         if get_frame_stare():
             canvas.delete('choice')
@@ -937,25 +939,24 @@ function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件下载位置", command=open_file)
 function_menuType.add_command(label="下载", command=save_1)
 
+# def save():
+#     with open('ms.pkl', 'wb') as f:
+#         for i in T.all_instances:
+#             print(i.__dict__)
+#             dill.dump(i.__dict__, f)
 
-def save():
-    with open('ms.pkl', 'wb') as f:
-        for i in T.all_instances:
-            print(i.__dict__)
-            dill.dump(i.__dict__, f)
-
-    # dill.dump_session('ms.pkl')
+# dill.dump_session('ms.pkl')
 
 
 # function_menuType.add_command(label="保存", command=save)
 
 
-def load():
-    with open('ms.pkl', 'rb') as f:
-        circle_data = dill.load(f)
-        circle = T(**circle_data)
-        circle.create()
-    # dill.load_session('ms.pkl')
+# def load():
+#     with open('ms.pkl', 'rb') as f:
+#         circle_data = dill.load(f)
+#         circle = T(**circle_data)
+#         circle.create()
+# dill.load_session('ms.pkl')
 
 
 # function_menuType.add_command(label="加载", command=load)

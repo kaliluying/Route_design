@@ -37,6 +37,7 @@ class T:
                 self.app.dtag('choice_start', 'choice_start')
         except Exception as e:
             print(e)
+            logging.warning(e)
         if what.get() == 0:
             try:
                 self.startx = event.x

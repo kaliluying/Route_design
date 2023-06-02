@@ -247,6 +247,7 @@ class Focus:
                     pass
             except Exception as e:
                 print(e)
+                logging.warning(e)
             obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get())
             # obj.img_path = merge(5, m1=20)
             obj.img = Image.open(obj.img_path)
@@ -268,6 +269,7 @@ class Focus:
                     return
             except Exception as e:
                 print('a障碍', e)
+                logging.warning('a障碍', e)
 
     def oxer_b(self, x1, x2, x3, ent_b, obj, obstacle, var_b):
         """
@@ -314,6 +316,7 @@ class Focus:
                     return
             except Exception as e:
                 print('b障碍', e)
+                logging.warning('b障碍', e)
 
     def oxer_c(self, x1, x2, x3, ent_c, obj, var_c):
         self.oxer(x3, ent_c, var_c)
@@ -376,3 +379,4 @@ class Focus:
                         return
         except Exception as e:
             print('abc障碍', e)
+            logging.warning('abc障碍', e)
