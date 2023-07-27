@@ -32,7 +32,7 @@ def log_error(exctype, value, tb):
     # 打印错误日志
     error_msg = ''.join(traceback.format_exception(exctype, value, tb))
     print(error_msg)
-    logging.error("预料之外的错误", error_msg)
+    logging.error("预料之外的错误: %s", error_msg, exc_info=True)
 
 
 win.report_callback_exception = log_error

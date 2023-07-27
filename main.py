@@ -1,4 +1,4 @@
-import logging
+# import logging
 import webbrowser
 import subprocess
 import tkinter.simpledialog
@@ -7,7 +7,7 @@ from tkinter import filedialog
 import Commom
 from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_stare, T
 from Tools import *
-from Commom import *
+# from Commom import *
 import time
 
 
@@ -261,40 +261,40 @@ def found():
     global WIDTH, HEIGHT, h1, h2, watermark, fg_img, fg_path
     w = var_l_w.get()
     h = var_l_h.get()
-    if w.isdigit() and h.isdigit():
-        WIDTH = int(w) * 10
-        HEIGHT = int(h) * 10
-        canvas.config(width=WIDTH + 30, height=HEIGHT + 70)
-        canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT + 50)
-        # canvas.place(x=175, y=130)
-        but1.place(x=WIDTH + 260, y=700)
-        but2.place(x=WIDTH + 360, y=700)
-        frame_info.place(x=WIDTH + 200, y=150)
-        canvas.delete(watermark)
-        wid = WIDTH / 10
-        hei = HEIGHT / 10
-        canvas.itemconfig('长', text=f"长：{wid}m")
-        canvas.itemconfig('宽', text=f"宽：{hei}m")
-        canvas.coords('长', WIDTH - 40, 60)
-        canvas.coords('宽', WIDTH - 40, 80)
-        canvas.coords('实时路线', WIDTH - 40, 30)
-        canvas.delete('bg')
-        img = Image.open(fg_path)
-        img = img.resize((WIDTH, HEIGHT))
-        fg_img = ImageTk.PhotoImage(img)
-        canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
-        if state_f:
-            font = 0.16 if sys_name == 'Darwin' else 0.12
-            watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
-                                           font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
-                                           tags=("watermark", '不框选'))
-            canvas.lower("watermark")
-    else:
-        messagebox.showerror('错误', '请输入正整数')
-        if w.isdigit():
-            var_l_h_inp.delete(0, 'end')
-        if h.isdigit():
-            var_l_w_inp.delete(0, 'end')
+    # if w.isdigit() and h.isdigit():
+    WIDTH = int(float(w) * 10)
+    HEIGHT = int(float(h) * 10)
+    canvas.config(width=WIDTH + 30, height=HEIGHT + 70)
+    canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT + 50)
+    # canvas.place(x=175, y=130)
+    but1.place(x=WIDTH + 260, y=700)
+    but2.place(x=WIDTH + 360, y=700)
+    frame_info.place(x=WIDTH + 200, y=150)
+    canvas.delete(watermark)
+    wid = WIDTH / 10
+    hei = HEIGHT / 10
+    canvas.itemconfig('长', text=f"长：{wid}m")
+    canvas.itemconfig('宽', text=f"宽：{hei}m")
+    canvas.coords('长', WIDTH - 40, 60)
+    canvas.coords('宽', WIDTH - 40, 80)
+    canvas.coords('实时路线', WIDTH - 40, 30)
+    canvas.delete('bg')
+    img = Image.open(fg_path)
+    img = img.resize((WIDTH, HEIGHT))
+    fg_img = ImageTk.PhotoImage(img)
+    canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
+    if state_f:
+        font = 0.16 if sys_name == 'Darwin' else 0.12
+        watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+                                       font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
+                                       tags=("watermark", '不框选'))
+        canvas.lower("watermark")
+    # else:
+    #     messagebox.showerror('错误', '请输入正整数')
+    #     if w.isdigit():
+    #         var_l_h_inp.delete(0, 'end')
+    #     if h.isdigit():
+    #         var_l_w_inp.delete(0, 'end')
 
 
 # 鼠标左键按下
