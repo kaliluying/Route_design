@@ -111,6 +111,8 @@ class CreateParameter(T):
 class CreateImg(T):
     def __init__(self, app, index, img_path, obstacle=None):
         super(CreateImg, self).__init__(app, index)
+        self.var = None
+        self.img = None
         self.frame_button = None
         self.frame_input = None
         self.img_path = img_path
@@ -316,7 +318,8 @@ class CreateImg(T):
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(self.tag, image=self.temp_path)
 
-    def create_frame(self):
+    @staticmethod
+    def create_frame():
         # 旋转、备注编辑主容器
         frame_edit = tk.Frame(frame_job, name='旋转、备注')
         frame_edit.pack()
@@ -424,8 +427,8 @@ class CreateImg(T):
     def rotate(self, id, angle):
         """
         旋转
+        :param angle:
         :param id:
-        :param state:
         :return:
         """
         self.img = self.rotate_bound(angle)

@@ -52,7 +52,7 @@ Y = tk.IntVar(value=0)
 what = tk.IntVar(value=0)
 no_what = tk.IntVar(value=0)
 
-canvas = tk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 70, highlightthickness=0)
+canvas = tk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 80, highlightthickness=0)
 canvas.place(x=175, y=100)
 
 # img = Image.open('./img/bg1.png')

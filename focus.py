@@ -61,7 +61,6 @@ class Focus:
             a_b.pack()
             tk.Button(self.frame_button, text="确认").pack()
 
-
         elif obstacle == "tirail":
             tk.Label(self.frame_label, text='A-->B(m):').pack()
             var_a_b = tk.StringVar(value=info[0] if info else '')
@@ -84,6 +83,7 @@ class Focus:
     def live(self, info, obj):
         """
         利物浦聚焦输入框
+        :param obj:
         :param info:
         :return:
         """
@@ -102,7 +102,8 @@ class Focus:
         Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
                     command=partial(self.live_two, obj, check)).pack()
 
-    def live_two(self, obj, check):
+    @staticmethod
+    def live_two(obj, check):
         check = check.get()
         set_live(check)
         if check == '1':
@@ -208,11 +209,12 @@ class Focus:
         # for i in self.frame_select.winfo_children():
         #     i.destroy()
 
-    def oxer(self, x1, ent, var):
+    @staticmethod
+    def oxer(x1, ent, var):
         """
+        :param var:
         :param x1:
         :param ent:
-        :param obj:
         :return:
         """
         if x1.get() == '1':
@@ -226,6 +228,7 @@ class Focus:
     def oxer_a(self, x1, x2, x3, ent_a, obj, obstacle, var_a):
         """
         选中A障碍是否为双横木
+        :param var_a:
         :param x1: a障碍是否为双横木
         :param x2: b障碍是否为双横木
         :param x3: c障碍是否为双横木
@@ -274,6 +277,7 @@ class Focus:
     def oxer_b(self, x1, x2, x3, ent_b, obj, obstacle, var_b):
         """
         选中B障碍是否为双横木
+        :param var_b:
         :param x1:
         :param x2:
         :param x3:
@@ -322,7 +326,8 @@ class Focus:
         self.oxer(x3, ent_c, var_c)
         self.judge_abc(x1, x2, x3, obj)
 
-    def com(self, obj):
+    @staticmethod
+    def com(obj):
         """
         当两个都是双横木
         :param obj:
@@ -333,7 +338,8 @@ class Focus:
         obj.temp_path = ImageTk.PhotoImage(obj.img)
         obj.app.itemconfig(obj.tag, image=obj.temp_path)
 
-    def combination_abc(self, obj, x1, x2, x3):
+    @staticmethod
+    def combination_abc(obj, x1, x2, x3):
         obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get(), state_c=x3.get(), b_c=30)
         obj.img = Image.open(obj.img_path)
         obj.temp_path = ImageTk.PhotoImage(obj.img)

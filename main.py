@@ -321,6 +321,7 @@ def create_line(x1, y1, x2, y2):
 # 鼠标左键滚动事件
 def leftButtonMove(event):
     global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare
+    shu(event)
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
                                       fill='#000000', width=font_size, tags=("line", '不框选'), smooth=True)
@@ -610,12 +611,10 @@ def sava(checkvar):
             cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
                   f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
             # os.system(cmd)
-            print(1)
             # subprocess.call(cmd)
             subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             creationflags=subprocess.CREATE_NO_WINDOW,
                             startupinfo=startupinfo)
-            print(2)
         else:
             img = Image.open(eps_path)
             img.save(png_path)
@@ -874,6 +873,25 @@ canvas.create_line(20, 70, 70, 70, tags=('辅助信息', '不框选'))
 # 右上显示，路线长度
 canvas.create_text(WIDTH - 40, 30, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
 
+
+# 鼠标实时坐标
+def shu(event):
+    x = event.x / 10 - 1.5
+    y = event.y / 10 - 5
+    canvas.itemconfig('鼠标x', text=f'x:{x:.2f}')
+    canvas.itemconfig('鼠标y', text=f'y:{y:.2f}')
+
+
+# 右下角显示鼠标实时坐标
+canvas.create_text(WIDTH - 10, HEIGHT + 60, text='x:', tags=('辅助信息', '不框选', '鼠标x'))
+canvas.create_text(WIDTH - 10, HEIGHT + 70, text='y:', tags=('辅助信息', '不框选', '鼠标y'))
+
+canvas.bind('<Motion>', shu)
+
+# 左下显示当前障碍坐标
+canvas.create_text(20, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
+canvas.create_text(20, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
+
 # 水印
 font = 0.16 if sys_name == 'Darwin' else 0.12
 watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
@@ -890,7 +908,8 @@ canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称', font=("微软雅�
 
 # 信息
 info = [
-    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度', '允许时间', '限制时间',
+    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度',
+    '允许时间', '限制时间',
     '障碍数量', '跳跃数量', '附加赛', '路线设计师',
 ]
 
@@ -1042,6 +1061,6 @@ def delete(event):
 
 win.bind('<Button-1>', unfocus_click)
 win.bind('<BackSpace>', delete)
-win.protocol("WM_DELETE_WINDOW", save)
+# win.protocol("WM_DELETE_WINDOW", save)
 
 win.mainloop()
