@@ -9,6 +9,7 @@ from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_star
 from Tools import *
 # from Commom import *
 import time
+import gsapi
 
 
 # 障碍号确认
@@ -589,8 +590,24 @@ def save_0():
     sava(checkvar)
 
 
-# 保存
+def end_gpdl(instance):
+    """
+    结束 Ghostscript DLL 实例的函数。
+    参数：
+        instance：要结束的 Ghostscript DLL 实例。
+    返回：
+        没有任何
+    """
+    gsapi.gsapi_exit(instance)
+    gsapi.gsapi_delete_instance(instance)
+
+
 def sava(checkvar):
+    """
+    根据用户输入保存文件的函数。它提示用户选择保存文件的位置，将画布转换为 EPS 文件，
+    然后使用 Ghostscript 将 EPS 文件转换为 JPG 文件。返回 Ghostscript 进程的退出代码。
+    """
+
     current_time = time.strftime("%Y%m%d-%H%M%S")
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
@@ -600,27 +617,33 @@ def sava(checkvar):
     if path:
         path = path.split('.')[0]
         eps_path = path + '.eps'
-        png_path = path + '.png'
+        jpg_path = path + '.jpg'
         canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
-        # Win
-        if sys_name == 'Windows':
-            EpsImagePlugin.gs_windows_binary = os.getcwd() + r'\gs10.01.1-32bit\bin\gswin32.exe'
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
-                  f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
-            # os.system(cmd)
-            # subprocess.call(cmd)
-            subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            creationflags=subprocess.CREATE_NO_WINDOW,
-                            startupinfo=startupinfo)
-        else:
-            img = Image.open(eps_path)
-            img.save(png_path)
+        size = 1024
+        params = ['gs', '-dNOPAUSE', '-dBATCH', '-sDEVICE=jpeg', '-r72', '-o', jpg_path]
 
+        instance = gsapi.gsapi_new_instance(0)
+
+        gsapi.gsapi_set_arg_encoding(instance, gsapi.GS_ARG_ENCODING_UTF8)
+        gsapi.gsapi_init_with_args(instance, params)
+
+        gsapi.gsapi_run_string_begin(instance, 0)
+
+        with open(eps_path, "rb") as f:
+            while True:
+                data = f.read(size)
+                if not data:
+                    break
+                gsapi.gsapi_run_string_continue(instance, data, 0)
+
+        exitcode = gsapi.gsapi_run_string_end(instance, 0)
+
+        end_gpdl(instance)
         os.remove(eps_path)
-        messagebox.showinfo("成功", f"保存成功,\n路径:{png_path}")
+        messagebox.showinfo("成功", f"保存成功,\n路径:{jpg_path}")
+
+        return exitcode
 
 
 # 打开文件保存路径
