@@ -77,3 +77,4 @@ Traceback (most recent call last):
     fp = io.BytesIO(fp.read())
 AttributeError: 'str' object has no attribute 'read'
 2024-03-14 18:04:56,502.502 [WARNING] [scale.py:40] 'list' object has no attribute 'x'
+2024-04-18 15:52:58,063.063 [WARNING] [scale.py:40] 'list' object has no attribute 'x'

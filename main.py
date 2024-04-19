@@ -3,7 +3,6 @@ import webbrowser
 import subprocess
 import tkinter.simpledialog
 from tkinter import filedialog
-# import numpy as np
 import Commom
 from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_stare, T
 from Tools import *
