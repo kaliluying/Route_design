@@ -17,8 +17,9 @@ win.title("路线设计")
 # 程序最大化
 W = win.winfo_screenwidth()
 H = win.winfo_screenheight()
-win.geometry(f"{W}x{H}")
-win.state("zoomed")
+print(W, H)
+win.geometry(f"{H}x{H-200}")
+# win.state("zoomed")
 win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
 
 logging.basicConfig(

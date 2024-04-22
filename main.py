@@ -598,37 +598,62 @@ def end_gpdl(instance):
         没有任何
     """
     gsapi.gsapi_exit(instance)
-    gsapi.gsapi_delete_instance(instance)
+    try:
+        gsapi.gsapi_delete_instance(instance)
+    except gsapi.GSError as e:
+        print(f"Error deleting Ghostscript instance: {e}")
 
 
 def sava(checkvar):
     """
     根据用户输入保存文件的函数。它提示用户选择保存文件的位置，将画布转换为 EPS 文件，
     然后使用 Ghostscript 将 EPS 文件转换为 JPG 文件。返回 Ghostscript 进程的退出代码。
+
+    参数:
+    - checkvar: 未使用，保留参数
+
+    返回值:
+    - exitcode: Ghostscript 进程的退出代码，用于指示转换是否成功
     """
 
-    current_time = time.strftime("%Y%m%d-%H%M%S")
+    # 生成当前时间戳，用于文件命名
+    current_time = time.strftime("%Y-%m%d-%H-%M-%S")
+    # 默认文件名，或根据已有临时文本文件名生成
     txt = temp_txt if temp_txt else '路线设计_' + current_time
+    # 创建保存目录，如果不存在
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
+    # 提示用户选择保存路径，并生成文件名
     path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("PNG", ".png")],
                                         initialdir=os.getcwd() + '/ms_download', initialfile=txt)
     if path:
-        path = path.split('.')[0]
-        eps_path = path + '.eps'
-        jpg_path = path + '.jpg'
+        path = path.split('.')[0]  # 去除文件扩展名
+        eps_path = path + '.eps'  # 生成 EPS 文件路径
+        jpg_path = path + '.jpg'  # 生成 JPG 文件路径
+        # 将画布转换为 EPS 文件
         canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
+        # 设置 Ghostscript 转换参数
         size = 1024
-        params = ['gs', '-dNOPAUSE', '-dBATCH', '-sDEVICE=jpeg', '-r72', '-o', jpg_path]
+        params = ['gs', '-dNOPAUSE', '-dBATCH',
+                  '-dFIXEDMEDIA',
+                  '-dTextAlphaBits=4',
+                  '-sPAPERSIZE=letter',
+                  '-dDEVICEWIDTHPOINTS=700', '-dDEVICEHEIGHTPOINTS=700',
+                  '-r300', '-sDEVICE=jpeg', '-o', jpg_path]
 
+        # 创建 Ghostscript 实例
         instance = gsapi.gsapi_new_instance(0)
 
+        # 设置 Ghostscript 参数编码
         gsapi.gsapi_set_arg_encoding(instance, gsapi.GS_ARG_ENCODING_UTF8)
+        # 初始化 Ghostscript 实例
         gsapi.gsapi_init_with_args(instance, params)
 
+        # 开始转换 EPS 文件至 JPG
         gsapi.gsapi_run_string_begin(instance, 0)
 
+        # 读取 EPS 文件内容，并分块发送至 Ghostscript 进行转换
         with open(eps_path, "rb") as f:
             while True:
                 data = f.read(size)
@@ -636,10 +661,13 @@ def sava(checkvar):
                     break
                 gsapi.gsapi_run_string_continue(instance, data, 0)
 
+        # 结束转换，获取退出代码
         exitcode = gsapi.gsapi_run_string_end(instance, 0)
 
+        # 清理资源，删除临时 EPS 文件
         end_gpdl(instance)
         os.remove(eps_path)
+        # 显示保存成功信息
         messagebox.showinfo("成功", f"保存成功,\n路径:{jpg_path}")
 
         return exitcode
@@ -651,7 +679,7 @@ def open_file():
         os.mkdir('./ms_download')
     path = os.getcwd() + f'/ms_download'
     if sys_name == 'Windows':
-        subprocess.Popen(["explorer", path])
+        subprocess.call(["explorer", path])
     else:
         subprocess.call(["open", path])
 
