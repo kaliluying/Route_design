@@ -12,6 +12,11 @@ import time
 import gsapi
 
 
+
+
+# 这两行代码在自己原基础的代码上加入即可，放在代码的最开端部分，也就是在窗口创建代码之前
+
+
 # 障碍号确认
 def insert():
     global index_txt
@@ -612,7 +617,7 @@ def sava(checkvar):
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
-    path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("PNG", ".png")],
+    path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("JPEG", ".jpg")],
                                         initialdir=os.getcwd() + '/ms_download', initialfile=txt)
     if path:
         path = path.split('.')[0]
@@ -621,7 +626,9 @@ def sava(checkvar):
         canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
         size = 1024
-        params = ['gs', '-dNOPAUSE', '-dBATCH', '-sDEVICE=jpeg', '-r72', '-o', jpg_path]
+        params = ['gs', '-dNOPAUSE', '-dBATCH', '-sDEVICE=jpeg', '-o', jpg_path]
+        # cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
+        #       f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
 
         instance = gsapi.gsapi_new_instance(0)
 
@@ -640,7 +647,7 @@ def sava(checkvar):
         exitcode = gsapi.gsapi_run_string_end(instance, 0)
 
         end_gpdl(instance)
-        os.remove(eps_path)
+        # os.remove(eps_path)
         messagebox.showinfo("成功", f"保存成功,\n路径:{jpg_path}")
 
         return exitcode
