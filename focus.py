@@ -59,7 +59,7 @@ class Focus:
             var_a_b = ttk.StringVar(value=info[0] if info else '')
             a_b = Entry(self.frame_input, textvariable=var_a_b, width=5)
             a_b.pack()
-            ttk.Button(self.frame_button, text="确认").pack()
+            ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
 
         elif obstacle == "tirail":
             ttk.Label(self.frame_label, text='A-->B(m):').pack()
@@ -70,7 +70,7 @@ class Focus:
             var_b_c = ttk.StringVar(value=info[1] if info else '')
             b_c = Entry(self.frame_input, textvariable=var_b_c, width=5)
             b_c.pack()
-            ttk.Button(self.frame_button, text="确认").pack()
+            ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
 
         elif obstacle == "combination_ab" or obstacle == "combination_abc":
             self.combination(obj, com_info, obstacle, state)
@@ -98,7 +98,7 @@ class Focus:
         water_height_ent.pack()
         water_height_ent.bind("<Command-KeyPress-z>", water_width_ent.undo)
 
-        ttk.Button(self.frame_button, text="确认").pack()
+        ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
         Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
                     command=partial(self.live_two, obj, check)).pack()
 
@@ -131,7 +131,7 @@ class Focus:
         water_height_var = ttk.StringVar(value=info[0] if info else '4')
         water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5)
         water_height_ent.pack()
-        ttk.Button(self.frame_button, text="确认").pack()
+        ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
 
     def combination(self, obj, info, obstacle, state):
         """
@@ -192,7 +192,7 @@ class Focus:
             Checkbutton(self.frame_label, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
                         command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).pack()
 
-        ttk.Button(self.frame_button, text="确认").pack()
+        ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
         return checkvar_a, checkvar_b
 
     def remove(self):

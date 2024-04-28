@@ -8,21 +8,24 @@ from tkinter import Checkbutton
 from tkinter import messagebox
 from functools import partial
 from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
+
 from Middleware import *
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
 # 创建窗口
 # win = ttk.Tk()
-win = ttk.Window()
-win.title("路线设计")
+win = ttk.Window(
+    title="路线设计",
+    iconphoto='img/ic.png'
+)
 
 # 程序最大化
 W = win.winfo_screenwidth()
 H = win.winfo_screenheight()
 win.geometry(f"{W}x{H}")
 win.state("zoomed")
-win.iconphoto(False, ttk.PhotoImage(file='img/ic.png'))
+# win.iconphoto(False, ttk.PhotoImage(file='img/ic.png'))
 
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
@@ -207,15 +210,15 @@ frame_function = ttk.Frame(win, name='左侧功能栏', )
 frame_function.place(x=5, y=150)
 
 # 工作模块容器
-frame_job = ttk.Frame(frame_function, relief='ridge', name='工作模块')
-# 辅助模块容器
-frame_aux = ttk.Frame(frame_function, relief='ridge', name='辅助模块')
-# 测量模块容器
-frame_mea = ttk.Frame(frame_function, relief='ridge', name='测量模块')
+frame_job = ttk.Frame(frame_function, name='工作模块')
+# # 辅助模块容器
+# frame_aux = ttk.Frame(frame_function, name='辅助模块')
+# # 测量模块容器
+# frame_mea = ttk.Frame(frame_function, name='测量模块')
 
 frame_job.pack()
 
-frame_aux_mea = ttk.Frame(win, relief='ridge', name='辅助模块')
+frame_aux_mea = ttk.Frame(win, name='辅助模块')
 frame_aux_mea.place(x=5, y=530)
 # 辅助模块容器
 frame_aux = ttk.Frame(frame_aux_mea, name='辅助模块')
@@ -299,9 +302,9 @@ frame_mea_com_lef.pack(side='left')
 frame_mea_com_rig.pack(side='right')
 
 # 障碍按键容器
-frame_create = ttk.Frame(win, name='按键', relief='ridge')
+frame_create = ttk.Frame(win, name='按键')
 frame_create.place(x=400, y=5)
-ttk.Label(frame_create, text='生产模块').pack()
+# ttk.Label(frame_create, text='生产模块').pack()
 frame_temp_1 = ttk.Frame(frame_create)
 frame_temp_2 = ttk.Frame(frame_create)
 frame_temp_3 = ttk.Frame(frame_create)
