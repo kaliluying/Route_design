@@ -1,6 +1,6 @@
 import os
 import math
-import tkinter as tk
+# import tkinter as ttk
 import platform
 import logging
 import traceback
@@ -9,9 +9,12 @@ from tkinter import messagebox
 from functools import partial
 from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
 from Middleware import *
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
 # 创建窗口
-win = tk.Tk()
+# win = ttk.Tk()
+win = ttk.Window()
 win.title("路线设计")
 
 # 程序最大化
@@ -19,7 +22,7 @@ W = win.winfo_screenwidth()
 H = win.winfo_screenheight()
 win.geometry(f"{W}x{H}")
 win.state("zoomed")
-win.iconphoto(False, tk.PhotoImage(file='img/ic.png'))
+win.iconphoto(False, ttk.PhotoImage(file='img/ic.png'))
 
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
@@ -47,12 +50,12 @@ if sys_name == 'Darwin':
     FONT = ("微软雅黑", 15)
 elif sys_name == 'Windows':
     FONT = ("微软雅黑", 12)
-X = tk.IntVar(value=0)
-Y = tk.IntVar(value=0)
-what = tk.IntVar(value=0)
-no_what = tk.IntVar(value=0)
+X = ttk.IntVar(value=0)
+Y = ttk.IntVar(value=0)
+what = ttk.IntVar(value=0)
+no_what = ttk.IntVar(value=0)
 
-canvas = tk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 80, highlightthickness=0)
+canvas = ttk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 80, highlightthickness=0)
 canvas.place(x=175, y=100)
 
 # img = Image.open('./img/bg1.png')
@@ -65,17 +68,17 @@ canvas.place(x=175, y=100)
 #     canvas.delete('bg')
 #
 #
-# tk.Button(win, text='del', command=d).place(x=0, y=0)
+# ttk.Button(win, text='del', command=d).place(x=0, y=0)
 
 fg_img = None
 fg_path = None
 
 # 初始点
-start_x = tk.IntVar(value=0)
-start_y = tk.IntVar(value=0)
+start_x = ttk.IntVar(value=0)
+start_y = ttk.IntVar(value=0)
 # 终止点
-end_x = tk.IntVar(value=0)
-end_y = tk.IntVar(value=0)
+end_x = ttk.IntVar(value=0)
+end_y = ttk.IntVar(value=0)
 # 路线测量每一次点击的位置
 route_click = []
 # 点击次数
@@ -99,8 +102,8 @@ aux_stare = True
 stack = []
 
 # 撤销移动的还原点
-move_x = tk.IntVar(value=0)
-move_y = tk.IntVar(value=0)
+move_x = ttk.IntVar(value=0)
+move_y = ttk.IntVar(value=0)
 
 # 多选框框中的状态
 choice_start = False
@@ -200,81 +203,81 @@ icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
 circular_image = "img/circular.png"
 
 # 左侧功能栏
-frame_function = tk.Frame(win, name='左侧功能栏')
+frame_function = ttk.Frame(win, name='左侧功能栏', )
 frame_function.place(x=5, y=150)
 
 # 工作模块容器
-frame_job = tk.Frame(frame_function, relief='ridge', bd=2, name='工作模块')
+frame_job = ttk.Frame(frame_function, relief='ridge', name='工作模块')
 # 辅助模块容器
-frame_aux = tk.Frame(frame_function, relief='ridge', bd=2, name='辅助模块')
+frame_aux = ttk.Frame(frame_function, relief='ridge', name='辅助模块')
 # 测量模块容器
-frame_mea = tk.Frame(frame_function, relief='ridge', bd=2, name='测量模块')
+frame_mea = ttk.Frame(frame_function, relief='ridge', name='测量模块')
 
 frame_job.pack()
 
-frame_aux_mea = tk.Frame(win, relief='ridge', bd=2, name='辅助模块')
+frame_aux_mea = ttk.Frame(win, relief='ridge', name='辅助模块')
 frame_aux_mea.place(x=5, y=530)
 # 辅助模块容器
-frame_aux = tk.Frame(frame_aux_mea, name='辅助模块')
+frame_aux = ttk.Frame(frame_aux_mea, name='辅助模块')
 # 测量模块容器
-frame_mea = tk.Frame(frame_aux_mea, name='测量模块')
+frame_mea = ttk.Frame(frame_aux_mea, name='测量模块')
 frame_aux.pack()
 frame_mea.pack()
 
 # 功能容器
-frame_command = tk.Frame(frame_job, name='功能容器')
+frame_command = ttk.Frame(frame_job, name='功能容器')
 frame_command.pack()
-frame_command_left = tk.Frame(frame_command)
-frame_command_right = tk.Frame(frame_command)
-tk.Label(frame_command, text='操作模块').pack()
+frame_command_left = ttk.Frame(frame_command)
+frame_command_right = ttk.Frame(frame_command)
+ttk.Label(frame_command, text='操作模块').pack()
 frame_command_left.pack(side="left")
 frame_command_right.pack(side="right")
 
 # 旋转、备注编辑主容器
-frame_edit = tk.Frame(frame_job, name='旋转、备注')
+frame_edit = ttk.Frame(frame_job, name='旋转、备注', bootstyle="info")
 frame_edit.pack()
 
 # 旋转容器
-frame_x = tk.Frame(frame_edit, name='旋转')
+frame_x = ttk.Frame(frame_edit, name='旋转')
 frame_x.pack()
-frame_focus_x_ladel = tk.Frame(frame_x)
-frame_focus_x_ent = tk.Frame(frame_x)
-frame_focus_x_but = tk.Frame(frame_x)
+frame_focus_x_ladel = ttk.Frame(frame_x)
+frame_focus_x_ent = ttk.Frame(frame_x)
+frame_focus_x_but = ttk.Frame(frame_x)
 frame_focus_x_but.pack(side='bottom')
 frame_focus_x_ladel.pack(side='left')
 frame_focus_x_ent.pack(side='right')
 
 # 备注容器
-frame_z = tk.Frame(frame_edit, name='备注')
+frame_z = ttk.Frame(frame_edit, name='备注')
 frame_z.pack()
-frame_focus_z_ladel = tk.Frame(frame_z)
-frame_focus_z_ent = tk.Frame(frame_z)
-frame_focus_z_but = tk.Frame(frame_z)
+frame_focus_z_ladel = ttk.Frame(frame_z)
+frame_focus_z_ent = ttk.Frame(frame_z)
+frame_focus_z_but = ttk.Frame(frame_z)
 frame_focus_z_but.pack(side='bottom')
 frame_focus_z_ladel.pack(side='left')
 frame_focus_z_ent.pack(side='right')
 
 # 辅助功能容器
-frame_aux_com = tk.Frame(frame_aux, name='辅助功能容器')
-# frame_aux_com = tk.Frame(frame_aux, name='辅助功能容器')
+frame_aux_com = ttk.Frame(frame_aux, name='辅助功能容器')
+# frame_aux_com = ttk.Frame(frame_aux, name='辅助功能容器')
 frame_aux_com.pack()
-tk.Label(frame_aux_com, text='辅助模块').pack()
-frame_aux_com_lef = tk.Frame(frame_aux_com)
-frame_aux_com_rig = tk.Frame(frame_aux_com)
+ttk.Label(frame_aux_com, text='辅助模块').pack()
+frame_aux_com_lef = ttk.Frame(frame_aux_com)
+frame_aux_com_rig = ttk.Frame(frame_aux_com)
 frame_aux_com_lef.pack(side='left')
 frame_aux_com_rig.pack(side='right')
 
 # 辅助信息容器
-frame_aux_info = tk.Frame(frame_aux, name='辅助信息容器')
+frame_aux_info = ttk.Frame(frame_aux, name='辅助信息容器')
 frame_aux_info.pack()
 
-frame_aux_info_1 = tk.Frame(frame_aux_info)
-frame_aux_info_2 = tk.Frame(frame_aux_info)
-frame_aux_tit = tk.Frame(frame_aux_info_1)
-frame_aux_inp = tk.Frame(frame_aux_info_1)
-frame_aux_tit2 = tk.Frame(frame_aux_info)
-frame_aux_inp2 = tk.Frame(frame_aux_info)
-frame_aux_but = tk.Frame(frame_aux_info)
+frame_aux_info_1 = ttk.Frame(frame_aux_info)
+frame_aux_info_2 = ttk.Frame(frame_aux_info)
+frame_aux_tit = ttk.Frame(frame_aux_info_1)
+frame_aux_inp = ttk.Frame(frame_aux_info_1)
+frame_aux_tit2 = ttk.Frame(frame_aux_info)
+frame_aux_inp2 = ttk.Frame(frame_aux_info)
+frame_aux_but = ttk.Frame(frame_aux_info)
 
 frame_aux_info_1.pack()
 frame_aux_info_2.pack()
@@ -287,27 +290,27 @@ frame_aux_inp2.pack(side='left')
 frame_aux_but.pack(side='bottom')
 
 # 测量功能容器
-frame_mea_com = tk.Frame(frame_mea, name='测量功能容器')
-# frame_mea_com = tk.Frame(frame_mea, name='测量功能容器')
+frame_mea_com = ttk.Frame(frame_mea, name='测量功能容器')
+# frame_mea_com = ttk.Frame(frame_mea, name='测量功能容器')
 frame_mea_com.pack()
-frame_mea_com_lef = tk.Frame(frame_mea_com)
-frame_mea_com_rig = tk.Frame(frame_mea_com)
+frame_mea_com_lef = ttk.Frame(frame_mea_com)
+frame_mea_com_rig = ttk.Frame(frame_mea_com)
 frame_mea_com_lef.pack(side='left')
 frame_mea_com_rig.pack(side='right')
 
 # 障碍按键容器
-frame_create = tk.Frame(win, name='按键', relief='ridge', bd=2)
+frame_create = ttk.Frame(win, name='按键', relief='ridge')
 frame_create.place(x=400, y=5)
-tk.Label(frame_create, text='生产模块').pack()
-frame_temp_1 = tk.Frame(frame_create)
-frame_temp_2 = tk.Frame(frame_create)
-frame_temp_3 = tk.Frame(frame_create)
-frame_temp_4 = tk.Frame(frame_create)
-frame_temp_5 = tk.Frame(frame_create)
-frame_temp_6 = tk.Frame(frame_create)
-frame_temp_7 = tk.Frame(frame_create)
-frame_temp_8 = tk.Frame(frame_create)
-frame_temp_9 = tk.Frame(frame_create)
+ttk.Label(frame_create, text='生产模块').pack()
+frame_temp_1 = ttk.Frame(frame_create)
+frame_temp_2 = ttk.Frame(frame_create)
+frame_temp_3 = ttk.Frame(frame_create)
+frame_temp_4 = ttk.Frame(frame_create)
+frame_temp_5 = ttk.Frame(frame_create)
+frame_temp_6 = ttk.Frame(frame_create)
+frame_temp_7 = ttk.Frame(frame_create)
+frame_temp_8 = ttk.Frame(frame_create)
+frame_temp_9 = ttk.Frame(frame_create)
 
 frame_temp_1.pack(side="left")
 frame_temp_2.pack(side="left")

@@ -321,25 +321,25 @@ class CreateImg(T):
     @staticmethod
     def create_frame():
         # 旋转、备注编辑主容器
-        frame_edit = tk.Frame(frame_job, name='旋转、备注')
+        frame_edit = ttk.Frame(frame_job, name='旋转、备注')
         frame_edit.pack()
 
         # 旋转容器
-        frame_x = tk.Frame(frame_edit, name='旋转')
+        frame_x = ttk.Frame(frame_edit, name='旋转')
         frame_x.pack()
-        frame_focus_x_ladel = tk.Frame(frame_x)
-        frame_focus_x_ent = tk.Frame(frame_x)
-        frame_focus_x_but = tk.Frame(frame_x)
+        frame_focus_x_ladel = ttk.Frame(frame_x)
+        frame_focus_x_ent = ttk.Frame(frame_x)
+        frame_focus_x_but = ttk.Frame(frame_x)
         frame_focus_x_but.pack(side='bottom')
         frame_focus_x_ladel.pack(side='left')
         frame_focus_x_ent.pack(side='right')
 
         # 备注容器
-        frame_z = tk.Frame(frame_edit, name='备注')
+        frame_z = ttk.Frame(frame_edit, name='备注')
         frame_z.pack()
-        frame_focus_z_ladel = tk.Frame(frame_z)
-        frame_focus_z_ent = tk.Frame(frame_z)
-        frame_focus_z_but = tk.Frame(frame_z)
+        frame_focus_z_ladel = ttk.Frame(frame_z)
+        frame_focus_z_ent = ttk.Frame(frame_z)
+        frame_focus_z_but = ttk.Frame(frame_z)
         frame_focus_z_but.pack(side='bottom')
         frame_focus_z_ladel.pack(side='left')
         frame_focus_z_ent.pack(side='right')
@@ -352,18 +352,18 @@ class CreateImg(T):
         self.create_frame()
         remove_from_edit()
 
-        tk.Label(frame_focus_x_ladel, text="旋转： ", font=("微软雅黑", 15)).pack()
-        self.var = tk.StringVar()
+        ttk.Label(frame_focus_x_ladel, text="旋转： ", font=("微软雅黑", 15)).pack()
+        self.var = ttk.StringVar()
         self.var.set(str(int(self.angle)))
         Entry(frame_focus_x_ent, textvariable=self.var, width=5, undo=True).pack()
 
-        tk.Button(frame_focus_x_but, text="确认", command=partial(self.to_rotate, self.tag, self.var)).pack()
-        tk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 15)).pack()
-        var_name = tk.StringVar(value=self.name if self.name else self.tag)
+        ttk.Button(frame_focus_x_but, text="确认", command=partial(self.to_rotate, self.tag, self.var)).pack()
+        ttk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 15)).pack()
+        var_name = ttk.StringVar(value=self.name if self.name else self.tag)
         Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
-        tk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
+        ttk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name)).pack()
         w = 5 if sys_name == 'Darwin' else 10
-        tk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w, height=1).pack()
+        ttk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w).pack()
 
     def bar_aux(self):
         # if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:

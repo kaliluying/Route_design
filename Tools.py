@@ -2,9 +2,9 @@ from PIL import Image, ImageOps
 from Commom import *
 
 
-class Entry(tk.Entry):
+class Entry(ttk.Entry):
     def __init__(self, master=None, undo=True, cnf={}, **kw):
-        tk.Entry.__init__(self, master, cnf, **kw)
+        ttk.Entry.__init__(self, master, cnf, **kw)
         self.con = None
         self.kw = kw
         self.undo_stack = []
@@ -15,7 +15,7 @@ class Entry(tk.Entry):
         self.bind("<Control-KeyPress-z>", self.undo if self.undo_ else '')
 
     def config(self, cnf=None, **kw):
-        tk.Entry.configure(self, cnf, **kw)
+        ttk.Entry.configure(self, cnf, **kw)
         self.con = kw
 
     def getname(self):
@@ -44,7 +44,7 @@ class Entry(tk.Entry):
     def undo(self, event):
         if self.undo_stack:
             self.current_value = self.undo_stack.pop()
-            self.delete(0, tk.END)
+            self.delete(0, ttk.END)
             self.insert(0, self.current_value)
 
 

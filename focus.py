@@ -31,15 +31,15 @@ class Focus:
         初始化生成frame容器
         :return:
         """
-        self.frame = tk.Frame(self.win, name='障碍编辑容器')
+        self.frame = ttk.Frame(self.win, name='障碍编辑容器')
         self.frame.pack()
-        self.frame_button = tk.Frame(self.frame)
+        self.frame_button = ttk.Frame(self.frame)
         self.frame_button.pack(side="bottom")
-        self.frame_label = tk.Frame(self.frame)
+        self.frame_label = ttk.Frame(self.frame)
         self.frame_label.pack(side="left")
-        # self.frame_select = tk.Frame(self.frame)
+        # self.frame_select = ttk.Frame(self.frame)
         # self.frame_select.pack(side="right")
-        self.frame_input = tk.Frame(self.frame)
+        self.frame_input = ttk.Frame(self.frame)
         self.frame_input.pack(side="right")
 
     def update(self, obj, obstacle, info=None, state=None, com_info=None):
@@ -55,22 +55,22 @@ class Focus:
         self.create_frame()
         self.remove()
         if obstacle == "oxer":
-            tk.Label(self.frame_label, text='A-->B(m):').pack()
-            var_a_b = tk.StringVar(value=info[0] if info else '')
+            ttk.Label(self.frame_label, text='A-->B(m):').pack()
+            var_a_b = ttk.StringVar(value=info[0] if info else '')
             a_b = Entry(self.frame_input, textvariable=var_a_b, width=5)
             a_b.pack()
-            tk.Button(self.frame_button, text="确认").pack()
+            ttk.Button(self.frame_button, text="确认").pack()
 
         elif obstacle == "tirail":
-            tk.Label(self.frame_label, text='A-->B(m):').pack()
-            var_a_b = tk.StringVar(value=info[0] if info else '')
+            ttk.Label(self.frame_label, text='A-->B(m):').pack()
+            var_a_b = ttk.StringVar(value=info[0] if info else '')
             a_b = Entry(self.frame_input, textvariable=var_a_b, width=5, )
             a_b.pack()
-            tk.Label(self.frame_label, text='B-->C(m):').pack()
-            var_b_c = tk.StringVar(value=info[1] if info else '')
+            ttk.Label(self.frame_label, text='B-->C(m):').pack()
+            var_b_c = ttk.StringVar(value=info[1] if info else '')
             b_c = Entry(self.frame_input, textvariable=var_b_c, width=5)
             b_c.pack()
-            tk.Button(self.frame_button, text="确认").pack()
+            ttk.Button(self.frame_button, text="确认").pack()
 
         elif obstacle == "combination_ab" or obstacle == "combination_abc":
             self.combination(obj, com_info, obstacle, state)
@@ -87,18 +87,18 @@ class Focus:
         :param info:
         :return:
         """
-        check = tk.StringVar(value='0')
-        tk.Label(self.frame_label, text='宽(m)：').pack()
-        water_width_var = tk.StringVar(value=info[0] if info else '2')
+        check = ttk.StringVar(value='0')
+        ttk.Label(self.frame_label, text='宽(m)：').pack()
+        water_width_var = ttk.StringVar(value=info[0] if info else '2')
         water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5, name='water_w_ent')
         water_width_ent.pack()
-        tk.Label(self.frame_label, text='长(m)：').pack()
-        water_height_var = tk.StringVar(value=info[0] if info else '4')
+        ttk.Label(self.frame_label, text='长(m)：').pack()
+        water_height_var = ttk.StringVar(value=info[0] if info else '4')
         water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5, name='water_h_ent')
         water_height_ent.pack()
         water_height_ent.bind("<Command-KeyPress-z>", water_width_ent.undo)
 
-        tk.Button(self.frame_button, text="确认").pack()
+        ttk.Button(self.frame_button, text="确认").pack()
         Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
                     command=partial(self.live_two, obj, check)).pack()
 
@@ -123,15 +123,15 @@ class Focus:
         :param info:
         :return:
         """
-        tk.Label(self.frame_label, text='宽(m)：').pack()
-        water_width_var = tk.StringVar(value=info[0] if info else '3')
+        ttk.Label(self.frame_label, text='宽(m)：').pack()
+        water_width_var = ttk.StringVar(value=info[0] if info else '3')
         water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5)
         water_width_ent.pack()
-        tk.Label(self.frame_label, text='长(m)：').pack()
-        water_height_var = tk.StringVar(value=info[0] if info else '4')
+        ttk.Label(self.frame_label, text='长(m)：').pack()
+        water_height_var = ttk.StringVar(value=info[0] if info else '4')
         water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5)
         water_height_ent.pack()
-        tk.Button(self.frame_button, text="确认").pack()
+        ttk.Button(self.frame_button, text="确认").pack()
 
     def combination(self, obj, info, obstacle, state):
         """
@@ -151,11 +151,11 @@ class Focus:
             except KeyError:
                 pass
 
-        checkvar_a = tk.StringVar(value=a, name="checkvar_a")
-        checkvar_b = tk.StringVar(value=b, name="checkvar_b")
-        checkvar_c = tk.StringVar(value=c, name="checkvar_c")
+        checkvar_a = ttk.StringVar(value=a, name="checkvar_a")
+        checkvar_b = ttk.StringVar(value=b, name="checkvar_b")
+        checkvar_c = ttk.StringVar(value=c, name="checkvar_c")
 
-        var_a = tk.StringVar(value=info['ent_a'] if info else '')
+        var_a = ttk.StringVar(value=info['ent_a'] if info else '')
         ent_a = Entry(self.frame_input, textvariable=var_a, width=5,
                       state=state["ent_a"] if state else "disabled",
                       name="ent_a")
@@ -165,12 +165,12 @@ class Focus:
                     command=partial(self.oxer_a, checkvar_a, checkvar_b, checkvar_c, ent_a, obj, obstacle,
                                     var_a)).pack()
 
-        tk.Label(self.frame_label, text='A-->B(m):').pack()
-        var_a_b = tk.StringVar(value=info['ent_a_b'] if info else '3')
+        ttk.Label(self.frame_label, text='A-->B(m):').pack()
+        var_a_b = ttk.StringVar(value=info['ent_a_b'] if info else '3')
         ent_a_b = Entry(self.frame_input, textvariable=var_a_b, width=5, name="ent_a_b")
         ent_a_b.pack()
 
-        var_b = tk.StringVar(value=info['ent_b'] if info else '')
+        var_b = ttk.StringVar(value=info['ent_b'] if info else '')
         ent_b = Entry(self.frame_input, textvariable=var_b, width=5,
                       state=state["ent_b"] if state else "disabled",
                       name='ent_b')
@@ -180,11 +180,11 @@ class Focus:
                     command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
                                     var_b)).pack()
         if obstacle == "combination_abc":
-            tk.Label(self.frame_label, text='B-->C(m):').pack()
-            var_b_c = tk.StringVar(value=info['ent_b_c'] if info else '3')
+            ttk.Label(self.frame_label, text='B-->C(m):').pack()
+            var_b_c = ttk.StringVar(value=info['ent_b_c'] if info else '3')
             ent_b_c = Entry(self.frame_input, textvariable=var_b_c, width=5, name="ent_b_c")
             ent_b_c.pack()
-            var_c = tk.StringVar(value=info['ent_c'] if info else '')
+            var_c = ttk.StringVar(value=info['ent_c'] if info else '')
             ent_c = Entry(self.frame_input, textvariable=var_c, width=5,
                           state=state["ent_c"] if state else "disabled",
                           name="ent_c")
@@ -192,7 +192,7 @@ class Focus:
             Checkbutton(self.frame_label, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
                         command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).pack()
 
-        tk.Button(self.frame_button, text="确认").pack()
+        ttk.Button(self.frame_button, text="确认").pack()
         return checkvar_a, checkvar_b
 
     def remove(self):

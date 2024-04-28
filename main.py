@@ -12,11 +12,6 @@ import time
 import gsapi
 
 
-
-
-# 这两行代码在自己原基础的代码上加入即可，放在代码的最开端部分，也就是在窗口创建代码之前
-
-
 # 障碍号确认
 def insert():
     global index_txt
@@ -198,9 +193,9 @@ def dle():
                 canvas.itemconfig('比赛名称', text=temp_txt)
                 continue
             font = 21 if sys_name == 'Darwin' else 15
-            tk.Label(frame_tit, text=key + ': ', font=("微软雅黑", font)).pack(padx=1, pady=4)
-            tk.Label(frame_inp, text=value.get(), font=("微软雅黑", font)).pack(padx=1, pady=4)
-            tk.Label(frame_por, text='').pack(padx=1, pady=7)
+            ttk.Label(frame_tit, text=key + ': ', font=("微软雅黑", font)).pack(padx=1, pady=4)
+            ttk.Label(frame_inp, text=value.get(), font=("微软雅黑", font)).pack(padx=1, pady=4)
+            ttk.Label(frame_por, text='').pack(padx=1, pady=7)
 
     except Exception as e:
         print("Error: " + str(e))
@@ -224,9 +219,9 @@ def edit():
         i.destroy()
     for i in info:
         font = 20 if sys_name == 'Darwin' else 13
-        tk.Label(frame_tit, text=i + ":", font=("微软雅黑", font)).pack(padx=1, pady=3)
-        var = tk.StringVar()
-        pro_value = tk.StringVar()
+        ttk.Label(frame_tit, text=i + ":", font=("微软雅黑", font)).pack(padx=1, pady=3)
+        var = ttk.StringVar()
+        pro_value = ttk.StringVar()
         if temp_:
             var.set(temp_[i])
         info_var.append(var)
@@ -235,10 +230,10 @@ def edit():
         if i == '允许时间':
             Entry(frame_inp, textvariable=var, width=15, validate="focusin",
                   validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=y)
-            tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
+            ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
             continue
         Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=y)
-        tk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
+        ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
 
 
 def allow(info_var, pro_value):
@@ -739,16 +734,16 @@ def remove_f():
 
 # 关于软件
 def about():
-    app = tk.Toplevel(win)
+    app = ttk.Toplevel(win)
     app.title("关于软件")
     app.geometry("300x200")
-    app_frame = tk.Frame(app)
+    app_frame = ttk.Frame(app)
     app_frame.pack()
-    tk.Label(app_frame, image=icon_obj).pack(pady=15)
-    tk.Label(app_frame, text="路线设计", font=("宋体", 15, "bold")).pack()
-    tk.Label(app_frame, text="版本 1.0").pack()
-    tk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
-    tk.Label(app_frame, text="软件开发：许志亮 葛茂林").pack()
+    ttk.Label(app_frame, image=icon_obj).pack(pady=15)
+    ttk.Label(app_frame, text="路线设计", font=("宋体", 15, "bold")).pack()
+    ttk.Label(app_frame, text="版本 1.0").pack()
+    ttk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
+    ttk.Label(app_frame, text="软件开发：许志亮 葛茂林").pack()
 
 
 # 帮助文档
@@ -786,105 +781,105 @@ def del_fg():
 
 
 # 障碍物
-tk.Button(frame_temp_1, text='进出口', command=gate).pack()
-tk.Button(frame_temp_1, text='指北针', command=compass).pack()
+ttk.Button(frame_temp_1, bootstyle="success-link", text='进出口', command=gate).pack()
+ttk.Button(frame_temp_1, bootstyle="success-link", text='指北针', command=compass).pack()
 #
-tk.Button(frame_temp_2, text='水障', command=water_barrier).pack()
-tk.Button(frame_temp_2, text='砖墙', command=brick_wall).pack()
+ttk.Button(frame_temp_2, bootstyle="outline", text='水障', command=water_barrier).pack()
+ttk.Button(frame_temp_2, bootstyle="success-outline", text='砖墙', command=brick_wall).pack()
 #
-tk.Button(frame_temp_3, text='起/终点线', command=line).pack()
-tk.Button(frame_temp_3, text='强制通过点', command=force).pack()
+ttk.Button(frame_temp_3, bootstyle="link", text='起/终点线', command=line).pack()
+ttk.Button(frame_temp_3, bootstyle="success-link", text='强制通过点', command=force).pack()
 
-tk.Button(frame_temp_4, text='利物浦', command=live).pack()
-tk.Button(frame_temp_4, text='单横木', command=monorail).pack()
+ttk.Button(frame_temp_4, bootstyle="success-link", text='利物浦', command=live).pack()
+ttk.Button(frame_temp_4, bootstyle="success-link", text='单横木', command=monorail).pack()
 
-tk.Button(frame_temp_5, text='双横木', command=oxer).pack()
-tk.Button(frame_temp_5, text='三横木', command=tirail).pack()
+ttk.Button(frame_temp_5, bootstyle="success-link", text='双横木', command=oxer).pack()
+ttk.Button(frame_temp_5, bootstyle="success-link", text='三横木', command=tirail).pack()
 
-tk.Button(frame_temp_6, text='AB组合障碍', command=combination_ab).pack()
-tk.Button(frame_temp_6, text='ABC组合障碍', command=combination_abc).pack()
+ttk.Button(frame_temp_6, bootstyle="success-link", text='AB组合障碍', command=combination_ab).pack()
+ttk.Button(frame_temp_6, bootstyle="success-link", text='ABC组合障碍', command=combination_abc).pack()
 
-tk.Button(frame_temp_7, text='自定义障碍', command=custom).pack()
-tk.Button(frame_temp_7, text='导入背景图', command=fg).pack()
+ttk.Button(frame_temp_7, bootstyle="success-link", text='自定义障碍', command=custom).pack()
+ttk.Button(frame_temp_7, bootstyle="success-link", text='导入背景图', command=fg).pack()
 
 if sys_name == 'Darwin':
     width = 5
 elif sys_name == 'Windows':
     width = 10
 # 工作模块
-but_0 = tk.Button(frame_command_left, text='拖动', command=drag, fg='red', width=width, height=1)
+but_0 = ttk.Checkbutton(frame_command_left, text='拖动', command=drag, width=width, bootstyle="success-outline-toolbutton")
 but_0.pack()
-but_3 = tk.Button(frame_command_left, text='旋转', command=rotate, width=width, height=1)
+but_3 = ttk.Checkbutton(frame_command_left, text='旋转', command=rotate, width=width, bootstyle="outline-toolbutton")
 but_3.pack()
 
-# but_4 = tk.Button(frame_command_left, text='画弧', command=arc, width=width, height=1)
+# but_4 = ttk.Button(frame_command_left, text='画弧', command=arc, width=width, height=1)
 # but_4.pack()
-# but_2 = tk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
+# but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
 # but_2.pack()
-tk.Button(frame_mea_com_rig, text='清屏', command=clear, width=width, height=1).pack()
-# tk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
-tk.Button(frame_command_right, text='置底', command=set_state, width=width, height=1).pack()
-tk.Button(frame_command_right, text='删除', command=pop, width=width, height=1).pack()
+ttk.Button(frame_mea_com_rig, text='清屏', command=clear, width=width).pack()
+# ttk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
+ttk.Button(frame_command_right, text='置底', command=set_state, width=width).pack()
+ttk.Button(frame_command_right, text='删除', command=pop, width=width).pack()
 
 # 辅助模块
-tk.Button(frame_aux_com_lef, text='网格辅助线', command=grid, width=width, height=1).pack()
-aux_info = tk.Button(frame_aux_com_rig, text='隐藏辅助信息', command=info, width=width, height=1)
+ttk.Button(frame_aux_com_lef, text='网格辅助线', command=grid, width=width).pack()
+aux_info = ttk.Button(frame_aux_com_rig, text='隐藏辅助信息', command=info, width=width)
 aux_info.pack()
 
 # 障碍参数
-tk.Label(frame_aux_tit, text="障碍备注：", font=FONT).pack(pady=5)
-var_parameter = tk.StringVar()
+ttk.Label(frame_aux_tit, text="障碍备注：", font=FONT).pack(pady=5)
+var_parameter = ttk.StringVar()
 e_parameter = Entry(frame_aux_inp, textvariable=var_parameter, width=8)
 e_parameter.pack(pady=5)
 
-tk.Button(frame_aux_tit, text='确认', command=parameter).pack()
-par_state = tk.Button(frame_aux_inp, text='隐藏', command=hidden)
+ttk.Button(frame_aux_tit, text='确认', command=parameter).pack()
+par_state = ttk.Button(frame_aux_inp, text='隐藏', command=hidden)
 par_state.pack()
 
 # 圆
-tk.Label(frame_aux_tit2, text="圆(m)：", font=FONT).pack()
-var_cir = tk.StringVar()
+ttk.Label(frame_aux_tit2, text="圆(m)：", font=FONT).pack()
+var_cir = ttk.StringVar()
 e_id = Entry(frame_aux_inp2, textvariable=var_cir, width=3)
 e_id.pack()
 
-tk.Button(frame_aux_but, text='确认', command=circular).pack()
+ttk.Button(frame_aux_but, text='确认', command=circular).pack()
 
 # 测量模块
-but_1 = tk.Button(frame_mea_com_lef, text='长度测量', command=pen, width=width, height=1)
+but_1 = ttk.Button(frame_mea_com_lef, text='长度测量', command=pen, width=width)
 but_1.pack()
 
 # 障碍号
-tk.Label(frame_temp_9, text="障碍号：", font=FONT).pack(side="left")
-var_id = tk.StringVar()
+ttk.Label(frame_temp_9, text="障碍号：", font=FONT).pack(side="left")
+var_id = ttk.StringVar()
 e_id = Entry(frame_temp_9, textvariable=var_id, width=4)
 e_id.pack(side="left")
 
-tk.Button(frame_temp_8, text='确认', command=insert).pack(padx=1)
+ttk.Button(frame_temp_8, text='确认', command=insert).pack(padx=1)
 
-tk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=200, y=10)
-var_len = tk.StringVar(value='4')
+ttk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=200, y=10)
+var_len = ttk.StringVar(value='4')
 len_entt = Entry(win, textvariable=var_len, width=4)
 len_entt.place(x=330, y=10)
 
-tk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
+ttk.Button(win, text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
 
-tk.Button(win, text="清除水印", command=remove_f).place(x=180, y=40)
+ttk.Button(win, text="清除水印", command=remove_f).place(x=180, y=40)
 
 # 路线图长度
-tk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
-var_l_w = tk.StringVar()
+ttk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
+var_l_w = ttk.StringVar()
 var_l_w.set('90')
 var_l_w_inp = Entry(win, textvariable=var_l_w, width=5)
 var_l_w_inp.place(x=80, y=10)
 
 # 路线图宽度
-tk.Label(win, text="宽度(m):", font=FONT).place(x=10, y=40)
-var_l_h = tk.StringVar()
+ttk.Label(win, text="宽度(m):", font=FONT).place(x=10, y=40)
+var_l_h = ttk.StringVar()
 var_l_h.set("60")
 var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
 
-tk.Button(win, text="确认", command=found).place(x=50, y=70)
+ttk.Button(win, text="确认", command=found).place(x=50, y=70)
 
 canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
@@ -944,13 +939,13 @@ info = [
 ]
 
 # 赛事信息主容器
-frame_info = tk.Frame(win)
+frame_info = ttk.Frame(win)
 # 放赛事信息标题
-frame_tit = tk.Frame(frame_info)
+frame_tit = ttk.Frame(frame_info)
 # 放赛事信息输入框
-frame_inp = tk.Frame(frame_info)
+frame_inp = ttk.Frame(frame_info)
 # 建议信息容器
-frame_por = tk.Frame(frame_info)
+frame_por = ttk.Frame(frame_info)
 
 frame_info.place(x=WIDTH + 200, y=150)
 frame_tit.pack(side='left')
@@ -962,17 +957,17 @@ info_var = []
 pro_var = []
 edit()
 
-but1 = tk.Button(win, text="确认", command=dle)
+but1 = ttk.Button(win, text="确认", command=dle)
 but1.place(x=WIDTH + 260, y=700)
-but2 = tk.Button(win, text="修改", command=edit)
+but2 = ttk.Button(win, text="修改", command=edit)
 but2.place(x=WIDTH + 360, y=700)
 
 # 菜单栏
-menu = tk.Menu(win)
+menu = ttk.Menu(win)
 
 # 工具栏
-menuType = tk.Menu(menu, tearoff=0)
-# menu_sava = tk.Menu(menu, tearoff=0)
+menuType = ttk.Menu(menu, tearoff=0)
+# menu_sava = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="工具栏", menu=menuType)
 menuType.add_radiobutton(label="指针拖动", command=drag, variable=what, value=0)
 menuType.add_radiobutton(label="旋转", command=rotate, variable=what, value=3)
@@ -980,7 +975,7 @@ menuType.add_radiobutton(label="长度测量", command=pen, variable=what, value
 # menuType.add_radiobutton(label="橡皮擦", command=remove, variable=what, value=2)
 
 # 功能
-function_menuType = tk.Menu(menu, tearoff=0)
+function_menuType = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="功能", menu=function_menuType)
 function_menuType.add_command(label="清屏", command=clear)
 # function_menuType.add_command(label="撤销", command=back)
@@ -1017,14 +1012,14 @@ function_menuType.add_command(label="删除背景", command=del_fg)
 # function_menuType.add_cascade(label="保存", menu=menu_sava)
 
 # 字号
-font_menuType = tk.Menu(menu, tearoff=0)
+font_menuType = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="字号", menu=font_menuType)
 # font_menuType.add_command(label="通用", command=currency_font)
 font_menuType.add_command(label="长度测量", command=currency_pen)
 # font_menuType.add_command(label="橡皮擦", command=currency_remove)
 
 # 帮助
-app_help = tk.Menu(menu, tearoff=0)
+app_help = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="帮助", menu=app_help)
 app_help.add_command(label="关于软件", command=about)
 app_help.add_command(label="帮助文档", command=open_web)
