@@ -204,36 +204,67 @@ def dle():
 
 
 # 修改赛事信息
+# def edit():
+#     """
+#     编辑信息函数：根据现有信息变量（info_var）和项目变量（pro_var）的内容，更新界面显示并清空输入框。
+#     该函数首先将info_var中的值存储到字典temp_中，然后清空info_var和pro_var，并销毁所有界面元素。
+#     随后，根据temp_中存储的值重新创建界面元素，包括标签和输入框，并根据系统类型（Darwin或其他）调整字体大小和界面布局。
+#     特别地，对于'允许时间'这一项，使用了额外的验证机制（validate="focusin"）来确保输入的合法性。
+#     """
+#     temp_ = {}
+#     # 根据info和info_var的对应关系，获取并存储info_var中的值到temp_字典
+#     for i in range(len(info_var)):
+#         temp_[info[i]] = info_var[i].get()
+#
+#     # 清空info_var和pro_var，并销毁三个框架中所有的子元素
+#     info_var.clear()
+#     pro_var.clear()
+#     for i in frame_tit.winfo_children():
+#         i.destroy()
+#     for i in frame_inp.winfo_children():
+#         i.destroy()
+#     for i in frame_por.winfo_children():
+#         i.destroy()
+#
+#     # 根据temp_中存储的内容，重新创建标签、输入框和对应的变量
+#     for i in info:
+#         font = 20 if sys_name == 'Darwin' else 13  # 根据系统类型选择字体大小
+#         ttk.Label(frame_tit, text=i + ":", font=("微软雅黑", font)).pack(padx=1, pady=3)
+#         var = ttk.StringVar()
+#         pro_value = ttk.StringVar()
+#         if temp_:
+#             var.set(temp_[i])  # 如果temp_不为空，设置var的初始值
+#         info_var.append(var)
+#         pro_var.append(pro_value)
+#
+#         y = 4 if sys_name == 'Darwin' else 7  # 根据系统类型选择间距大小
+#         if i == '允许时间':
+#             # 对于'允许时间'这一项，使用特别的验证机制和额外的标签来显示验证信息
+#             Entry(frame_inp, textvariable=var, width=15, validate="focusin",
+#                   validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=y)
+#             ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
+#             continue
+#         # 对于其他项，简单地创建输入框和对应的标签
+#         Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=y)
+#         ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
+
 def edit():
     temp_ = {}
-    for i in range(len(info_var)):
-        temp_[info[i]] = info_var[i].get()
+    for i in frame_info.winfo_children():
+        i.destroy()
 
-    info_var.clear()
-    pro_var.clear()
-    for i in frame_tit.winfo_children():
-        i.destroy()
-    for i in frame_inp.winfo_children():
-        i.destroy()
-    for i in frame_por.winfo_children():
-        i.destroy()
-    for i in info:
-        font = 20 if sys_name == 'Darwin' else 13
-        ttk.Label(frame_tit, text=i + ":", font=("微软雅黑", font)).pack(padx=1, pady=3)
-        var = ttk.StringVar()
-        pro_value = ttk.StringVar()
-        if temp_:
-            var.set(temp_[i])
-        info_var.append(var)
-        pro_var.append(pro_value)
-        y = 4 if sys_name == 'Darwin' else 7
-        if i == '允许时间':
-            Entry(frame_inp, textvariable=var, width=15, validate="focusin",
-                  validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=y)
-            ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
-            continue
-        Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=y)
-        ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
+    for i, title in enumerate(info):
+        title_label = ttk.Label(frame_info, text=title + ":")
+        title_label.grid(row=i, column=0, sticky="e", padx=5, pady=5)
+
+        label = ttk.Label(frame_info, text=info.get(title, ""))
+        label.grid(row=i, column=1, sticky="w", padx=5, pady=5)
+        label_list.append(label)
+
+        entry = ttk.Entry(frame_info)
+        entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
+        entry.insert(0, info.get(title, ""))
+        entry_list.append(entry)
 
 
 def allow(info_var, pro_value):
@@ -268,8 +299,8 @@ def found():
     canvas.config(width=WIDTH + 30, height=HEIGHT + 70)
     canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT + 50)
     # canvas.place(x=175, y=130)
-    but1.place(x=WIDTH + 260, y=700)
-    but2.place(x=WIDTH + 360, y=700)
+    # but1.place(x=WIDTH + 260, y=700)
+    # but2.place(x=WIDTH + 360, y=700)
     frame_info.place(x=WIDTH + 200, y=150)
     canvas.delete(watermark)
     wid = WIDTH / 10
@@ -514,18 +545,11 @@ def set_color():
         but_1.state(['!selected'])
     # elif id == 4:
     #     but_4.config(fg='red')
-
-    if id != no_id:
-        if no_id == 0:
-            but_0.config(fg='black')
-        elif no_id == 1:
-            but_1.config(fg='black')
-        # elif no_id == 2:
-        #     but_2.config(fg='black')
-        elif no_id == 3:
-            but_3.config(fg='black')
-        # elif no_id == 4:
-        #     but_4.config(fg='black')
+    # if but_0.state()[1] == but_1.state()[1] == but_3.state()[1] == 'selected':
+    #     but_0.state(['selected'])
+    if 'selected' not in but_0.state() and 'selected' not in but_1.state() and 'selected' not in but_3.state():
+        but_0.state(['selected'])
+        drag()
 
 
 # 清屏
@@ -723,11 +747,9 @@ def info():
     global aux_stare
     if aux_stare:
         canvas.itemconfig('辅助信息', stat='hidden')
-        aux_info.config(text='显示辅助信息')
         aux_stare = False
     else:
         canvas.itemconfig('辅助信息', stat='normal')
-        aux_info.config(text='隐藏辅助信息')
         aux_stare = True
 
 
@@ -813,7 +835,7 @@ if sys_name == 'Darwin':
 elif sys_name == 'Windows':
     width = 10
 # 工作模块
-but_0 = ttk.Checkbutton(frame_command_left, text='拖动', command=drag, width=width,bootstyle="round-toggle")
+but_0 = ttk.Checkbutton(frame_command_left, text='拖动', command=drag, width=width, bootstyle="round-toggle")
 but_0.pack()
 but_0.state(['selected'])
 but_3 = ttk.Checkbutton(frame_command_left, text='旋转', command=rotate, width=width, bootstyle="round-toggle")
@@ -824,15 +846,16 @@ but_3.state(['!selected'])
 # but_4.pack()
 # but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
 # but_2.pack()
-ttk.Button(frame_mea_com_rig, bootstyle="link", text='清屏', command=clear, width=width).pack()
+ttk.Button(frame_mea_com_rig, bootstyle="outline", text='清屏', command=clear, width=width).pack()
 # ttk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
-ttk.Button(frame_command_right, bootstyle="link", text='置底', command=set_state, width=width).pack()
-ttk.Button(frame_command_right, bootstyle="link", text='删除', command=pop, width=width).pack()
+ttk.Button(frame_command_right, bootstyle="outline", text='置底', command=set_state, width=width).pack()
+ttk.Button(frame_command_right, bootstyle="outline", text='删除', command=pop, width=width).pack()
 
 # 辅助模块
-ttk.Button(frame_aux_com_lef, bootstyle="link", text='网格辅助线', command=grid, width=width).pack()
-aux_info = ttk.Button(frame_aux_com_rig, bootstyle="link", text='隐藏辅助信息', command=info, width=width)
+ttk.Button(frame_aux_com_lef, bootstyle="outline", text='网格辅助线', command=grid, width=width).pack()
+aux_info = ttk.Checkbutton(frame_aux_com_rig, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
 aux_info.pack()
+aux_info.state(['selected'])
 
 # 障碍参数
 ttk.Label(frame_aux_tit, text="障碍备注：", font=FONT).pack(pady=5)
@@ -887,7 +910,7 @@ var_l_h.set("60")
 var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
 
-ttk.Button(win, bootstyle="link", text="确认", command=found).place(x=50, y=70)
+ttk.Button(win, bootstyle="success-outline", text="确认", command=found).place(x=50, y=70)
 
 canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
@@ -940,14 +963,28 @@ canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称', font=("微软雅黑", 18), tags=('比赛名称', '不框选'))
 
 # 信息
-info = [
-    '比赛名称', '级别赛制', '比赛日期', '路线查看时间', '开赛时间', '判罚表', '障碍高度', '行进速度', '路线长度',
-    '允许时间', '限制时间',
-    '障碍数量', '跳跃数量', '附加赛', '路线设计师',
-]
+info = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
+        '障碍高度': '', '行进速度': '', '路线长度': '', '允许时间': '', '限制时间': '', '障碍数量': '', '跳跃数量': '',
+        '附加赛': '', '路线设计师': ''}
 
 # 赛事信息主容器
 frame_info = ttk.Frame(win)
+
+entry_list = []
+label_list = []
+
+# for i, title in enumerate(info):
+#     title_label = ttk.Label(frame_info, text=title + ":")
+#     title_label.grid(row=i, column=0, sticky="e", padx=5, pady=5)
+#
+#     label = ttk.Label(frame_info, text=info)
+#     label.grid(row=i, column=1, sticky="w", padx=5, pady=5)
+#     label_list.append(label)
+#
+#     entry = ttk.Entry(frame_info)
+#     entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
+#     entry_list.append(entry)
+
 # 放赛事信息标题
 frame_tit = ttk.Frame(frame_info)
 # 放赛事信息输入框
@@ -956,19 +993,24 @@ frame_inp = ttk.Frame(frame_info)
 frame_por = ttk.Frame(frame_info)
 
 frame_info.place(x=WIDTH + 200, y=150)
-frame_tit.pack(side='left')
-frame_por.pack(side='right')
-frame_inp.pack(side='right')
+# frame_tit.pack(side='left')
+# frame_por.pack(side='right')
+# frame_inp.pack(side='right')
 
 # 生成赛事信息
 info_var = []
 pro_var = []
 edit()
+confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle="success-outline")
+confirm_button.grid(row=len(info), column=1, sticky="n", padx=5, pady=5)
 
-but1 = ttk.Button(win, bootstyle="link", text="确认", command=dle)
-but1.place(x=WIDTH + 260, y=700)
-but2 = ttk.Button(win, bootstyle="link", text="修改", command=edit)
-but2.place(x=WIDTH + 360, y=700)
+# modify_button = ttk.Button(frame_info, text="修改", command=edit)
+# modify_button.grid(row=len(info), column=1, sticky="e", padx=5, pady=5)
+
+# but1 = ttk.Button(win, bootstyle="success-outline", text="确认", command=dle)
+# but1.place(x=WIDTH + 260, y=700)
+# but2 = ttk.Button(win, bootstyle="success-outline", text="修改", command=edit)
+# but2.place(x=WIDTH + 360, y=700)
 
 # 菜单栏
 menu = ttk.Menu(win)

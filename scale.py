@@ -363,7 +363,7 @@ class CreateImg(T):
         Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         ttk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name), bootstyle="link").pack()
         w = 5 if sys_name == 'Darwin' else 10
-        ttk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w, bootstyle="link").pack()
+        ttk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w, bootstyle='outline').pack()
 
     def bar_aux(self):
         # if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
