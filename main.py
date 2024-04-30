@@ -1,15 +1,12 @@
-# import logging
-import webbrowser
 import subprocess
-import tkinter.simpledialog
-from tkinter import filedialog
-# import numpy as np
-import Commom
-from scale import CreateImg, CreateTxt, CreateParameter, get_cur, get_frame_stare, T
-from Tools import *
-# from Commom import *
 import time
+import tkinter.simpledialog
+import webbrowser
+from tkinter import filedialog
+
 import gsapi
+from Tools import *
+from scale import CreateImg, CreateTxt, CreateParameter
 
 
 # 障碍号确认
@@ -174,28 +171,41 @@ def circular():
 
 # 赛事信息确认
 def dle():
-    global temp_txt
+    global temp_txt, entry_list, label_list
     try:
-        temp = {}
-        for i in frame_tit.winfo_children():
-            i.destroy()
-        for i in frame_inp.winfo_children():
-            i.destroy()
-        for i in frame_por.winfo_children():
-            i.destroy()
-        for i in range(len(info_var)):
-            if info_var[i].get():
-                temp[info[i]] = info_var[i]
+        data_dict = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
+                     '障碍高度': '', '行进速度': '', '路线长度': '', '允许时间': '', '限制时间': '', '障碍数量': '',
+                     '跳跃数量': '',
+                     '附加赛': '', '路线设计师': ''}
+        for entry, label, title in zip(entry_list, label_list, data_dict):
+            text = entry.get().strip()
+            data_dict[title] = text
+        entry_list.clear()
+        label_list.clear()
+        # 将不为空的键值对取出
+        filtered_dict = {key: value for key, value in data_dict.items() if value}
 
-        for key, value in temp.items():
-            if key == '比赛名称':
-                temp_txt = value.get()
+        for i in frame_info.winfo_children():
+            i.destroy()
+
+        for i, title in enumerate(filtered_dict):
+            if title == '比赛名称':
+                temp_txt = data_dict.get(title, "")
                 canvas.itemconfig('比赛名称', text=temp_txt)
                 continue
-            font = 21 if sys_name == 'Darwin' else 15
-            ttk.Label(frame_tit, text=key + ': ', font=("微软雅黑", font)).pack(padx=1, pady=4)
-            ttk.Label(frame_inp, text=value.get(), font=("微软雅黑", font)).pack(padx=1, pady=4)
-            ttk.Label(frame_por, text='').pack(padx=1, pady=7)
+            title_label = ttk.Label(frame_info, text=title + ":")
+            title_label.grid(row=i, column=0, sticky="e", padx=5, pady=5)
+
+            label = ttk.Label(frame_info, text=filtered_dict.get(title, ""))
+            label.grid(row=i, column=1, sticky="w", padx=5, pady=5)
+            label_list.append(label)
+
+            # entry = ttk.Label(frame_info, text=filtered_dict.get(title, ""))
+            # entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
+            # entry_list.append(entry)
+        confirm_button = ttk.Button(frame_info, text="修改", command=partial(edit, filtered_dict),
+                                    bootstyle="success-outline")
+        confirm_button.grid(row=len(filtered_dict), column=1, sticky="n", padx=5, pady=5)
 
     except Exception as e:
         print("Error: " + str(e))
@@ -248,23 +258,36 @@ def dle():
 #         Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=y)
 #         ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
 
-def edit():
-    temp_ = {}
+def edit(current_dist=None):
+    global entry_list, label_list
+    data_dict = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
+                 '障碍高度': '', '行进速度': '', '路线长度': '', '允许时间': '', '限制时间': '', '障碍数量': '',
+                 '跳跃数量': '',
+                 '附加赛': '', '路线设计师': ''}
+
+    try:
+        data_dict.update(current_dist)
+    except TypeError:
+        pass
+    entry_list.clear()
+    label_list.clear()
     for i in frame_info.winfo_children():
         i.destroy()
 
-    for i, title in enumerate(info):
+    for i, title in enumerate(data_dict):
         title_label = ttk.Label(frame_info, text=title + ":")
         title_label.grid(row=i, column=0, sticky="e", padx=5, pady=5)
 
-        label = ttk.Label(frame_info, text=info.get(title, ""))
+        label = ttk.Label(frame_info, text=data_dict.get(title, ""))
         label.grid(row=i, column=1, sticky="w", padx=5, pady=5)
         label_list.append(label)
 
         entry = ttk.Entry(frame_info)
         entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
-        entry.insert(0, info.get(title, ""))
+        entry.insert(0, data_dict.get(title, ""))
         entry_list.append(entry)
+    confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle="success-outline")
+    confirm_button.grid(row=len(data_dict), column=1, sticky="n", padx=5, pady=5)
 
 
 def allow(info_var, pro_value):
@@ -962,28 +985,11 @@ canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 # 标题
 canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称', font=("微软雅黑", 18), tags=('比赛名称', '不框选'))
 
-# 信息
-info = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
-        '障碍高度': '', '行进速度': '', '路线长度': '', '允许时间': '', '限制时间': '', '障碍数量': '', '跳跃数量': '',
-        '附加赛': '', '路线设计师': ''}
-
 # 赛事信息主容器
 frame_info = ttk.Frame(win)
 
 entry_list = []
 label_list = []
-
-# for i, title in enumerate(info):
-#     title_label = ttk.Label(frame_info, text=title + ":")
-#     title_label.grid(row=i, column=0, sticky="e", padx=5, pady=5)
-#
-#     label = ttk.Label(frame_info, text=info)
-#     label.grid(row=i, column=1, sticky="w", padx=5, pady=5)
-#     label_list.append(label)
-#
-#     entry = ttk.Entry(frame_info)
-#     entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
-#     entry_list.append(entry)
 
 # 放赛事信息标题
 frame_tit = ttk.Frame(frame_info)
@@ -1001,8 +1007,8 @@ frame_info.place(x=WIDTH + 200, y=150)
 info_var = []
 pro_var = []
 edit()
-confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle="success-outline")
-confirm_button.grid(row=len(info), column=1, sticky="n", padx=5, pady=5)
+# confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle="success-outline")
+# confirm_button.grid(row=len(info), column=1, sticky="n", padx=5, pady=5)
 
 # modify_button = ttk.Button(frame_info, text="修改", command=edit)
 # modify_button.grid(row=len(info), column=1, sticky="e", padx=5, pady=5)
