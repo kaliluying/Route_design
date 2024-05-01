@@ -1,5 +1,6 @@
-from Commom import *
 from Tools import *
+from Common import *
+from functools import partial
 
 
 class Focus:
@@ -99,7 +100,7 @@ class Focus:
         water_height_ent.bind("<Command-KeyPress-z>", water_width_ent.undo)
 
         ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
-        Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
+        ttk.Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
                     command=partial(self.live_two, obj, check)).pack()
 
     @staticmethod
@@ -161,9 +162,9 @@ class Focus:
                       name="ent_a")
         ent_a.pack()
 
-        Checkbutton(self.frame_label, text="A双横木(cm)", variable=checkvar_a, onvalue=1, offvalue=0,
-                    command=partial(self.oxer_a, checkvar_a, checkvar_b, checkvar_c, ent_a, obj, obstacle,
-                                    var_a)).pack()
+        ttk.Checkbutton(self.frame_label, text="A双横木(cm)", variable=checkvar_a, onvalue=1, offvalue=0,
+                        command=partial(self.oxer_a, checkvar_a, checkvar_b, checkvar_c, ent_a, obj, obstacle,
+                                        var_a)).pack()
 
         ttk.Label(self.frame_label, text='A-->B(m):').pack()
         var_a_b = ttk.StringVar(value=info['ent_a_b'] if info else '3')
@@ -176,7 +177,7 @@ class Focus:
                       name='ent_b')
         ent_b.pack()
 
-        Checkbutton(self.frame_label, text="B双横木(cm)", variable=checkvar_b, onvalue=1, offvalue=0,
+        ttk.Checkbutton(self.frame_label, text="B双横木(cm)", variable=checkvar_b, onvalue=1, offvalue=0,
                     command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
                                     var_b)).pack()
         if obstacle == "combination_abc":
@@ -189,7 +190,7 @@ class Focus:
                           state=state["ent_c"] if state else "disabled",
                           name="ent_c")
             ent_c.pack()
-            Checkbutton(self.frame_label, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
+            ttk.Checkbutton(self.frame_label, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
                         command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).pack()
 
         ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()

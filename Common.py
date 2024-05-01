@@ -1,17 +1,11 @@
-import os
-import math
-# import tkinter as ttk
-import platform
 import logging
+import os
+import platform
 import traceback
-from tkinter import Checkbutton
-from tkinter import messagebox
-from functools import partial
-from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
+import ttkbootstrap as ttk
+from PIL import Image, ImageTk
 
 from Middleware import *
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
 
 # 创建窗口
 # win = ttk.Tk()

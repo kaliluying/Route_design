@@ -1,5 +1,6 @@
-from PIL import Image, ImageOps
-from Commom import *
+from PIL import ImageOps
+
+from Common import *
 
 
 class Entry(ttk.Entry):

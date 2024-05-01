@@ -3,6 +3,8 @@ import time
 import tkinter.simpledialog
 import webbrowser
 from tkinter import filedialog
+from Common import *
+from functools import partial
 
 import gsapi
 from Tools import *

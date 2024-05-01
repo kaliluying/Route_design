@@ -1,6 +1,7 @@
-import Commom
+from functools import partial
+
+from Common import *
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
-from Commom import *
 
 
 class T:
@@ -357,13 +358,15 @@ class CreateImg(T):
         self.var.set(str(int(self.angle)))
         Entry(frame_focus_x_ent, textvariable=self.var, width=5, undo=True).pack()
 
-        ttk.Button(frame_focus_x_but, text="确认", command=partial(self.to_rotate, self.tag, self.var), bootstyle="link").pack()
+        ttk.Button(frame_focus_x_but, text="确认", command=partial(self.to_rotate, self.tag, self.var),
+                   bootstyle="link").pack()
         ttk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 15)).pack()
         var_name = ttk.StringVar(value=self.name if self.name else self.tag)
         Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         ttk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name), bootstyle="link").pack()
         w = 5 if sys_name == 'Darwin' else 10
-        ttk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w, bootstyle='outline').pack()
+        ttk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w,
+                   bootstyle='outline').pack()
 
     def bar_aux(self):
         # if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
