@@ -1,5 +1,3 @@
-from PIL import ImageOps
-
 from Common import *
 
 

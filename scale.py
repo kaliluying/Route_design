@@ -114,7 +114,6 @@ class CreateImg(T):
         super(CreateImg, self).__init__(app, index)
         self.var = None
         self.img = None
-        self.frame_button = None
         self.frame_input = None
         self.img_path = img_path
         self.img_obj = Image.open(self.img_path)
@@ -156,9 +155,8 @@ class CreateImg(T):
         if what.get() == '3':
             self.temp_angle = self.angle
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'water', 'live']:
-            self.frame_input, self.frame_button = self.focus.update(self, self.obstacle, info=self.info,
+            self.frame_input, button = self.focus.update(self, self.obstacle, info=self.info,
                                                                     state=self.state, com_info=self.com_info)
-            button = self.frame_button.winfo_children()[0]
             button.config(command=self.update_img)
         else:
             if frame_function.winfo_children()[0].winfo_children()[1].winfo_name() == '障碍编辑容器':

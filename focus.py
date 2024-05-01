@@ -1,6 +1,7 @@
-from Tools import *
-from Common import *
 from functools import partial
+
+from Common import *
+from Tools import *
 
 
 class Focus:
@@ -12,9 +13,9 @@ class Focus:
     def __init__(self, win):
         self.win = win
         self.frame = None
-        self.frame_input = None
-        self.frame_label = None
-        self.frame_button = None
+        self.frame = None
+        self.frame = None
+        self.frame = None
         self.create_frame()  # 初始化生成frame容器
 
     def __new__(cls, *args, **kwargs):
@@ -34,14 +35,15 @@ class Focus:
         """
         self.frame = ttk.Frame(self.win, name='障碍编辑容器')
         self.frame.pack()
-        self.frame_button = ttk.Frame(self.frame)
-        self.frame_button.pack(side="bottom")
-        self.frame_label = ttk.Frame(self.frame)
-        self.frame_label.pack(side="left")
+        # self.frame_button = ttk.Frame(self.frame)
+        # self.frame_button.pack(side="bottom")
+        # self.frame = ttk.Frame(self.frame)
+        # self.frame_label.pack(side="left")
         # self.frame_select = ttk.Frame(self.frame)
-        # self.frame_select.pack(side="right")
-        self.frame_input = ttk.Frame(self.frame)
-        self.frame_input.pack(side="right")
+        # # self.frame_select.pack(side="right")
+        # self.frame_input = ttk.Frame(self.frame)
+        # self.frame_input.pack(side="right")
+        #
 
     def update(self, obj, obstacle, info=None, state=None, com_info=None):
         """
@@ -56,22 +58,22 @@ class Focus:
         self.create_frame()
         self.remove()
         if obstacle == "oxer":
-            ttk.Label(self.frame_label, text='A-->B(m):').pack()
+            ttk.Label(self.frame, text='A-->B(m):').grid(row=0, column=0, sticky='e', padx=5, pady=5)
             var_a_b = ttk.StringVar(value=info[0] if info else '')
-            a_b = Entry(self.frame_input, textvariable=var_a_b, width=5)
-            a_b.pack()
-            ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
+            a_b = Entry(self.frame, textvariable=var_a_b, width=5)
+            a_b.grid(row=0, column=1, sticky='w', padx=5, pady=5)
+            ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=1, column=1, sticky='w', padx=5, pady=5)
 
         elif obstacle == "tirail":
-            ttk.Label(self.frame_label, text='A-->B(m):').pack()
+            ttk.Label(self.frame, text='A-->B(m):').grid(row=0, column=0, sticky='e', padx=5, pady=5)
             var_a_b = ttk.StringVar(value=info[0] if info else '')
-            a_b = Entry(self.frame_input, textvariable=var_a_b, width=5, )
-            a_b.pack()
-            ttk.Label(self.frame_label, text='B-->C(m):').pack()
+            a_b = Entry(self.frame, textvariable=var_a_b, width=5, )
+            a_b.grid(row=0, column=1, sticky='w', padx=5, pady=5)
+            ttk.Label(self.frame, text='B-->C(m):').grid(row=1, column=0, sticky='e', padx=5, pady=5)
             var_b_c = ttk.StringVar(value=info[1] if info else '')
-            b_c = Entry(self.frame_input, textvariable=var_b_c, width=5)
-            b_c.pack()
-            ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
+            b_c = Entry(self.frame, textvariable=var_b_c, width=5)
+            b_c.grid(row=1, column=1, sticky='w', padx=5, pady=5)
+            ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=2, column=1, sticky='w', padx=5, pady=5)
 
         elif obstacle == "combination_ab" or obstacle == "combination_abc":
             self.combination(obj, com_info, obstacle, state)
@@ -79,7 +81,10 @@ class Focus:
             self.water(info)
         elif obstacle == "live":
             self.live(info, obj)
-        return self.frame_input, self.frame_button
+
+        buttons = [child for child in self.frame.winfo_children() if isinstance(child, ttk.Button)][0]
+        entrys = [child for child in self.frame.winfo_children() if isinstance(child, Entry)]
+        return entrys, buttons
 
     def live(self, info, obj):
         """
@@ -89,34 +94,46 @@ class Focus:
         :return:
         """
         check = ttk.StringVar(value='0')
-        ttk.Label(self.frame_label, text='宽(m)：').pack()
+        ttk.Label(self.frame, text='宽(m)：').pack()
         water_width_var = ttk.StringVar(value=info[0] if info else '2')
-        water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5, name='water_w_ent')
+        water_width_ent = Entry(self.frame, textvariable=water_width_var, width=5, name='water_w_ent')
         water_width_ent.pack()
-        ttk.Label(self.frame_label, text='长(m)：').pack()
+        ttk.Label(self.frame, text='长(m)：').pack()
         water_height_var = ttk.StringVar(value=info[0] if info else '4')
-        water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5, name='water_h_ent')
+        water_height_ent = Entry(self.frame, textvariable=water_height_var, width=5, name='water_h_ent')
         water_height_ent.pack()
         water_height_ent.bind("<Command-KeyPress-z>", water_width_ent.undo)
 
-        ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
-        ttk.Checkbutton(self.frame_button, text='双横木', variable=check, onvalue=1, offvalue=0,
-                    command=partial(self.live_two, obj, check)).pack()
+        ttk.Button(self.frame, bootstyle="link", text="确认").pack()
+        ttk.Checkbutton(self.frame, text='双横木', variable=check, onvalue=1, offvalue=0,
+                        command=partial(self.live_two, obj, check)).pack()
 
     @staticmethod
     def live_two(obj, check):
-        check = check.get()
-        set_live(check)
+        """
+        根据传入的检查状态，切换图片以实现两种不同的现场显示。
+
+        参数:
+        - obj: 包含应用界面元素的对象，需要有img_path, img, temp_path, app, 和 tag属性。
+        - check: 一个可以获取状态的对象，预期为'1'或'0'，决定显示哪张图片。
+
+        返回值:
+        - 无
+        """
+        check = check.get()  # 获取检查状态
+        set_live(check)  # 设置现场状态
         if check == '1':
-            obj.img_path = live_two_tool()
-            obj.img = Image.open(obj.img_path)
-            obj.temp_path = ImageTk.PhotoImage(obj.img)
-            obj.app.itemconfig(obj.tag, image=obj.temp_path)
+            # 如果检查状态为'1'，则使用第二种现场图片
+            obj.img_path = live_two_tool()  # 获取第二现场图片路径
+            obj.img = Image.open(obj.img_path)  # 打开图片
+            obj.temp_path = ImageTk.PhotoImage(obj.img)  # 将图片转换为可以在GUI中使用的格式
+            obj.app.itemconfig(obj.tag, image=obj.temp_path)  # 更新界面元素显示图片
         elif check == '0':
-            obj.img_path = live_one_tool()
-            obj.img = Image.open(obj.img_path)
-            obj.temp_path = ImageTk.PhotoImage(obj.img)
-            obj.app.itemconfig(obj.tag, image=obj.temp_path)
+            # 如果检查状态为'0'，则使用第一种现场图片
+            obj.img_path = live_one_tool()  # 获取第一现场图片路径
+            obj.img = Image.open(obj.img_path)  # 打开图片
+            obj.temp_path = ImageTk.PhotoImage(obj.img)  # 将图片转换为可以在GUI中使用的格式
+            obj.app.itemconfig(obj.tag, image=obj.temp_path)  # 更新界面元素显示图片
 
     def water(self, info):
         """
@@ -124,15 +141,15 @@ class Focus:
         :param info:
         :return:
         """
-        ttk.Label(self.frame_label, text='宽(m)：').pack()
+        ttk.Label(self.frame, text='宽(m)：').pack()
         water_width_var = ttk.StringVar(value=info[0] if info else '3')
-        water_width_ent = Entry(self.frame_input, textvariable=water_width_var, width=5)
+        water_width_ent = Entry(self.frame, textvariable=water_width_var, width=5)
         water_width_ent.pack()
-        ttk.Label(self.frame_label, text='长(m)：').pack()
+        ttk.Label(self.frame, text='长(m)：').pack()
         water_height_var = ttk.StringVar(value=info[0] if info else '4')
-        water_height_ent = Entry(self.frame_input, textvariable=water_height_var, width=5)
+        water_height_ent = Entry(self.frame, textvariable=water_height_var, width=5)
         water_height_ent.pack()
-        ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
+        ttk.Button(self.frame, bootstyle="link", text="确认").pack()
 
     def combination(self, obj, info, obstacle, state):
         """
@@ -157,43 +174,46 @@ class Focus:
         checkvar_c = ttk.StringVar(value=c, name="checkvar_c")
 
         var_a = ttk.StringVar(value=info['ent_a'] if info else '')
-        ent_a = Entry(self.frame_input, textvariable=var_a, width=5,
+        ent_a = Entry(self.frame, textvariable=var_a, width=5,
                       state=state["ent_a"] if state else "disabled",
                       name="ent_a")
-        ent_a.pack()
+        # ent_a.pack()
 
-        ttk.Checkbutton(self.frame_label, text="A双横木(cm)", variable=checkvar_a, onvalue=1, offvalue=0,
+        ent_a.grid(row=0, column=1, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(self.frame, text="A双横木(cm)", variable=checkvar_a, onvalue=1, offvalue=0,
                         command=partial(self.oxer_a, checkvar_a, checkvar_b, checkvar_c, ent_a, obj, obstacle,
-                                        var_a)).pack()
+                                        var_a)).grid(row=0, column=0, sticky='e', padx=5, pady=5)
 
-        ttk.Label(self.frame_label, text='A-->B(m):').pack()
+        ttk.Label(self.frame, text='A-->B(m):').grid(row=1, column=0, sticky="e", padx=5, pady=5)
         var_a_b = ttk.StringVar(value=info['ent_a_b'] if info else '3')
-        ent_a_b = Entry(self.frame_input, textvariable=var_a_b, width=5, name="ent_a_b")
-        ent_a_b.pack()
+        ent_a_b = Entry(self.frame, textvariable=var_a_b, width=5, name="ent_a_b")
+        ent_a_b.grid(row=1, column=1, sticky='w', padx= 5, pady=5)
 
         var_b = ttk.StringVar(value=info['ent_b'] if info else '')
-        ent_b = Entry(self.frame_input, textvariable=var_b, width=5,
+        ent_b = Entry(self.frame, textvariable=var_b, width=5,
                       state=state["ent_b"] if state else "disabled",
                       name='ent_b')
-        ent_b.pack()
+        ent_b.grid(row=2, column=1, sticky='w', padx=5, pady=5)
 
-        ttk.Checkbutton(self.frame_label, text="B双横木(cm)", variable=checkvar_b, onvalue=1, offvalue=0,
-                    command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
-                                    var_b)).pack()
+        ttk.Checkbutton(self.frame, text="B双横木(cm)", variable=checkvar_b, onvalue=1, offvalue=0,
+                        command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
+                                        var_b)).grid(row=2, column=0, sticky='e', padx=5, pady=5)
+        ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=3, column=1, sticky='e', padx=5, pady=5)
         if obstacle == "combination_abc":
-            ttk.Label(self.frame_label, text='B-->C(m):').pack()
+            ttk.Label(self.frame, text='B-->C(m):').grid(row=3, column=0, sticky="e", padx=5, pady=5)
             var_b_c = ttk.StringVar(value=info['ent_b_c'] if info else '3')
-            ent_b_c = Entry(self.frame_input, textvariable=var_b_c, width=5, name="ent_b_c")
-            ent_b_c.pack()
+            ent_b_c = Entry(self.frame, textvariable=var_b_c, width=5, name="ent_b_c")
+            ent_b_c.grid(row=3, column=1, sticky='w', padx=5, pady=5)
             var_c = ttk.StringVar(value=info['ent_c'] if info else '')
-            ent_c = Entry(self.frame_input, textvariable=var_c, width=5,
+            ent_c = Entry(self.frame, textvariable=var_c, width=5,
                           state=state["ent_c"] if state else "disabled",
                           name="ent_c")
-            ent_c.pack()
-            ttk.Checkbutton(self.frame_label, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
-                        command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).pack()
+            ent_c.grid(row=4, column=1, sticky='w', padx=5, pady=5)
+            ttk.Checkbutton(self.frame, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
+                            command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).grid(row=4, column=0, sticky='e', padx=5, pady=5)
+            ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=5, column=1, sticky='e', padx=5, pady=5)
 
-        ttk.Button(self.frame_button, bootstyle="link", text="确认").pack()
+
         return checkvar_a, checkvar_b
 
     def remove(self):
@@ -201,12 +221,14 @@ class Focus:
         删除容器中的内容
         :return:
         """
-        for i in self.frame_label.winfo_children():
+        for i in self.frame.winfo_children():
             i.destroy()
-        for i in self.frame_input.winfo_children():
-            i.destroy()
-        for i in self.frame_button.winfo_children():
-            i.destroy()
+        # for i in self.frame_label.winfo_children():
+        #     i.destroy()
+        # for i in self.frame_input.winfo_children():
+        #     i.destroy()
+        # for i in self.frame_button.winfo_children():
+        #     i.destroy()
         # for i in self.frame_select.winfo_children():
         #     i.destroy()
 
