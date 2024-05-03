@@ -5,11 +5,13 @@ block_cipher = None
 
 
 a = Analysis(
-    ['main.py','Commom.py', 'focus.py', 'scale.py', 'Tools.py'],
-    pathex=['/Users/gml/code/python_demo/Route_design'],
+    ['main.py','Common.py', 'focus.py', 'scale.py', 'Tools.py'],
+    pathex=[r'C:\Users\gaozh\Desktop\Route_design'],
+#    pathex=['/Users/gml/code/python_demo/Route_design'],
     binaries=[],
-    datas=[('./img/*','img')],
-    hiddenimports=['/Users/gml/code/python_demo/Route_design'],
+    datas=[('./img/*','img'),('./config/*', 'config')],
+    hiddenimports=[r'C:\Users\gaozh\Desktop\Route_design'],
+#    hiddenimports=['/Users/gml/code/python_demo/Route_design'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -5,9 +5,6 @@
 
 [源码链接](https://github.com/kaliluying/Route_design)
 
-> 如果想要拉取源码本地运行,请使用conda环境,conda环境文件(conda_requirements.txt)已上传  
-> PS:因为代码使用了Ghostscript,但[Pypi](https://pypi.org/project/ghostscript/) 需要额外安装他的客户端,而[conda](https://anaconda.org/conda-forge/ghostscript)中不用,因此推荐使用conda环境(你不用无法运行),或者使用pip环境,并将保存功能注释掉就可以运行
-
 ### 界面预览
 
 ![](./readme_img/demo.png)

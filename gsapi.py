@@ -1,74 +1,74 @@
 #! /usr/bin/env python3
 
 '''
-Python version of the C API in psi/iapi.h.
+psi/iapi.h 中 C API 的 Python 版本。
 
-Copyright (C) 2001-2023 Artifex Software, Inc.
+版权所有 （C） 2001-2023 Artifex Software， Inc.
 
-Overview:
+概述：
 
-    Implemented using Python's ctypes module.
+使用 Python 的 ctypes 模块实现。
 
-    All functions have the same name as the C function that they wrap.
+所有函数的名称都与它们包装的 C 函数相同。
 
-    Functions raise a GSError exception if the underlying function returned a
-    negative error code.
+如果基础函数返回
+    负错误代码。
 
-    Functions that don't have out-params return None. Out-params are returned
-    directly (using tuples if there are more than one).
+没有外参数的函数返回 None。返回 Out-params
+    直接（如果有多个元组，则使用元组）。
 
-    See examples.py for sample usage.
+有关示例用法，请参阅 examples.py。
 
-Example usage:
+用法示例：
 
-    On Linux/OpenBSD/MacOS:
-        Build the ghostscript shared library:
-            make sodebug
+在 Linux/OpenBSD/MacOS 上：
+        构建 ghostscript 共享库：
+            制作 sodebug
 
-        Run gsapi.py as a test script:
+将 gsapi.py 作为测试脚本运行：
             GSAPI_LIBDIR=sodebugbin ./demos/python/gsapi.py
 
-    On Windows:
-        Build ghostscript dll, for example:
+在 Windows 上：
+        构建 ghostscript dll，例如：
             devenv.com windows/GhostPDL.sln /Build Debug /Project ghostscript
 
-        Run gsapi.py as a test script in a cmd.exe window:
-            set GSAPI_LIBDIR=debugbin&& python ./demos/python/gsapi.py
+在cmd.exe窗口中将 gsapi.py 作为测试脚本运行：
+            设置 GSAPI_LIBDIR=debugbin&& python ./demos/python/gsapi.py
 
-        Run gsapi.py as a test script in a PowerShell window:
-            cmd /C "set GSAPI_LIBDIR=debugbin&& python ./demos/python/gsapi.py"
+在 PowerShell 窗口中将 gsapi.py 作为测试脚本运行：Run  as a test script in a PowerShell window：
+            cmd /C “set GSAPI_LIBDIR=debugbin&& python ./demos/python/gsapi.py”
 
-Specifying the Ghostscript shared library:
+指定 Ghostscript 共享库：
 
-    Two environmental variables can be used to specify where to find the
-    Ghostscript shared library.
+可以使用两个环境变量来指定在何处查找
+    Ghostscript 共享库。
 
-    GSAPI_LIB sets the exact path of the ghostscript shared library, else
-    GSAPI_LIBDIR sets the directory containing the ghostscript shared
-    library. If neither is defined we will use the OS's default location(s) for
-    shared libraries.
+GSAPI_LIB设置 ghostscript 共享库的确切路径，否则
+    GSAPI_LIBDIR设置包含共享的 ghostscript 的目录
+    图书馆。如果两者都未定义，我们将使用操作系统的默认位置
+    共享库。
 
-    If GSAPI_LIB is not defined, the leafname of the shared library is inferred
-    from the OS type - libgs.so on Unix, libgs.dylib on MacOS, gsdll64.dll on
-    Windows 64.
+如果未定义GSAPI_LIB，则推断共享库的叶名
+    从操作系统类型 - Unix 上的 libgs.so，MacOS 上的 libgs.dylib，gsdll64.dll
+    视窗 64.
 
-Requirements:
+要求：
 
-    Should work on python-2.5+ and python-3.0+, but this might change in
-    future.
+应该在 python-2.5+ 和 python-3.0+ 上工作，但这可能会在
+    前途。
 
-Limitations as of 2020-07-21:
+截至 2020-07-21 的限制：
 
-    Only very limited testing on has been done.
+只进行了非常有限的测试。
 
-    Tested on Linux, OpenBSD and Windows.
+在 Linux、OpenBSD 和 Windows 上进行了测试。
 
-    Only tested with python-3.7 and 2.7.
+仅使用 python-3.7 和 2.7 进行测试。
 
-    We don't provide gsapi_add_fs() or gsapi_remove_fs().
+我们不提供 gsapi_add_fs（） 或 gsapi_remove_fs（）。
 
-    We only provide display_callback V2, without V3's
-    display_adjust_band_height and display_rectangle_request.
+我们只提供 display_callback V2，没有 V3
+    display_adjust_band_height和display_rectangle_request。
 
 '''
 
@@ -80,23 +80,20 @@ import sys
 
 _lib = os.environ.get('GSAPI_LIB')
 if not _lib:
+    path = './config/'
     if platform.system() in ('Linux', 'OpenBSD'):
         _lib = 'libgs.so'
     elif platform.system() == 'Darwin':
         _lib = 'libgs.dylib'
     elif platform.system() == 'Windows':
         if sys.maxsize == 2**31 - 1:
-            _lib = 'gsdll32.dll'
+            _lib = path + 'gsdll32.dll'
         elif sys.maxsize == 2**63 - 1:
-            _lib = 'gsdll64.dll'
+            _lib = path + 'gsdll64.dll'
         else:
             raise Exception('Unrecognised sys.maxsize=0x%x' % sys.maxsize)
     else:
         raise Exception('Unrecognised platform.system()=%s' % platform.system())
-
-    _libdir = os.environ.get('GSAPI_LIBDIR')
-    if _libdir:
-        _lib = os.path.join(_libdir, _lib)
 
 try:
     _libgs = ctypes.CDLL(_lib)

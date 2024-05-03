@@ -1,3 +1,2 @@
 Pillow==9.4.0
-# conda install conda-forge::ghostscript
 ttkbootstrap~=1.10.1
