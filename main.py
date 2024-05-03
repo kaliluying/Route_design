@@ -288,7 +288,7 @@ def edit(current_dist=None):
         entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
         entry.insert(0, data_dict.get(title, ""))
         entry_list.append(entry)
-    confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle="success-outline")
+    confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle=CONFIRM_STYLE)
     confirm_button.grid(row=len(data_dict), column=1, sticky="n", padx=5, pady=5)
 
 
@@ -676,7 +676,8 @@ def sava(checkvar):
         canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
         size = 1024
-        params = ['gs', '-dNOPAUSE', '-dBATCH', '-sDEVICE=jpeg', '-o', jpg_path]
+        params = ['gs', '-dNOPAUSE', '-dBATCH', '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
+                  '-sDEVICE=jpeg', '-r100', '-o', jpg_path]
         # cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
         #       f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
 
@@ -697,7 +698,7 @@ def sava(checkvar):
         exitcode = gsapi.gsapi_run_string_end(instance, 0)
 
         end_gpdl(instance)
-        # os.remove(eps_path)
+        os.remove(eps_path)
         messagebox.showinfo("成功", f"保存成功,\n路径:{jpg_path}")
 
         return exitcode
@@ -833,94 +834,6 @@ def del_fg():
     canvas.delete('bg')
 
 
-# 障碍物
-ttk.Button(frame_temp_1, bootstyle="outline", text='进出口', command=gate).pack()
-ttk.Button(frame_temp_1, bootstyle="outline", text='指北针', command=compass).pack()
-#
-ttk.Button(frame_temp_2, bootstyle="outline", text='水障', command=water_barrier).pack()
-ttk.Button(frame_temp_2, bootstyle="outline", text='砖墙', command=brick_wall).pack()
-#
-ttk.Button(frame_temp_3, bootstyle="outline", text='起/终点线', command=line).pack()
-ttk.Button(frame_temp_3, bootstyle="outline", text='强制通过点', command=force).pack()
-
-ttk.Button(frame_temp_4, bootstyle="outline", text='利物浦', command=live).pack()
-ttk.Button(frame_temp_4, bootstyle="outline", text='单横木', command=monorail).pack()
-
-ttk.Button(frame_temp_5, bootstyle="outline", text='双横木', command=oxer).pack()
-ttk.Button(frame_temp_5, bootstyle="outline", text='三横木', command=tirail).pack()
-
-ttk.Button(frame_temp_6, bootstyle="outline", text='AB组合障碍', command=combination_ab).pack()
-ttk.Button(frame_temp_6, bootstyle="outline", text='ABC组合障碍', command=combination_abc).pack()
-
-ttk.Button(frame_temp_7, bootstyle="outline", text='自定义障碍', command=custom).pack()
-ttk.Button(frame_temp_7, bootstyle="outline", text='导入背景图', command=fg).pack()
-
-if sys_name == 'Darwin':
-    width = 5
-elif sys_name == 'Windows':
-    width = 10
-# 工作模块
-but_0 = ttk.Checkbutton(frame_command_left, text='拖动', command=drag, width=width, bootstyle="round-toggle")
-but_0.pack()
-but_0.state(['selected'])
-but_3 = ttk.Checkbutton(frame_command_left, text='旋转', command=rotate, width=width, bootstyle="round-toggle")
-but_3.pack()
-but_3.state(['!selected'])
-
-# but_4 = ttk.Button(frame_command_left, text='画弧', command=arc, width=width, height=1)
-# but_4.pack()
-# but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
-# but_2.pack()
-ttk.Button(frame_mea_com_rig, bootstyle="outline", text='清屏', command=clear, width=width).pack()
-# ttk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
-ttk.Button(frame_command_right, bootstyle="outline", text='置底', command=set_state, width=width).pack()
-ttk.Button(frame_command_right, bootstyle="outline", text='删除', command=pop, width=width).pack()
-
-# 辅助模块
-ttk.Button(frame_aux_com_lef, bootstyle="outline", text='网格辅助线', command=grid, width=width).pack()
-aux_info = ttk.Checkbutton(frame_aux_com_rig, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
-aux_info.pack()
-aux_info.state(['selected'])
-
-# 障碍参数
-ttk.Label(frame_aux_tit, text="障碍备注：", font=FONT).pack(pady=5)
-var_parameter = ttk.StringVar()
-e_parameter = Entry(frame_aux_inp, textvariable=var_parameter, width=8)
-e_parameter.pack(pady=5)
-
-ttk.Button(frame_aux_tit, bootstyle="success-outline", text='确认', command=parameter).pack()
-par_state = ttk.Button(frame_aux_inp, bootstyle="success-outline", text='隐藏', command=hidden)
-par_state.pack()
-
-# 圆
-ttk.Label(frame_aux_tit2, text="圆(m)：", font=FONT).pack()
-var_cir = ttk.StringVar()
-e_id = Entry(frame_aux_inp2, textvariable=var_cir, width=3)
-e_id.pack()
-
-ttk.Button(frame_aux_but, bootstyle="success-outline", text='确认', command=circular).pack()
-
-# 测量模块
-but_1 = ttk.Checkbutton(frame_mea_com_lef, bootstyle="round-toggle", text='长度测量', command=pen, width=width)
-but_1.pack()
-
-# 障碍号
-ttk.Label(frame_temp_9, text="障碍号：", font=FONT).pack(side="left")
-var_id = ttk.StringVar()
-e_id = Entry(frame_temp_9, textvariable=var_id, width=4)
-e_id.pack(side="left")
-
-ttk.Button(frame_temp_8, bootstyle="success-outline", text='确认', command=insert).pack(padx=1)
-
-ttk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=200, y=10)
-var_len = ttk.StringVar(value='4')
-len_entt = Entry(win, textvariable=var_len, width=4)
-len_entt.place(x=330, y=10)
-
-ttk.Button(win, bootstyle="success-outline", text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
-
-ttk.Button(win, bootstyle="success-outline", text="清除水印", command=remove_f).place(x=180, y=40)
-
 # 路线图长度
 ttk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
 var_l_w = ttk.StringVar()
@@ -935,7 +848,96 @@ var_l_h.set("60")
 var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
 var_l_h_inp.place(x=80, y=40)
 
-ttk.Button(win, bootstyle="success-outline", text="确认", command=found).place(x=50, y=70)
+ttk.Button(win, bootstyle=CONFIRM_STYLE, text="确认", command=found).place(x=50, y=70)
+
+ttk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=200, y=10)
+var_len = ttk.StringVar(value='4')
+len_entt = Entry(win, textvariable=var_len, width=4)
+len_entt.place(x=330, y=10)
+
+ttk.Button(win, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
+
+# ttk.Button(win, bootstyle="success-outline", text="清除水印", command=remove_f).place(x=180, y=40)
+
+
+# 障碍物
+ttk.Button(frame_temp_1, bootstyle=BUTTON_STYLE, text='进出口', command=gate).pack()
+ttk.Button(frame_temp_1, bootstyle=BUTTON_STYLE, text='指北针', command=compass).pack()
+#
+ttk.Button(frame_temp_2, bootstyle=BUTTON_STYLE, text='水障', command=water_barrier).pack()
+ttk.Button(frame_temp_2, bootstyle=BUTTON_STYLE, text='砖墙', command=brick_wall).pack()
+#
+ttk.Button(frame_temp_3, bootstyle=BUTTON_STYLE, text='起/终点线', command=line).pack()
+ttk.Button(frame_temp_3, bootstyle=BUTTON_STYLE, text='强制通过点', command=force).pack()
+
+ttk.Button(frame_temp_4, bootstyle=BUTTON_STYLE, text='利物浦', command=live).pack()
+ttk.Button(frame_temp_4, bootstyle=BUTTON_STYLE, text='单横木', command=monorail).pack()
+
+ttk.Button(frame_temp_5, bootstyle=BUTTON_STYLE, text='双横木', command=oxer).pack()
+ttk.Button(frame_temp_5, bootstyle=BUTTON_STYLE, text='三横木', command=tirail).pack()
+
+ttk.Button(frame_temp_6, bootstyle=BUTTON_STYLE, text='AB组合障碍', command=combination_ab).pack()
+ttk.Button(frame_temp_6, bootstyle=BUTTON_STYLE, text='ABC组合障碍', command=combination_abc).pack()
+
+ttk.Button(frame_temp_7, bootstyle=BUTTON_STYLE, text='自定义障碍', command=custom).pack()
+ttk.Button(frame_temp_7, bootstyle=BUTTON_STYLE, text='导入背景图', command=fg).pack()
+
+# 障碍号
+ttk.Label(frame_temp_9, text="障碍号：", font=FONT).pack(side="left")
+var_id = ttk.StringVar()
+e_id = Entry(frame_temp_9, textvariable=var_id, width=4)
+e_id.pack(side="left")
+
+ttk.Button(frame_temp_8, bootstyle=CONFIRM_STYLE, text='确认', command=insert).pack(padx=1)
+
+if sys_name == 'Darwin':
+    width = 5
+elif sys_name == 'Windows':
+    width = 5
+# 工作模块
+but_0 = ttk.Checkbutton(frame_command_left, text='拖动', command=drag, width=width, bootstyle="round-toggle")
+but_0.pack()
+but_0.state(['selected'])
+but_3 = ttk.Checkbutton(frame_command_left, text='旋转', command=rotate, width=width, bootstyle="round-toggle")
+but_3.pack()
+but_3.state(['!selected'])
+
+# but_4 = ttk.Button(frame_command_left, text='画弧', command=arc, width=width, height=1)
+# but_4.pack()
+# but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
+# but_2.pack()
+ttk.Button(frame_mea_com_rig, bootstyle=BUTTON_STYLE, text='清屏', command=clear, width=width).pack(side='right')
+# ttk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
+ttk.Button(frame_command_right, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).pack()
+ttk.Button(frame_command_right, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).pack()
+
+# 辅助模块
+ttk.Button(frame_aux_com_lef, bootstyle=BUTTON_STYLE, text='网格辅助线', command=grid, width=width).pack()
+aux_info = ttk.Checkbutton(frame_aux_com_rig, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
+aux_info.pack()
+aux_info.state(['selected'])
+
+# 障碍参数
+ttk.Label(frame_aux_tit, text="障碍备注：", font=FONT).pack(pady=5)
+var_parameter = ttk.StringVar()
+e_parameter = Entry(frame_aux_inp, textvariable=var_parameter, width=8)
+e_parameter.pack(pady=5)
+
+ttk.Button(frame_aux_tit, bootstyle=CONFIRM_STYLE, text='确认', command=parameter).pack()
+par_state = ttk.Button(frame_aux_inp, bootstyle="success-outline", text='隐藏', command=hidden)
+par_state.pack()
+
+# 圆
+ttk.Label(frame_aux_tit2, text="圆(m)：", font=FONT).pack()
+var_cir = ttk.StringVar()
+e_id = Entry(frame_aux_inp2, textvariable=var_cir, width=3)
+e_id.pack()
+
+ttk.Button(frame_aux_but, bootstyle=CONFIRM_STYLE, text='确认', command=circular).pack()
+
+# 测量模块
+but_1 = ttk.Checkbutton(frame_mea_com_lef, bootstyle="round-toggle", text='长度测量', command=pen, width=width)
+but_1.pack()
 
 canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
@@ -1001,24 +1003,11 @@ frame_inp = ttk.Frame(frame_info)
 frame_por = ttk.Frame(frame_info)
 
 frame_info.place(x=WIDTH + 200, y=150)
-# frame_tit.pack(side='left')
-# frame_por.pack(side='right')
-# frame_inp.pack(side='right')
 
 # 生成赛事信息
 info_var = []
 pro_var = []
 edit()
-# confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle="success-outline")
-# confirm_button.grid(row=len(info), column=1, sticky="n", padx=5, pady=5)
-
-# modify_button = ttk.Button(frame_info, text="修改", command=edit)
-# modify_button.grid(row=len(info), column=1, sticky="e", padx=5, pady=5)
-
-# but1 = ttk.Button(win, bootstyle="success-outline", text="确认", command=dle)
-# but1.place(x=WIDTH + 260, y=700)
-# but2 = ttk.Button(win, bootstyle="success-outline", text="修改", command=edit)
-# but2.place(x=WIDTH + 360, y=700)
 
 # 菜单栏
 menu = ttk.Menu(win)

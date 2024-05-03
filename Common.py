@@ -53,6 +53,10 @@ Y = ttk.IntVar(value=0)
 what = ttk.IntVar(value=0)
 no_what = ttk.IntVar(value=0)
 
+# 样式
+CONFIRM_STYLE = 'success-outline'
+BUTTON_STYLE = 'outline'
+
 canvas = ttk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 80, highlightthickness=0)
 canvas.place(x=175, y=100)
 
@@ -211,10 +215,10 @@ frame_job = ttk.Frame(frame_function, name='工作模块')
 # # 测量模块容器
 # frame_mea = ttk.Frame(frame_function, name='测量模块')
 
-frame_job.pack()
+frame_job.pack(side='top')
 
-frame_aux_mea = ttk.Frame(win, name='辅助模块')
-frame_aux_mea.place(x=5, y=530)
+frame_aux_mea = ttk.Frame(frame_function, name='辅助模块')
+frame_aux_mea.pack(side='top')
 # 辅助模块容器
 frame_aux = ttk.Frame(frame_aux_mea, name='辅助模块')
 # 测量模块容器

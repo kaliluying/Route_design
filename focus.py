@@ -62,7 +62,7 @@ class Focus:
             var_a_b = ttk.StringVar(value=info[0] if info else '')
             a_b = Entry(self.frame, textvariable=var_a_b, width=5)
             a_b.grid(row=0, column=1, sticky='w', padx=5, pady=5)
-            ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=1, column=1, sticky='w', padx=5, pady=5)
+            ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=1, column=1, sticky='w', padx=5, pady=5)
 
         elif obstacle == "tirail":
             ttk.Label(self.frame, text='A-->B(m):').grid(row=0, column=0, sticky='e', padx=5, pady=5)
@@ -73,7 +73,7 @@ class Focus:
             var_b_c = ttk.StringVar(value=info[1] if info else '')
             b_c = Entry(self.frame, textvariable=var_b_c, width=5)
             b_c.grid(row=1, column=1, sticky='w', padx=5, pady=5)
-            ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=2, column=1, sticky='w', padx=5, pady=5)
+            ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=2, column=1, sticky='w', padx=5, pady=5)
 
         elif obstacle == "combination_ab" or obstacle == "combination_abc":
             self.combination(obj, com_info, obstacle, state)
@@ -94,17 +94,17 @@ class Focus:
         :return:
         """
         check = ttk.StringVar(value='0')
-        ttk.Label(self.frame, text='宽(m)：').pack()
+        ttk.Label(self.frame, text='宽(m)：').grid(row=0, column=0, sticky='e', padx=5, pady=5)
         water_width_var = ttk.StringVar(value=info[0] if info else '2')
         water_width_ent = Entry(self.frame, textvariable=water_width_var, width=5, name='water_w_ent')
-        water_width_ent.pack()
-        ttk.Label(self.frame, text='长(m)：').pack()
+        water_width_ent.grid(row=0, column=1, sticky='w', padx=5, pady=5)
+        ttk.Label(self.frame, text='长(m)：').grid(row=1, column=0, sticky='e', padx=5, pady=5)
         water_height_var = ttk.StringVar(value=info[0] if info else '4')
         water_height_ent = Entry(self.frame, textvariable=water_height_var, width=5, name='water_h_ent')
-        water_height_ent.pack()
+        water_height_ent.grid(row=1, column=1, sticky='w', padx=5, pady=5)
         water_height_ent.bind("<Command-KeyPress-z>", water_width_ent.undo)
 
-        ttk.Button(self.frame, bootstyle="link", text="确认").pack()
+        ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=2, column=1, sticky='w', padx=5, pady=5)
         ttk.Checkbutton(self.frame, text='双横木', variable=check, onvalue=1, offvalue=0,
                         command=partial(self.live_two, obj, check)).pack()
 
@@ -149,7 +149,7 @@ class Focus:
         water_height_var = ttk.StringVar(value=info[0] if info else '4')
         water_height_ent = Entry(self.frame, textvariable=water_height_var, width=5)
         water_height_ent.pack()
-        ttk.Button(self.frame, bootstyle="link", text="确认").pack()
+        ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").pack()
 
     def combination(self, obj, info, obstacle, state):
         """
@@ -198,7 +198,7 @@ class Focus:
         ttk.Checkbutton(self.frame, text="B双横木(cm)", variable=checkvar_b, onvalue=1, offvalue=0,
                         command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
                                         var_b)).grid(row=2, column=0, sticky='e', padx=5, pady=5)
-        ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=3, column=1, sticky='e', padx=5, pady=5)
+        ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=3, column=1, sticky='e', padx=5, pady=5)
         if obstacle == "combination_abc":
             ttk.Label(self.frame, text='B-->C(m):').grid(row=3, column=0, sticky="e", padx=5, pady=5)
             var_b_c = ttk.StringVar(value=info['ent_b_c'] if info else '3')
@@ -211,7 +211,7 @@ class Focus:
             ent_c.grid(row=4, column=1, sticky='w', padx=5, pady=5)
             ttk.Checkbutton(self.frame, text="C双横木(cm)", variable=checkvar_c, onvalue=1, offvalue=0,
                             command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).grid(row=4, column=0, sticky='e', padx=5, pady=5)
-            ttk.Button(self.frame, bootstyle="success-outline", text="确认").grid(row=5, column=1, sticky='e', padx=5, pady=5)
+            ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=5, column=1, sticky='e', padx=5, pady=5)
 
 
         return checkvar_a, checkvar_b
