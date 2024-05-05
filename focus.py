@@ -106,7 +106,7 @@ class Focus:
 
         ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=2, column=1, sticky='w', padx=5, pady=5)
         ttk.Checkbutton(self.frame, text='双横木', variable=check, onvalue=1, offvalue=0,
-                        command=partial(self.live_two, obj, check)).pack()
+                        command=partial(self.live_two, obj, check)).grid(row=2, column=0, sticky="w", padx=5, pady=5)
 
     @staticmethod
     def live_two(obj, check):
@@ -141,15 +141,15 @@ class Focus:
         :param info:
         :return:
         """
-        ttk.Label(self.frame, text='宽(m)：').pack()
+        ttk.Label(self.frame, text='宽(m)：').grid(row=0, column=0, sticky="w", padx=5, pady=5)
         water_width_var = ttk.StringVar(value=info[0] if info else '3')
         water_width_ent = Entry(self.frame, textvariable=water_width_var, width=5)
-        water_width_ent.pack()
-        ttk.Label(self.frame, text='长(m)：').pack()
+        water_width_ent.grid(row=0, column=1, sticky="w", padx=5, pady=5)
+        ttk.Label(self.frame, text='长(m)：').grid(row=1, column=0, sticky="w", padx=5, pady=5)
         water_height_var = ttk.StringVar(value=info[0] if info else '4')
         water_height_ent = Entry(self.frame, textvariable=water_height_var, width=5)
-        water_height_ent.pack()
-        ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").pack()
+        water_height_ent.grid(row=1, column=1, sticky="w", padx=5, pady=5)
+        ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=2, column=1, sticky="w", padx=5, pady=5)
 
     def combination(self, obj, info, obstacle, state):
         """
@@ -213,7 +213,6 @@ class Focus:
                             command=partial(self.oxer_c, checkvar_a, checkvar_b, checkvar_c, ent_c, obj, var_c)).grid(row=4, column=0, sticky='e', padx=5, pady=5)
             ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=5, column=1, sticky='e', padx=5, pady=5)
 
-
         return checkvar_a, checkvar_b
 
     def remove(self):
@@ -223,14 +222,7 @@ class Focus:
         """
         for i in self.frame.winfo_children():
             i.destroy()
-        # for i in self.frame_label.winfo_children():
-        #     i.destroy()
-        # for i in self.frame_input.winfo_children():
-        #     i.destroy()
-        # for i in self.frame_button.winfo_children():
-        #     i.destroy()
-        # for i in self.frame_select.winfo_children():
-        #     i.destroy()
+
 
     @staticmethod
     def oxer(x1, ent, var):
@@ -241,12 +233,14 @@ class Focus:
         :return:
         """
         if x1.get() == '1':
-            ent.config(state='normal', )
+            # ent.config(state='normal',)
+            ent.enable()
             # if not var.get():
             #     print(var.get())
             #     var.set('1')
         elif x1.get() == '0':
-            ent.config(state='disabled')
+            # ent.config(state='disabled',textvariable="light gray")
+            ent.disable()
 
     def oxer_a(self, x1, x2, x3, ent_a, obj, obstacle, var_a):
         """

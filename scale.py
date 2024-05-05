@@ -70,6 +70,8 @@ class T:
 
             self.startx = event.x
             self.starty = event.y
+            self.app.itemconfig('障碍x', text=f'x:{self.startx/10-1.5:.2f}')
+            self.app.itemconfig('障碍y', text=f'y:{self.starty/10-5:.2f}')
 
     def mouseup(self, event):
         # set_frame_stare(True)

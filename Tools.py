@@ -8,6 +8,7 @@ class Entry(ttk.Entry):
         self.kw = kw
         self.undo_stack = []
         self.current_value = ''
+        self.disabled_text = ""
         self.undo_ = undo
         self.bind('<Key>', self.on_key)
         self.bind("<Command-KeyPress-z>", self.undo if self.undo_ else '')
@@ -45,6 +46,17 @@ class Entry(ttk.Entry):
             self.current_value = self.undo_stack.pop()
             self.delete(0, ttk.END)
             self.insert(0, self.current_value)
+
+    def disable(self):
+        self.disabled_text = self.get()  # 保存禁用前的文本内容
+        self['state'] = 'disabled'
+        self.delete(0, ttk.END)
+        self.insert(0, "已禁用")
+
+    def enable(self):
+        self['state'] = 'normal'
+        self.delete(0, ttk.END)
+        self.insert(0, self.disabled_text)  # 重新设置禁用前的文本内容
 
 
 # 检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
