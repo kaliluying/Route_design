@@ -321,8 +321,8 @@ def found():
     # if w.isdigit() and h.isdigit():
     WIDTH = int(float(w) * 10)
     HEIGHT = int(float(h) * 10)
-    canvas.config(width=WIDTH + 30, height=HEIGHT + 70)
-    canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT + 50)
+    canvas.config(width=WIDTH + 30, height=HEIGHT + 80)
+    canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT +50)
     # canvas.place(x=175, y=130)
     # but1.place(x=WIDTH + 260, y=700)
     # but2.place(x=WIDTH + 360, y=700)
@@ -335,6 +335,10 @@ def found():
     canvas.coords('长', WIDTH - 40, 60)
     canvas.coords('宽', WIDTH - 40, 80)
     canvas.coords('实时路线', WIDTH - 40, 30)
+    canvas.coords('障碍x', 20, HEIGHT + 60)
+    canvas.coords('障碍y', 20, HEIGHT + 70)
+    canvas.coords('鼠标x',WIDTH - 10, HEIGHT + 60)
+    canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 70)
     canvas.delete('bg')
     img = Image.open(fg_path)
     img = img.resize((WIDTH, HEIGHT))
@@ -676,8 +680,13 @@ def sava(checkvar):
         canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
 
         size = 1024
-        params = ['gs', '-dNOPAUSE', '-dBATCH', '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
-                  '-sDEVICE=jpeg', '-r100', '-o', jpg_path]
+        params = ['gs',
+                  '-dDEVICEWIDTHPOINTS=900',
+                  '-dDEVICEHEIGHTPOINTS=900',
+                  '-dNOPAUSE', '-dBATCH',
+                  '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
+                  '-sDEVICE=jpeg', '-r100', '-o',
+                  jpg_path]
         # cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
         #       f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
 
