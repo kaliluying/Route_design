@@ -970,22 +970,21 @@ _libgs.gsapi_init_with_args.argtypes = (
         )
 
 
-if 0:
-    # Not implemented yet:
-    #   gsapi_add_fs()
-    #   gsapi_remove_fs()
-    #
-    class gsapi_fs_t(ctypes.Structure): # lgtm [py/unreachable-statement]
-        _fields_ = [
-                ('open_file',
-                        ctypes.CFUNCTYPE(ctypes.c_int,
-                                ctypes.c_pvoid, # const gs_memory_t *mem
-                                ctypes.c_pvoid, # secret
-                                ctypes.c_char_p,    # fname
-                                ctypes.c_char_p,    # mode
-                                )),
-                ]
-
+# if 0:
+#     # Not implemented yet:
+#     #   gsapi_add_fs()
+#     #   gsapi_remove_fs()
+#     #
+#     class gsapi_fs_t(ctypes.Structure): # lgtm [py/unreachable-statement]
+#         _fields_ = [
+#                 ('open_file',
+#                         ctypes.CFUNCTYPE(ctypes.c_int,
+#                                 ctypes.c_pvoid, # const gs_memory_t *mem
+#                                 ctypes.c_pvoid, # secret
+#                                 ctypes.c_char_p,    # fname
+#                                 ctypes.c_char_p,    # mode
+#                                 )),
+#                 ]
 
 
 if __name__ == '__main__':

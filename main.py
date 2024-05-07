@@ -8,7 +8,7 @@ from functools import partial
 
 import gsapi
 from Tools import *
-from scale import CreateImg, CreateTxt, CreateParameter
+from scale import CreateImg, CreateTxt, CreateParameter, T
 
 
 # 障碍号确认
@@ -89,8 +89,6 @@ def combination_abc():
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create()
     drag()
-    print(frame_aux_com.winfo_x())
-    print(frame_aux_com.winfo_y())
 
 
 # 利物浦
@@ -202,9 +200,6 @@ def dle():
             label.grid(row=i, column=1, sticky="w", padx=5, pady=5)
             label_list.append(label)
 
-            # entry = ttk.Label(frame_info, text=filtered_dict.get(title, ""))
-            # entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
-            # entry_list.append(entry)
         confirm_button = ttk.Button(frame_info, text="修改", command=partial(edit, filtered_dict),
                                     bootstyle="success-outline")
         confirm_button.grid(row=len(filtered_dict), column=1, sticky="n", padx=5, pady=5)
@@ -214,51 +209,6 @@ def dle():
         messagebox.showerror("Error", "出错了")
         logging.warning("赛事信息确认", e)
 
-
-# 修改赛事信息
-# def edit():
-#     """
-#     编辑信息函数：根据现有信息变量（info_var）和项目变量（pro_var）的内容，更新界面显示并清空输入框。
-#     该函数首先将info_var中的值存储到字典temp_中，然后清空info_var和pro_var，并销毁所有界面元素。
-#     随后，根据temp_中存储的值重新创建界面元素，包括标签和输入框，并根据系统类型（Darwin或其他）调整字体大小和界面布局。
-#     特别地，对于'允许时间'这一项，使用了额外的验证机制（validate="focusin"）来确保输入的合法性。
-#     """
-#     temp_ = {}
-#     # 根据info和info_var的对应关系，获取并存储info_var中的值到temp_字典
-#     for i in range(len(info_var)):
-#         temp_[info[i]] = info_var[i].get()
-#
-#     # 清空info_var和pro_var，并销毁三个框架中所有的子元素
-#     info_var.clear()
-#     pro_var.clear()
-#     for i in frame_tit.winfo_children():
-#         i.destroy()
-#     for i in frame_inp.winfo_children():
-#         i.destroy()
-#     for i in frame_por.winfo_children():
-#         i.destroy()
-#
-#     # 根据temp_中存储的内容，重新创建标签、输入框和对应的变量
-#     for i in info:
-#         font = 20 if sys_name == 'Darwin' else 13  # 根据系统类型选择字体大小
-#         ttk.Label(frame_tit, text=i + ":", font=("微软雅黑", font)).pack(padx=1, pady=3)
-#         var = ttk.StringVar()
-#         pro_value = ttk.StringVar()
-#         if temp_:
-#             var.set(temp_[i])  # 如果temp_不为空，设置var的初始值
-#         info_var.append(var)
-#         pro_var.append(pro_value)
-#
-#         y = 4 if sys_name == 'Darwin' else 7  # 根据系统类型选择间距大小
-#         if i == '允许时间':
-#             # 对于'允许时间'这一项，使用特别的验证机制和额外的标签来显示验证信息
-#             Entry(frame_inp, textvariable=var, width=15, validate="focusin",
-#                   validatecommand=partial(allow, info_var, pro_value)).pack(padx=1, pady=y)
-#             ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
-#             continue
-#         # 对于其他项，简单地创建输入框和对应的标签
-#         Entry(frame_inp, textvariable=var, width=15).pack(padx=1, pady=y)
-#         ttk.Label(frame_por, textvariable=pro_value).pack(padx=1, pady=7)
 
 def edit(current_dist=None):
     global entry_list, label_list
@@ -666,7 +616,11 @@ def sava(checkvar):
     根据用户输入保存文件的函数。它提示用户选择保存文件的位置，将画布转换为 EPS 文件，
     然后使用 Ghostscript 将 EPS 文件转换为 JPG 文件。返回 Ghostscript 进程的退出代码。
     """
-
+    for i in T.all_instances:
+        attributes = vars(i)
+        # 遍历属性字典并打印
+        for attribute, value in attributes.items():
+            print(attribute, "=", value)
     current_time = time.strftime("%Y%m%d-%H%M%S")
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
@@ -687,8 +641,6 @@ def sava(checkvar):
                   '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
                   '-sDEVICE=jpeg', '-r100', '-o',
                   jpg_path]
-        # cmd = f"{EpsImagePlugin.gs_windows_binary} -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r600 " \
-        #       f"-dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dEPSCrop -sOutputFile={png_path} {eps_path} "
 
         instance = gsapi.gsapi_new_instance(0)
 
@@ -717,11 +669,10 @@ def sava(checkvar):
 def open_file():
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
-    path = os.getcwd() + f'/ms_download'
     if sys_name == 'Windows':
-        subprocess.Popen(["explorer", path])
+        subprocess.Popen(["explorer", os.getcwd() + r'\ms_download'])
     else:
-        subprocess.call(["open", path])
+        subprocess.call(["open", os.getcwd() + r'/ms_download'])
 
 
 # 置底
