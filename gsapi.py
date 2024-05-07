@@ -77,7 +77,6 @@ import os
 import platform
 import sys
 
-
 _lib = os.environ.get('GSAPI_LIB')
 if not _lib:
     path = './config/'
@@ -86,9 +85,9 @@ if not _lib:
     elif platform.system() == 'Darwin':
         _lib = 'libgs.dylib'
     elif platform.system() == 'Windows':
-        if sys.maxsize == 2**31 - 1:
+        if sys.maxsize == 2 ** 31 - 1:
             _lib = path + 'gsdll32.dll'
-        elif sys.maxsize == 2**63 - 1:
+        elif sys.maxsize == 2 ** 63 - 1:
             _lib = path + 'gsdll64.dll'
         else:
             raise Exception('Unrecognised sys.maxsize=0x%x' % sys.maxsize)
@@ -106,13 +105,16 @@ class GSError(Exception):
     '''
     Exception type for all errors from underlying C library.
     '''
+
     def __init__(self, gs_error):
         self.gs_error = gs_error
+
     def __str__(self):
         return 'Ghostscript exception %i: %s' % (
-                self.gs_error,
-                _gs_error_text(self.gs_error),
-                )
+            self.gs_error,
+            _gs_error_text(self.gs_error),
+        )
+
 
 class gsapi_revision_t:
     def __init__(self, product, copyright, revision, revisiondate):
@@ -120,13 +122,15 @@ class gsapi_revision_t:
         self.copyright = copyright
         self.revision = revision
         self.revisiondate = revisiondate
+
     def __str__(self):
         return 'product=%r copyright=%r revision=%r revisiondate=%r' % (
-                self.product,
-                self.copyright,
-                self.revision,
-                self.revisiondate,
-                )
+            self.product,
+            self.copyright,
+            self.revision,
+            self.revisiondate,
+        )
+
 
 def gsapi_revision():
     '''
@@ -139,11 +143,11 @@ def gsapi_revision():
     if e < 0:
         raise GSError(e)
     r = gsapi_revision_t(
-            _r.product.decode('utf-8'),
-            _r.copyright.decode('utf-8'),
-            _r.revision,
-            _r.revisiondate,
-            )
+        _r.product.decode('utf-8'),
+        _r.copyright.decode('utf-8'),
+        _r.revision,
+        _r.revisiondate,
+    )
     return r
 
 
@@ -158,9 +162,9 @@ def gsapi_new_instance(caller_handle=None):
     '''
     instance = ctypes.c_void_p()
     e = _libgs.gsapi_new_instance(
-            ctypes.byref(instance),
-            ctypes.c_void_p(caller_handle),
-            )
+        ctypes.byref(instance),
+        ctypes.c_void_p(caller_handle),
+    )
     if e < 0:
         raise GSError(e)
     return instance
@@ -192,18 +196,22 @@ def gsapi_set_stdio(instance, stdin_fn, stdout_fn, stderr_fn):
         Should return the number of bytes of <text> that they handled; for
         convenience None is converted to len(text).
     '''
+
     # [unicode: we do not do any encoding or decoding; stdin_fn should encode
     # and stdout_fn and stderr_fn should decode. ]
     def make_out(fn):
         if not fn:
             return None
+
         def out(caller_handle, text, len_):
             text2 = text[:len_]  # converts from ctypes.LP_c_char to bytes.
             ret = fn(caller_handle, text2)
             if ret is None:
                 return len_
             return ret
+
         return _stdio_fn(out)
+
     def make_in(fn):
         if not fn:
             return None
@@ -211,7 +219,7 @@ def gsapi_set_stdio(instance, stdin_fn, stdout_fn, stderr_fn):
 
     stdout_fn2 = make_out(stdout_fn)
     stderr_fn2 = make_out(stderr_fn)
-    stdin_fn2  = make_in(stdin_fn)
+    stdin_fn2 = make_in(stdin_fn)
     e = _libgs.gsapi_set_stdio(instance, stdout_fn2, stdout_fn2, stdout_fn2)
     if e < 0:
         raise GSError(e)
@@ -237,34 +245,34 @@ def gsapi_set_poll(instance, poll_fn):
 
 class display_callback:
     def __init__(self,
-            version_major = 0,
-            version_minor = 0,
-            display_open = 0,
-            display_preclose = 0,
-            display_close = 0,
-            display_presize = 0,
-            display_size = 0,
-            display_sync = 0,
-            display_page = 0,
-            display_update = 0,
-            display_memalloc = 0,
-            display_memfree = 0,
-            display_separation = 0,
-            display_adjust_band_height = 0,
-            ):
-        self.version_major              = version_major
-        self.version_minor              = version_minor
-        self.display_open               = display_open
-        self.display_preclose           = display_preclose
-        self.display_close              = display_close
-        self.display_presize            = display_presize
-        self.display_size               = display_size
-        self.display_sync               = display_sync
-        self.display_page               = display_page
-        self.display_update             = display_update
-        self.display_memalloc           = display_memalloc
-        self.display_memfree            = display_memfree
-        self.display_separation         = display_separation
+                 version_major=0,
+                 version_minor=0,
+                 display_open=0,
+                 display_preclose=0,
+                 display_close=0,
+                 display_presize=0,
+                 display_size=0,
+                 display_sync=0,
+                 display_page=0,
+                 display_update=0,
+                 display_memalloc=0,
+                 display_memfree=0,
+                 display_separation=0,
+                 display_adjust_band_height=0,
+                 ):
+        self.version_major = version_major
+        self.version_minor = version_minor
+        self.display_open = display_open
+        self.display_preclose = display_preclose
+        self.display_close = display_close
+        self.display_presize = display_presize
+        self.display_size = display_size
+        self.display_sync = display_sync
+        self.display_page = display_page
+        self.display_update = display_update
+        self.display_memalloc = display_memalloc
+        self.display_memfree = display_memfree
+        self.display_separation = display_separation
         self.display_adjust_band_height = display_adjust_band_height
 
 
@@ -315,10 +323,10 @@ def gsapi_get_default_device_list(instance):
     list_ = ctypes.POINTER(ctypes.c_char)()
     len_ = ctypes.c_int()
     e = _libgs.gsapi_get_default_device_list(
-            instance,
-            ctypes.byref(list_),
-            ctypes.byref(len_),
-            )
+        instance,
+        ctypes.byref(list_),
+        ctypes.byref(len_),
+    )
     if e < 0:
         raise GSError(e)
     return list_[:len_.value].decode('latin-1')
@@ -338,10 +346,10 @@ def gsapi_set_arg_encoding(instance, encoding):
             GS_ARG_ENCODING_UTF16LE
     '''
     assert encoding in (
-            GS_ARG_ENCODING_LOCAL,
-            GS_ARG_ENCODING_UTF8,
-            GS_ARG_ENCODING_UTF16LE,
-            )
+        GS_ARG_ENCODING_LOCAL,
+        GS_ARG_ENCODING_UTF8,
+        GS_ARG_ENCODING_UTF16LE,
+    )
     global _encoding
     e = _libgs.gsapi_set_arg_encoding(instance, encoding)
     if e < 0:
@@ -402,12 +410,12 @@ def gsapi_run_string_continue(instance, str_, user_errors=0):
     assert isinstance(str_, bytes)
     pexit_code = ctypes.c_int()
     e = _libgs.gsapi_run_string_continue(
-            instance,
-            str_,
-            len(str_),
-            user_errors,
-            ctypes.byref(pexit_code),
-            )
+        instance,
+        str_,
+        len(str_),
+        user_errors,
+        ctypes.byref(pexit_code),
+    )
     if e == gs_error_NeedInput.num:
         # This is normal, so we don't raise.
         pass
@@ -422,10 +430,10 @@ def gsapi_run_string_end(instance, user_errors=0):
     '''
     pexit_code = ctypes.c_int()
     e = _libgs.gsapi_run_string_end(
-            instance,
-            user_errors,
-            ctypes.byref(pexit_code),
-            )
+        instance,
+        user_errors,
+        ctypes.byref(pexit_code),
+    )
     if e < 0:
         raise GSError(e)
     return pexit_code.value
@@ -454,12 +462,12 @@ def gsapi_run_string(instance, str_, user_errors=0):
     pexit_code = ctypes.c_int()
     # We use gsapi_run_string_with_length() because str_ might contain zeros.
     e = _libgs.gsapi_run_string_with_length(
-            instance,
-            str_,
-            len(str_),
-            user_errors,
-            ctypes.byref(pexit_code),
-            )
+        instance,
+        str_,
+        len(str_),
+        user_errors,
+        ctypes.byref(pexit_code),
+    )
     if e < 0:
         raise GSError(e)
     return pexit_code.value
@@ -486,19 +494,19 @@ def gsapi_exit(instance):
 
 
 gs_spt_invalid = -1
-gs_spt_null    = 0 # void * is NULL.
-gs_spt_bool    = 1 # void * is NULL (false) or non-NULL (true).
-gs_spt_int     = 2 # void * is a pointer to an int.
-gs_spt_float   = 3 # void * is a float *.
-gs_spt_name    = 4 # void * is a char *.
-gs_spt_string  = 5 # void * is a char *.
-gs_spt_long    = 6 # void * is a long *.
-gs_spt_i64     = 7 # void * is an int64_t *.
-gs_spt_size_t  = 8 # void * is a size_t *.
-gs_spt_parsed  = 9 # void * is a pointer to a char * to be parsed.
-gs_spt__end    = 10
+gs_spt_null = 0  # void * is NULL.
+gs_spt_bool = 1  # void * is NULL (false) or non-NULL (true).
+gs_spt_int = 2  # void * is a pointer to an int.
+gs_spt_float = 3  # void * is a float *.
+gs_spt_name = 4  # void * is a char *.
+gs_spt_string = 5  # void * is a char *.
+gs_spt_long = 6  # void * is a long *.
+gs_spt_i64 = 7  # void * is an int64_t *.
+gs_spt_size_t = 8  # void * is a size_t *.
+gs_spt_parsed = 9  # void * is a pointer to a char * to be parsed.
+gs_spt__end = 10
 
-gs_spt_more_to_come = 2**31
+gs_spt_more_to_come = 2 ** 31
 
 
 def gsapi_set_param(instance, param, value, type_=None):
@@ -701,18 +709,20 @@ def gsapi_enumerate_params(instance):
     # [unicode: we assume that param names are encoded as latin-1.]
     iterator = ctypes.c_void_p()
     key = ctypes.c_char_p()
+
     type_ = ctypes.c_int()
     while 1:
         e = _libgs.gsapi_enumerate_params(
-                instance,
-                ctypes.byref(iterator),
-                ctypes.byref(key),
-                ctypes.byref(type_),
-                )
+            instance,
+            ctypes.byref(iterator),
+            ctypes.byref(key),
+            ctypes.byref(type_),
+        )
         if e == 1:
             break
         if e:
             raise GSError(e)
+        print(type_.value)
         yield key.value.decode('latin-1'), type_.value
 
 
@@ -757,61 +767,64 @@ def gsapi_is_path_control_active(instance):
         raise GSError(e)
 
 
-
 # Implementation details.
 #
 
 _Error_num_to_error = dict()
+
+
 class _Error:
     def __init__(self, num, desc):
         self.num = num
         self.desc = desc
         _Error_num_to_error[self.num] = self
 
-gs_error_ok                 = _Error(   0, 'ok')
-gs_error_unknownerror       = _Error(  -1, 'unknown error')
-gs_error_dictfull           = _Error(  -2, 'dict full')
-gs_error_dictstackoverflow  = _Error(  -3, 'dict stack overflow')
-gs_error_dictstackunderflow = _Error(  -4, 'dict stack underflow')
-gs_error_execstackoverflow  = _Error(  -5, 'exec stack overflow')
-gs_error_interrupt          = _Error(  -6, 'interrupt')
-gs_error_invalidaccess      = _Error(  -7, 'invalid access')
-gs_error_invalidexit        = _Error(  -8, 'invalid exit')
-gs_error_invalidfileaccess  = _Error(  -9, 'invalid fileaccess')
-gs_error_invalidfont        = _Error( -10, 'invalid font')
-gs_error_invalidrestore     = _Error( -11, 'invalid restore')
-gs_error_ioerror            = _Error( -12, 'ioerror')
-gs_error_limitcheck         = _Error( -13, 'limit check')
-gs_error_nocurrentpoint     = _Error( -14, 'no current point')
-gs_error_rangecheck         = _Error( -15, 'range check')
-gs_error_stackoverflow      = _Error( -16, 'stack overflow')
-gs_error_stackunderflow     = _Error( -17, 'stack underflow')
-gs_error_syntaxerror        = _Error( -18, 'syntax error')
-gs_error_timeout            = _Error( -19, 'timeout')
-gs_error_typecheck          = _Error( -20, 'type check')
-gs_error_undefined          = _Error( -21, 'undefined')
-gs_error_undefinedfilename  = _Error( -22, 'undefined filename')
-gs_error_undefinedresult    = _Error( -23, 'undefined result')
-gs_error_unmatchedmark      = _Error( -24, 'unmatched mark')
-gs_error_VMerror            = _Error( -25, 'VMerror')
 
-gs_error_configurationerror = _Error( -26, 'configuration error')
-gs_error_undefinedresource  = _Error( -27, 'undefined resource')
-gs_error_unregistered       = _Error( -28, 'unregistered')
-gs_error_invalidcontext     = _Error( -29, 'invalid context')
-gs_error_invalidid          = _Error( -30, 'invalid id')
+gs_error_ok = _Error(0, 'ok')
+gs_error_unknownerror = _Error(-1, 'unknown error')
+gs_error_dictfull = _Error(-2, 'dict full')
+gs_error_dictstackoverflow = _Error(-3, 'dict stack overflow')
+gs_error_dictstackunderflow = _Error(-4, 'dict stack underflow')
+gs_error_execstackoverflow = _Error(-5, 'exec stack overflow')
+gs_error_interrupt = _Error(-6, 'interrupt')
+gs_error_invalidaccess = _Error(-7, 'invalid access')
+gs_error_invalidexit = _Error(-8, 'invalid exit')
+gs_error_invalidfileaccess = _Error(-9, 'invalid fileaccess')
+gs_error_invalidfont = _Error(-10, 'invalid font')
+gs_error_invalidrestore = _Error(-11, 'invalid restore')
+gs_error_ioerror = _Error(-12, 'ioerror')
+gs_error_limitcheck = _Error(-13, 'limit check')
+gs_error_nocurrentpoint = _Error(-14, 'no current point')
+gs_error_rangecheck = _Error(-15, 'range check')
+gs_error_stackoverflow = _Error(-16, 'stack overflow')
+gs_error_stackunderflow = _Error(-17, 'stack underflow')
+gs_error_syntaxerror = _Error(-18, 'syntax error')
+gs_error_timeout = _Error(-19, 'timeout')
+gs_error_typecheck = _Error(-20, 'type check')
+gs_error_undefined = _Error(-21, 'undefined')
+gs_error_undefinedfilename = _Error(-22, 'undefined filename')
+gs_error_undefinedresult = _Error(-23, 'undefined result')
+gs_error_unmatchedmark = _Error(-24, 'unmatched mark')
+gs_error_VMerror = _Error(-25, 'VMerror')
 
-gs_error_hit_detected       = _Error( -99, 'hit detected')
-gs_error_Fatal              = _Error(-100, 'Fatal')
-gs_error_Quit               = _Error(-101, 'Quit')
-gs_error_InterpreterExit    = _Error(-102, 'Interpreter Exit')
-gs_error_Remap_Color        = _Error(-103, 'Remap Color')
+gs_error_configurationerror = _Error(-26, 'configuration error')
+gs_error_undefinedresource = _Error(-27, 'undefined resource')
+gs_error_unregistered = _Error(-28, 'unregistered')
+gs_error_invalidcontext = _Error(-29, 'invalid context')
+gs_error_invalidid = _Error(-30, 'invalid id')
+
+gs_error_hit_detected = _Error(-99, 'hit detected')
+gs_error_Fatal = _Error(-100, 'Fatal')
+gs_error_Quit = _Error(-101, 'Quit')
+gs_error_InterpreterExit = _Error(-102, 'Interpreter Exit')
+gs_error_Remap_Color = _Error(-103, 'Remap Color')
 gs_error_ExecStackUnderflow = _Error(-104, 'Exec Stack Underflow')
-gs_error_VMreclaim          = _Error(-105, 'VM reclaim')
-gs_error_NeedInput          = _Error(-106, 'Need Input')
-gs_error_NeedFile           = _Error(-107, 'Need File')
-gs_error_Info               = _Error(-110, 'Info')
-gs_error_handled            = _Error(-111, 'handled')
+gs_error_VMreclaim = _Error(-105, 'VM reclaim')
+gs_error_NeedInput = _Error(-106, 'Need Input')
+gs_error_NeedFile = _Error(-107, 'Need File')
+gs_error_Info = _Error(-110, 'Info')
+gs_error_handled = _Error(-111, 'handled')
+
 
 def _gs_error_text(gs_error):
     '''
@@ -830,31 +843,31 @@ def _gs_error_text(gs_error):
 #
 _encoding = 'utf-8'
 
+
 class _gsapi_revision_t(ctypes.Structure):
     _fields_ = [
-            ('product',         ctypes.c_char_p),
-            ('copyright',       ctypes.c_char_p),
-            ('revision',        ctypes.c_long),
-            ('revisiondate',    ctypes.c_long),
-            ]
+        ('product', ctypes.c_char_p),
+        ('copyright', ctypes.c_char_p),
+        ('revision', ctypes.c_long),
+        ('revisiondate', ctypes.c_long),
+    ]
 
 
 _stdio_fn = ctypes.CFUNCTYPE(
-        ctypes.c_int,                   # return
-        ctypes.c_void_p,                # caller_handle
-        ctypes.POINTER(ctypes.c_char),  # str
-        ctypes.c_int,                   # len
-        )
+    ctypes.c_int,  # return
+    ctypes.c_void_p,  # caller_handle
+    ctypes.POINTER(ctypes.c_char),  # str
+    ctypes.c_int,  # len
+)
 
 _gsapi_set_stdio_refs = None
-
 
 # ctypes representation of int (*poll_fn)(void* caller_handle).
 #
 _poll_fn = ctypes.CFUNCTYPE(
-        ctypes.c_int,       # return
-        ctypes.c_void_p,    # caller_handle
-        )
+    ctypes.c_int,  # return
+    ctypes.c_void_p,  # caller_handle
+)
 
 _gsapi_set_poll_refs = None
 
@@ -863,98 +876,96 @@ _gsapi_set_poll_refs = None
 #
 class _display_callback(ctypes.Structure):
     _fields_ = [
-            ('size', ctypes.c_int),
-            ('version_major', ctypes.c_int),
-            ('version_minor', ctypes.c_int),
-            ('display_open',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            )),
-            ('display_preclose',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            )),
-            ('display_close',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            )),
-            ('display_presize',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            ctypes.c_int,       # width
-                            ctypes.c_int,       # height
-                            ctypes.c_int,       # raster
-                            ctypes.c_uint,      # format
-                            )),
-            ('display_size',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            ctypes.c_int,       # width
-                            ctypes.c_int,       # height
-                            ctypes.c_int,       # raster
-                            ctypes.c_uint,      # format
-                            ctypes.c_char_p,    # pimage
-                            )),
-            ('display_sync',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            )),
-            ('display_page',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            ctypes.c_int,       # copies
-                            ctypes.c_int,       # flush
-                            )),
-            ('display_update',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            ctypes.c_int,       # x
-                            ctypes.c_int,       # y
-                            ctypes.c_int,       # w
-                            ctypes.c_int,       # h
-                            )),
-            ('display_memalloc',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            ctypes.c_ulong,     # size
-                            )),
-            ('display_memfree',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            ctypes.c_void_p,    # mem
-                            )),
-            ('display_separation',
-                    ctypes.CFUNCTYPE(ctypes.c_int,
-                            ctypes.c_void_p,    # handle
-                            ctypes.c_void_p,    # device
-                            ctypes.c_int,       # component
-                            ctypes.c_char_p,    # component_name
-                            ctypes.c_ushort,    # c
-                            ctypes.c_ushort,    # m
-                            ctypes.c_ushort,    # y
-                            ctypes.c_ushort,    # k
-                            )),
-            ]
+        ('size', ctypes.c_int),
+        ('version_major', ctypes.c_int),
+        ('version_minor', ctypes.c_int),
+        ('display_open',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          )),
+        ('display_preclose',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          )),
+        ('display_close',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          )),
+        ('display_presize',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          ctypes.c_int,  # width
+                          ctypes.c_int,  # height
+                          ctypes.c_int,  # raster
+                          ctypes.c_uint,  # format
+                          )),
+        ('display_size',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          ctypes.c_int,  # width
+                          ctypes.c_int,  # height
+                          ctypes.c_int,  # raster
+                          ctypes.c_uint,  # format
+                          ctypes.c_char_p,  # pimage
+                          )),
+        ('display_sync',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          )),
+        ('display_page',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          ctypes.c_int,  # copies
+                          ctypes.c_int,  # flush
+                          )),
+        ('display_update',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          ctypes.c_int,  # x
+                          ctypes.c_int,  # y
+                          ctypes.c_int,  # w
+                          ctypes.c_int,  # h
+                          )),
+        ('display_memalloc',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          ctypes.c_ulong,  # size
+                          )),
+        ('display_memfree',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          ctypes.c_void_p,  # mem
+                          )),
+        ('display_separation',
+         ctypes.CFUNCTYPE(ctypes.c_int,
+                          ctypes.c_void_p,  # handle
+                          ctypes.c_void_p,  # device
+                          ctypes.c_int,  # component
+                          ctypes.c_char_p,  # component_name
+                          ctypes.c_ushort,  # c
+                          ctypes.c_ushort,  # m
+                          ctypes.c_ushort,  # y
+                          ctypes.c_ushort,  # k
+                          )),
+    ]
 
 
 _libgs.gsapi_set_display_callback.argtypes = (
-        ctypes.c_void_p,                    # instance
-        ctypes.POINTER(_display_callback),  # callback
-        )
-
+    ctypes.c_void_p,  # instance
+    ctypes.POINTER(_display_callback),  # callback
+)
 
 _gsapi_set_display_callback_refs = None
-
 
 # See:
 #
@@ -964,11 +975,10 @@ _pchar = ctypes.POINTER(ctypes.c_char)
 _ppchar = ctypes.POINTER(_pchar)
 
 _libgs.gsapi_init_with_args.argtypes = (
-        ctypes.c_void_p,    # instance
-        ctypes.c_int,       # argc
-        _ppchar,            # argv
-        )
-
+    ctypes.c_void_p,  # instance
+    ctypes.c_int,  # argc
+    _ppchar,  # argv
+)
 
 # if 0:
 #     # Not implemented yet:
@@ -996,7 +1006,7 @@ if __name__ == '__main__':
 
     print('libgs: %s' % _libgs)
 
-    revision  = gsapi_revision()
+    revision = gsapi_revision()
     print('libgs.gsapi_revision() ok: %s' % revision)
 
     instance = gsapi_new_instance()
@@ -1005,8 +1015,11 @@ if __name__ == '__main__':
     gsapi_set_arg_encoding(instance, GS_ARG_ENCODING_UTF8)
     print('gsapi_set_arg_encoding() ok.')
 
+
     def stdout_fn(caller_handle, bytes_):
         sys.stdout.write(bytes_.decode('latin-1'))
+
+
     gsapi_set_stdio(instance, None, stdout_fn, None)
     print('gsapi_set_stdio() ok.')
 
@@ -1020,7 +1033,7 @@ if __name__ == '__main__':
     l = gsapi_get_default_device_list(instance)
     print('gsapi_get_default_device_list() ok: l=%s' % l)
 
-    gsapi_init_with_args(instance, ['gs',])
+    gsapi_init_with_args(instance, ['gs', ])
     print('gsapi_init_with_args() ok')
 
     gsapi_set_param(instance, "foo", 100, gs_spt_i64)
@@ -1049,11 +1062,11 @@ if __name__ == '__main__':
         assert 0
 
     # Check we can write 64-bit value.
-    gsapi_set_param(instance, 'foo', 2**40, None)
+    gsapi_set_param(instance, 'foo', 2 ** 40, None)
 
     # Check specifying out-of-range raises exception.
     try:
-        gsapi_set_param(instance, 'foo', 2**40, gs_spt_int)
+        gsapi_set_param(instance, 'foo', 2 ** 40, gs_spt_int)
     except Exception as e:
         print(e)
         assert 'out of range' in str(e)
@@ -1062,7 +1075,7 @@ if __name__ == '__main__':
 
     # Check specifying out-of-range raises exception.
     try:
-        gsapi_set_param(instance, 'foo', 2**70, None)
+        gsapi_set_param(instance, 'foo', 2 ** 70, None)
     except Exception as e:
         print(e)
         assert 'out of range' in str(e)
