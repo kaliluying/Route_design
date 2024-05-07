@@ -616,11 +616,6 @@ def sava(checkvar):
     根据用户输入保存文件的函数。它提示用户选择保存文件的位置，将画布转换为 EPS 文件，
     然后使用 Ghostscript 将 EPS 文件转换为 JPG 文件。返回 Ghostscript 进程的退出代码。
     """
-    for i in T.all_instances:
-        attributes = vars(i)
-        # 遍历属性字典并打印
-        for attribute, value in attributes.items():
-            print(attribute, "=", value)
     current_time = time.strftime("%Y%m%d-%H%M%S")
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
@@ -817,7 +812,16 @@ len_entt.place(x=330, y=10)
 
 ttk.Button(win, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
 
-# ttk.Button(win, bootstyle="success-outline", text="清除水印", command=remove_f).place(x=180, y=40)
+def download():
+
+    for i in T.all_instances:
+        attributes = vars(i)
+        # 遍历属性字典并打印
+        print(attributes)
+        # for attribute, value in attributes.items():
+        #     print(attribute, "=", value)
+
+ttk.Button(win, bootstyle="success-outline", text="保存", command=download).place(x=180, y=40)
 
 
 # 障碍物
@@ -932,8 +936,8 @@ canvas.create_text(WIDTH - 10, HEIGHT + 70, text='y:', tags=('辅助信息', '�
 canvas.bind('<Motion>', shu)
 
 # 左下显示当前障碍坐标
-canvas.create_text(20, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
-canvas.create_text(20, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
+canvas.create_text(30, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
+canvas.create_text(30, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
 
 # 水印
 font = 0.16 if sys_name == 'Darwin' else 0.12

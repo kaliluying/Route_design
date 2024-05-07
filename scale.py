@@ -8,18 +8,18 @@ class T:
     all_instances = []
 
     def __init__(self, app, index):
-        self.__class__.all_instances.append(self)
-        self.tag = None
-        self.startx = 160
-        self.starty = 25
-        self.current_x = 160
-        self.current_y = 25
-        self.angle = 0
-        self.temp_angle = 0
-        self.app = app
-        self.index = str(index)
-        self.line_tag = None
-        self.id = None
+        self.__class__.all_instances.append(self)   # 添加实例
+        self.tag = None                             # 标签
+        self.startx = 160                           # 鼠标开始x位置
+        self.starty = 25                            # 鼠标开始y位置
+        self.current_x = 160                        # 障碍当前x位置
+        self.current_y = 25                         # 障碍当前y位置
+        self.angle = 0                              # 障碍当前角度
+        self.temp_angle = 0                         # 障碍临时角度
+        self.app = app                              # 画布
+        self.index = str(index)                     # 障碍索引
+        self.line_tag = None                        # 障碍线标签
+        self.id = None                              # 障碍id
 
     def mousedown(self, tag, event):
         """
@@ -70,8 +70,8 @@ class T:
 
             self.startx = event.x
             self.starty = event.y
-            self.app.itemconfig('障碍x', text=f'x:{self.startx/10-1.5:.2f}')
-            self.app.itemconfig('障碍y', text=f'y:{self.starty/10-5:.2f}')
+            self.app.itemconfig('障碍x', text=f'x:{self.current_x/10-1.5:.2f}')
+            self.app.itemconfig('障碍y', text=f'y:{self.current_y/10-5:.2f}')
 
     def mouseup(self, event):
         # set_frame_stare(True)
@@ -114,9 +114,9 @@ class CreateParameter(T):
 class CreateImg(T):
     def __init__(self, app, index, img_path, obstacle=None):
         super(CreateImg, self).__init__(app, index)
-        self.var = None
-        self.img = None
-        self.frame_input = None
+        self.var = None                                 # 输入框
+        self.img = None                                 # 图片
+        self.frame_input = None                         #
         self.img_path = img_path
         self.img_obj = Image.open(self.img_path)
         self.temp_path = None
@@ -218,7 +218,7 @@ class CreateImg(T):
         :return:
         """
         self.info.clear()
-        for i in self.frame_input.winfo_children():
+        for i in self.frame_input:
             if self.obstacle == "combination_ab" or self.obstacle == "combination_abc":
                 if is_number(i.get()):
                     self.com_info[i.getname()] = i.get()

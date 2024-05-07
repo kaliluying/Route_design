@@ -13,9 +13,6 @@ class Focus:
     def __init__(self, win):
         self.win = win
         self.frame = None
-        self.frame = None
-        self.frame = None
-        self.frame = None
         self.create_frame()  # 初始化生成frame容器
 
     def __new__(cls, *args, **kwargs):
@@ -35,15 +32,6 @@ class Focus:
         """
         self.frame = ttk.Frame(self.win, name='障碍编辑容器')
         self.frame.pack()
-        # self.frame_button = ttk.Frame(self.frame)
-        # self.frame_button.pack(side="bottom")
-        # self.frame = ttk.Frame(self.frame)
-        # self.frame_label.pack(side="left")
-        # self.frame_select = ttk.Frame(self.frame)
-        # # self.frame_select.pack(side="right")
-        # self.frame_input = ttk.Frame(self.frame)
-        # self.frame_input.pack(side="right")
-        #
 
     def update(self, obj, obstacle, info=None, state=None, com_info=None):
         """
@@ -51,9 +39,9 @@ class Focus:
         :param obj: scale类对象
         :param obstacle: 标识
         :param info: 输入框中的内容
-        :return: 返回input和button容器
         :param com_info:
         :param state:
+        :return: 返回input和button容器
         """
         self.create_frame()
         self.remove()
@@ -198,7 +186,8 @@ class Focus:
         ttk.Checkbutton(self.frame, text="B双横木(cm)", variable=checkvar_b, onvalue=1, offvalue=0,
                         command=partial(self.oxer_b, checkvar_a, checkvar_b, checkvar_c, ent_b, obj, obstacle,
                                         var_b)).grid(row=2, column=0, sticky='e', padx=5, pady=5)
-        ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=3, column=1, sticky='e', padx=5, pady=5)
+        if obstacle == "combination_ab":
+            ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=3, column=1, sticky='e', padx=5, pady=5)
         if obstacle == "combination_abc":
             ttk.Label(self.frame, text='B-->C(m):').grid(row=3, column=0, sticky="e", padx=5, pady=5)
             var_b_c = ttk.StringVar(value=info['ent_b_c'] if info else '3')
