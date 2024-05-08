@@ -3,6 +3,13 @@ from Common import *
 
 class Entry(ttk.Entry):
     def __init__(self, master=None, undo=True, cnf={}, **kw):
+        """
+        对Entry进行重写
+        :param master:
+        :param undo:
+        :param cnf:
+        :param kw:
+        """
         ttk.Entry.__init__(self, master, cnf, **kw)
         self.con = None
         self.kw = kw
@@ -15,13 +22,27 @@ class Entry(ttk.Entry):
         self.bind("<Control-KeyPress-z>", self.undo if self.undo_ else '')
 
     def config(self, cnf=None, **kw):
+        """
+        从Entry中提取一些数据
+        :param cnf:
+        :param kw:
+        :return:
+        """
         ttk.Entry.configure(self, cnf, **kw)
         self.con = kw
 
     def getname(self):
+        """
+        获取name
+        :return:
+        """
         return self.kw['name']
 
     def getstate(self):
+        """
+        获取状态
+        :return:
+        """
         try:
             try:
                 return self.con['state']
@@ -31,36 +52,63 @@ class Entry(ttk.Entry):
             return ''
 
     def on_key(self, event):
+        """
+        处理键盘按键事件。
+        对于特定的按键事件（如回车、退格、删除），更新当前值并可能将其加入撤销栈。
+        :param event: 一个包含按键信息的事件对象。
+        :return:
+        """
         if event.keysym in ('Return', 'KP_Enter'):
+            # 当按下回车键时，将当前值加入撤销栈
             self.undo_stack.append(self.current_value)
         elif event.keysym == 'BackSpace':
+            # 当按下退格键时，重置当前值为文本框当前的内容
             self.current_value = self.get()
         elif event.keysym == 'Delete':
+            # 当按下删除键时，重置当前值为文本框当前的内容
             self.current_value = self.get()
         else:
+            # 对于其他按键，将当前值加入撤销栈，并更新当前值为文本框当前的内容
             self.undo_stack.append(self.current_value)
             self.current_value = self.get()
 
     def undo(self, event):
+        """
+        撤销
+        :param event: 一个包含按键信息的事件对象。
+        :return:
+        """
         if self.undo_stack:
             self.current_value = self.undo_stack.pop()
             self.delete(0, ttk.END)
             self.insert(0, self.current_value)
 
     def disable(self):
+        """
+        输入框禁用
+        :return:
+        """
         self.disabled_text = self.get()  # 保存禁用前的文本内容
         self['state'] = 'disabled'
         self.delete(0, ttk.END)
         self.insert(0, "已禁用")
 
     def enable(self):
+        """
+        输入框激活
+        :return:
+        """
         self['state'] = 'normal'
         self.delete(0, ttk.END)
         self.insert(0, self.disabled_text)  # 重新设置禁用前的文本内容
 
 
-# 检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
 def is_number(s):
+    """
+    检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
+    :param s:需要检测的字符串
+    :return:
+    """
     try:  # 如果能运行float(s)语句，返回True（字符串s是浮点数）
         float(s)
         return True
@@ -75,8 +123,14 @@ def is_number(s):
     return False
 
 
-# 合并图片
 def merge(m, m1=0, state=1):
+    """
+    合并图片
+    :param m:A B障碍的距离
+    :param m1:B C障碍的距离
+    :param state:是否为双横木
+    :return:调用函数添加行进方向并返回图片地址
+    """
     img_obj = Image.open(get_one_path())
     img_obj2 = Image.open(get_one_path())
     w, h = img_obj.size
@@ -98,8 +152,13 @@ def merge(m, m1=0, state=1):
     return start_direction(expand(com_image, state))
 
 
-# 图片扩展
 def expand(path, state=1):
+    """
+    图片扩展
+    :param path:图片地址
+    :param state:是否为双横木
+    :return:
+    """
     img = Image.open(path)
     w, h = img.size
     l = r = t = b = 0
@@ -127,8 +186,12 @@ def expand(path, state=1):
     return image_path
 
 
-# 添加行进方向
 def start_direction(image_path):
+    """
+    添加行进方向
+    :param image_path:
+    :return:返回图片地址
+    """
     img1 = Image.open(image_path)
     w, h = img1.size
     img2 = Image.open(direction_image)
@@ -145,6 +208,13 @@ def start_direction(image_path):
 
 
 def combination(m1, m2, m3):
+    """
+    AB组合障碍
+    :param m1: 障碍间距
+    :param m2: 障碍间距
+    :param m3: 障碍间距
+    :return: 调用函数添加行进方向并返回图片地址
+    """
     img_obj = Image.open(get_one_path())
     img_obj2 = Image.open(get_one_path())
     img_obj3 = Image.open(get_one_path())
@@ -161,6 +231,15 @@ def combination(m1, m2, m3):
 
 
 def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
+    """
+    AB组合障碍
+    :param m1: 障碍间距
+    :param m2: 障碍间距
+    :param m3: 障碍间距
+    :param m4: 障碍间距
+    :param m5: 障碍间距
+    :return: 调用函数添加行进方向并返回图片地址
+    """
     img_obj1 = img_obj2 = img_obj3 = img_obj4 = img_obj5 = img_obj6 = Image.open(get_one_path())
     result = Image.new(img_obj1.mode, (m1 + m2 + m3 + m4 + m5 + 30, 40))
 
@@ -180,6 +259,13 @@ def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
 
 
 def merge_ab(state, m1=0, m2=0):
+    """
+
+    :param state:
+    :param m1:
+    :param m2:
+    :return:
+    """
     if state == 1:
         path = start_direction(expand(get_one_path()))
     if state == 2:
@@ -204,6 +290,18 @@ def merge_ab(state, m1=0, m2=0):
 
 
 def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
+    """
+
+    :param stare_a:
+    :param state_b:
+    :param state_c:
+    :param a:
+    :param b:
+    :param c:
+    :param a_b:
+    :param b_c:
+    :return:
+    """
     a_img = one_exp_dir_path
     b_img = one_exp_dir_path
     c_img = one_exp_dir_path
@@ -234,6 +332,15 @@ def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
 
 
 def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
+    """
+
+    :param a:
+    :param b:
+    :param c:
+    :param a_b:
+    :param b_c:
+    :return:
+    """
     a_img = merge(a if a else 0, state=0)
     img_obj = Image.open(a_img)
     b_img = merge(b if b else 0, state=0)
@@ -251,6 +358,13 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
 
 
 def obs_ab(a=0, b=0, a_b=30):
+    """
+
+    :param a:
+    :param b:
+    :param a_b:
+    :return:
+    """
     a_img = merge(a if a else 0, state=0)
     img_obj = Image.open(a_img)
     b_img = merge(b if b else 0, state=0)

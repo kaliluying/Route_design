@@ -216,9 +216,10 @@ class Focus:
     @staticmethod
     def oxer(x1, ent, var):
         """
-        :param var:
+        设置输入框状态
         :param x1:
         :param ent:
+        :param var:
         :return:
         """
         if x1.get() == '1':
@@ -234,13 +235,13 @@ class Focus:
     def oxer_a(self, x1, x2, x3, ent_a, obj, obstacle, var_a):
         """
         选中A障碍是否为双横木
-        :param var_a:
         :param x1: a障碍是否为双横木
         :param x2: b障碍是否为双横木
         :param x3: c障碍是否为双横木
         :param ent_a: 输入框
         :param obj: 组件对像
         :param obstacle: ab组合还是abc
+        :param var_a: 输入框值
         :return:
         """
         self.oxer(x1, ent_a, var_a)
@@ -257,6 +258,7 @@ class Focus:
             except Exception as e:
                 print(e)
                 logging.warning(e)
+
             obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get())
             # obj.img_path = merge(5, m1=20)
             obj.img = Image.open(obj.img_path)
@@ -283,13 +285,13 @@ class Focus:
     def oxer_b(self, x1, x2, x3, ent_b, obj, obstacle, var_b):
         """
         选中B障碍是否为双横木
-        :param var_b:
-        :param x1:
-        :param x2:
-        :param x3:
-        :param ent_b:
-        :param obj:
-        :param obstacle:
+        :param x1: a障碍是否为双横木
+        :param x2: b障碍是否为双横木
+        :param x3: c障碍是否为双横木
+        :param ent_b: 输入框
+        :param obj: 组件对像
+        :param obstacle: ab组合还是abc
+        :param var_b: 输入框值
         :return:
         """
         self.oxer(x2, ent_b, var_b)
@@ -329,6 +331,16 @@ class Focus:
                 logging.warning('b障碍', e)
 
     def oxer_c(self, x1, x2, x3, ent_c, obj, var_c):
+        """
+        障碍C是否为双横木
+        :param x1:障碍A是否为双横木
+        :param x2:障碍B是否为双横木
+        :param x3:障碍C是否为双横木
+        :param ent_c:障碍C输入框
+        :param obj:障碍对象
+        :param var_c:输入框值
+        :return:
+        """
         self.oxer(x3, ent_c, var_c)
         self.judge_abc(x1, x2, x3, obj)
 
