@@ -365,34 +365,16 @@ class Focus:
 
     def judge_abc(self, x1, x2, x3, obj):
         try:
-            if x1.get() == '1':
-                if x2.get() == '1':
-                    if x3.get() == '1':
-                        obj.img_path = merge_ab(state=2, m1=30, m2=30)
-                        obj.img = Image.open(obj.img_path)
-                        obj.temp_path = ImageTk.PhotoImage(obj.img)
-                        obj.app.itemconfig(obj.tag, image=obj.temp_path)
-                        return
-                    elif x3.get() == '0':
-                        self.combination_abc(obj, x1, x2, x3)
-                        return
-                elif x2.get() == '0':
-                    self.combination_abc(obj, x1, x2, x3)
-                    return
-            elif x1.get() == '0':
-                if x2.get() == '1':
-                    self.combination_abc(obj, x1, x2, x3)
-                    return
-                elif x2.get() == '0':
-                    if x3.get() == '1':
-                        self.combination_abc(obj, x1, x2, x3)
-                        return
-                    elif x3.get() == '0':
-                        obj.img_path = merge_ab(state=1, m1=30, m2=30)
-                        obj.img = Image.open(obj.img_path)
-                        obj.temp_path = ImageTk.PhotoImage(obj.img)
-                        obj.app.itemconfig(obj.tag, image=obj.temp_path)
-                        return
+            if ((x1.get() == x2.get() == x3.get() == '0') or
+                    (x1.get() == x2.get() == x3.get() == '1')):
+                state = int(x1.get()) + 1
+                obj.img_path = merge_ab(state=state, m1=30, m2=30)
+                obj.img = Image.open(obj.img_path)
+                obj.temp_path = ImageTk.PhotoImage(obj.img)
+                obj.app.itemconfig(obj.tag, image=obj.temp_path)
+                return
+            else:
+                self.combination_abc(obj, x1, x2, x3)
         except Exception as e:
             print('abc障碍', e)
             logging.warning('abc障碍', e)
