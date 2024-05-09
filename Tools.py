@@ -38,19 +38,6 @@ class Entry(ttk.Entry):
         """
         return self.kw['name']
 
-    def getstate(self):
-        """
-        获取状态
-        :return:
-        """
-        try:
-            try:
-                return self.con['state']
-            except:
-                return self.kw['state']
-        except:
-            return ''
-
     def on_key(self, event):
         """
         处理键盘按键事件。
@@ -106,8 +93,8 @@ class Entry(ttk.Entry):
 def is_number(s):
     """
     检测字符串中是否是数字，支持正负整数，小数，中文数字如：一
-    :param s:需要检测的字符串
-    :return:
+    :param s: 需要检测的字符串
+    :return: 返回布尔值
     """
     try:  # 如果能运行float(s)语句，返回True（字符串s是浮点数）
         float(s)
@@ -126,24 +113,21 @@ def is_number(s):
 def merge(m, m1=0, state=1):
     """
     合并图片
-    :param m:A B障碍的距离
-    :param m1:B C障碍的距离
-    :param state:是否为双横木
-    :return:调用函数添加行进方向并返回图片地址
+    :param m: A B障碍的距离
+    :param m1: B C障碍的距离
+    :param state: 是否为双横木
+    :return: 调用函数添加行进方向并返回图片地址
     """
     img_obj = Image.open(get_one_path())
     img_obj2 = Image.open(get_one_path())
     w, h = img_obj.size
     result = Image.new(img_obj.mode, (m + m1 + 10, h))
     result.paste(img_obj, box=(0, 0))
-    if m1:
-        a = 10
-    else:
-        a = 5
-    result.paste(img_obj2, box=(m + m1 - a, 0))
+    a = 5 if m1 else 0
+    result.paste(img_obj2, box=(m + m1 + a, 0))
     if m1:
         image3 = Image.open(get_one_path())
-        result.paste(image3, box=(m - 5, 0))
+        result.paste(image3, box=(m, 0))
         result.save("img/com_2.png")
         com_image = "img/com_2.png"
         return start_direction(expand(com_image, state))
@@ -155,8 +139,8 @@ def merge(m, m1=0, state=1):
 def expand(path, state=1):
     """
     图片扩展
-    :param path:图片地址
-    :param state:是否为双横木
+    :param path: 图片地址
+    :param state: 是否为双横木
     :return:
     """
     img = Image.open(path)
@@ -189,8 +173,8 @@ def expand(path, state=1):
 def start_direction(image_path):
     """
     添加行进方向
-    :param image_path:
-    :return:返回图片地址
+    :param image_path: 需要添加行进方向的地址
+    :return: 返回图片地址
     """
     img1 = Image.open(image_path)
     w, h = img1.size
@@ -232,7 +216,7 @@ def combination(m1, m2, m3):
 
 def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
     """
-    AB组合障碍
+    ABC组合障碍
     :param m1: 障碍间距
     :param m2: 障碍间距
     :param m3: 障碍间距
@@ -260,7 +244,7 @@ def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
 
 def merge_ab(state, m1=0, m2=0):
     """
-
+    都是双横木时
     :param state:
     :param m1:
     :param m2:
@@ -292,9 +276,9 @@ def merge_ab(state, m1=0, m2=0):
 def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
     """
 
-    :param stare_a:
-    :param state_b:
-    :param state_c:
+    :param stare_a:障碍A是否为双横木
+    :param state_b:障碍B是否为双横木
+    :param state_c:障碍C是否为双横木
     :param a:
     :param b:
     :param c:

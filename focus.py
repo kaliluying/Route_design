@@ -377,20 +377,12 @@ class Focus:
                         self.combination_abc(obj, x1, x2, x3)
                         return
                 elif x2.get() == '0':
-                    if x3.get() == '1':
-                        self.combination_abc(obj, x1, x2, x3)
-                        return
-                    elif x3.get() == '0':
-                        self.combination_abc(obj, x1, x2, x3)
-                        return
+                    self.combination_abc(obj, x1, x2, x3)
+                    return
             elif x1.get() == '0':
                 if x2.get() == '1':
-                    if x3.get() == '1':
-                        self.combination_abc(obj, x1, x2, x3)
-                        return
-                    elif x3.get() == '0':
-                        self.combination_abc(obj, x1, x2, x3)
-                        return
+                    self.combination_abc(obj, x1, x2, x3)
+                    return
                 elif x2.get() == '0':
                     if x3.get() == '1':
                         self.combination_abc(obj, x1, x2, x3)

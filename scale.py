@@ -124,8 +124,8 @@ class CreateImg(T):
         self.obstacle = obstacle
         self.focus = focus
         self.info = []
-        self.com_info = {}
-        self.state = {}
+        self.com_info = {}                              # 输入框内容
+        self.state = {}                                 # 输入框状态
         self.name = ''
         self.state_line = 0
 
@@ -222,13 +222,13 @@ class CreateImg(T):
             if self.obstacle == "combination_ab" or self.obstacle == "combination_abc":
                 if is_number(i.get()):
                     self.com_info[i.getname()] = i.get()
-                    self.state[i.getname()] = i.getstate()
+                    self.state[i.getname()] = i['state']
                     if self.state[i.getname()] == "disabled":
                         self.com_info[i.getname()] = "0"
                     continue
                 elif i.get() == '':
                     self.com_info[i.getname()] = '0'
-                    self.state[i.getname()] = i.getstate()
+                    self.state[i.getname()] = i['state']
                     continue
                 else:
                     messagebox.showerror("错误", "请输入数字")
@@ -237,13 +237,13 @@ class CreateImg(T):
             elif self.obstacle == 'live':
                 if is_number(i.get()):
                     self.com_info[i.winfo_name()] = i.get()
-                    self.state[i.winfo_name()] = i.getstate()
+                    self.state[i.winfo_name()] = i['state']
                     if self.state[i.winfo_name()] == "disabled":
                         self.com_info[i.winfo_name()] = "0"
                     continue
                 elif i.get() == '':
                     self.com_info[i.winfo_name()] = '0'
-                    self.state[i.winfo_name()] = i.getstate()
+                    self.state[i.winfo_name()] = i['state']
                     continue
                 else:
                     messagebox.showerror("错误", "请输入数字")
@@ -275,7 +275,7 @@ class CreateImg(T):
                 else:
                     temp[key] = 0
             a, a_b, b = temp.values()
-            a, a_b, b = round(a), round(a_b), round(b)
+            a, a_b, b = round(a)+5 if a else 0, round(a_b), round(b)+5 if b else 0,
             self.img_path = obs_ab(a, b, a_b)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
@@ -290,7 +290,11 @@ class CreateImg(T):
                 else:
                     temp[key] = 0
             a, a_b, b, b_c, c = temp.values()
-            a, a_b, b, b_c, c = int(a), int(a_b), int(b), int(b_c), int(c)
+            a, a_b, b, b_c, c = (round(a)+5 if a else 0,
+                                 round(a_b),
+                                 round(b)+5 if b else 0,
+                                 round(b_c),
+                                 round(c)+5 if c else 0)
             self.img_path = oxer_obs_abc(a, b, c, a_b, b_c)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)

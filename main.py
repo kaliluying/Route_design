@@ -287,7 +287,7 @@ def found():
     canvas.coords('实时路线', WIDTH - 40, 30)
     canvas.coords('障碍x', 20, HEIGHT + 60)
     canvas.coords('障碍y', 20, HEIGHT + 70)
-    canvas.coords('鼠标x',WIDTH - 10, HEIGHT + 60)
+    canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 60)
     canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 70)
     canvas.delete('bg')
     img = Image.open(fg_path)
