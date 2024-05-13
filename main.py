@@ -634,7 +634,7 @@ def sava(checkvar):
                   '-dDEVICEHEIGHTPOINTS=900',
                   '-dNOPAUSE', '-dBATCH',
                   '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
-                  '-sDEVICE=jpeg', '-r100', '-o',
+                  '-sDEVICE=jpeg', '-r300', '-o',
                   jpg_path]
 
         instance = gsapi.gsapi_new_instance(0)

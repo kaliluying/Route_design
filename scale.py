@@ -88,11 +88,13 @@ class CreateTxt(T):
 
     def create(self, txt):
         self.tag = "txt-" + self.index
+        length = 7+2*len(txt)
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
+        circle = canvas.create_oval(self.startx-length, self.starty-length, self.startx+length, self.starty+length, tags=self.tag)
         self.id = text
-        stack.append(('创建', text))
+        stack.append(('创建', (text, circle)))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
-        self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
+        self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, self.tag))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
         self.mousedown(self.tag, [200, 100])
@@ -403,8 +405,9 @@ class CreateImg(T):
         """
         T.drag(self, tag, event)
         if what.get() == 3:
-            x = event.x - self.startx
-            y = event.y - self.starty
+            x = event.x
+            # x = event.x - self.startx
+            # y = event.y - self.starty
             # if x != 0 and y != 0:
             #     if (x < 0 and y >= 0) or (x < 0 and y < 0):
             #         self.angle += (math.sqrt(x * x + y * y))
@@ -414,7 +417,8 @@ class CreateImg(T):
             #     self.angle += (x + y)
             if x < 0:
                 x = -x
-            self.angle += x / 15
+            self.angle = (x - canvas.winfo_width() / 2) * 2
+            # self.angle += x / 15
             self.to_rotate(tag, self.angle, state=False)
             # self.startx = event.x
             # self.starty = event.y

@@ -7,13 +7,18 @@ from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
 import math
 from tkinter import messagebox
 
+from ttkbootstrap.utility import enable_high_dpi_awareness
+
 from Middleware import *
+
+
 # 创建窗口
 # win = ttk.Tk()
 win = ttk.Window(
     title="路线设计",
     iconphoto='img/ic.png'
 )
+# enable_high_dpi_awareness(win, 1.1)
 
 # 程序最大化
 W = win.winfo_screenwidth()
@@ -205,7 +210,7 @@ icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
 circular_image = "img/circular.png"
 
 # 左侧功能栏
-frame_function = ttk.Frame(win, name='左侧功能栏', )
+frame_function = ttk.Frame(win, name='左侧功能栏')
 frame_function.place(x=5, y=150)
 
 # 工作模块容器
