@@ -87,12 +87,20 @@ class T:
 class CreateTxt(T):
 
     def create(self, txt):
+        """
+        创建障碍号
+        :param txt: 要创建的字符串
+        :return:
+        """
         self.tag = "txt-" + self.index
+        # 字符串外圆圈的位置
         length = 7+2*len(txt)
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
         circle = canvas.create_oval(self.startx-length, self.starty-length, self.startx+length, self.starty+length, tags=self.tag)
         self.id = text
+        # 撤销记录
         stack.append(('创建', (text, circle)))
+
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, self.tag))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -102,6 +110,11 @@ class CreateTxt(T):
 
 class CreateParameter(T):
     def create(self, txt):
+        """
+        创建障碍备注
+        :param txt: 备注字符串
+        :return:
+        """
         self.tag = "parameter-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', self.tag))
         self.id = text
@@ -118,18 +131,18 @@ class CreateImg(T):
         super(CreateImg, self).__init__(app, index)
         self.var = None                                 # 输入框
         self.img = None                                 # 图片
-        self.frame_input = None                         #
-        self.img_path = img_path
-        self.img_obj = Image.open(self.img_path)
-        self.temp_path = None
+        self.frame_input = None                         # 输入框列表
+        self.img_path = img_path                        # 图片路径
+        self.img_obj = Image.open(self.img_path)        # 图片对象
+        self.temp_path = None                           # 临时路径
         self.img_file = None
-        self.obstacle = obstacle
-        self.focus = focus
-        self.info = []
-        self.com_info = {}                              # 输入框内容
+        self.obstacle = obstacle                        # 障碍类别
+        self.focus = focus                              # 聚焦对象
+        self.info = []                                  # 输入框信息
+        self.com_info = {}                              # 组合障碍输入框内容
         self.state = {}                                 # 输入框状态
-        self.name = ''
-        self.state_line = 0
+        self.name = ''                                  # 备注
+        self.state_line = 0                             # 辅助线状态
 
     def create(self):
         self.tag = "img-" + self.index
@@ -150,7 +163,7 @@ class CreateImg(T):
     def mousedown(self, tag, event):
         """
         鼠标左键点击事件
-        :param tag:
+        :param tag: tag
         :param event:
         :return:
         """
@@ -167,6 +180,10 @@ class CreateImg(T):
                 frame_function.winfo_children()[0].winfo_children()[1].destroy()
 
     def guide(self):
+        """
+        辅助线
+        :return:
+        """
         if 90 < self.angle < 180 or 270 < self.angle <= 359:
             ang = 90 - self.angle % 90
         elif 180 < self.angle < 270:
@@ -262,11 +279,11 @@ class CreateImg(T):
                 return
         if self.obstacle == "oxer":
             val = int(float(self.info[0]) * 10)
-            self.img_updata(val)
+            self.img_update(val)
         elif self.obstacle == "tirail":
             val_a = float(self.info[0]) * 10
             val_b = float(self.info[1]) * 10
-            self.img_updata(val_a, val_b)
+            self.img_update(val_a, val_b)
         elif self.obstacle == "combination_ab":
             temp = {}
             for key, val in self.com_info.items():
@@ -317,7 +334,7 @@ class CreateImg(T):
             self.app.itemconfig(self.tag, image=self.temp_path)
         self.to_rotate(self.tag, self.angle)
 
-    def img_updata(self, m1, m2=0.0):
+    def img_update(self, m1, m2=0.0):
         m1 = int(m1)
         m2 = int(m2)
         self.img_path = merge(m1, m1=m2)

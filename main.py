@@ -21,7 +21,7 @@ def insert():
     drag()
 
 
-# 障碍参数确认
+# 障碍备注
 def parameter():
     global index_txt
     var = var_parameter.get()
@@ -940,10 +940,10 @@ canvas.create_text(30, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选
 canvas.create_text(30, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
 
 # 水印
-font = 0.16 if sys_name == 'Darwin' else 0.12
-watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
-                               font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
-                               tags=("watermark", '不框选'), state='disabled')
+# font = 0.16 if sys_name == 'Darwin' else 0.12
+# watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+#                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
+#                                tags=("watermark", '不框选'), state='disabled')
 
 # 画图
 canvas.bind('<Button-1>', leftButtonDown)  # 鼠标左键点击事件
