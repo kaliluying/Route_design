@@ -272,7 +272,7 @@ def found():
     WIDTH = int(float(w) * 10)
     HEIGHT = int(float(h) * 10)
     canvas.config(width=WIDTH + 30, height=HEIGHT + 80)
-    canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT +50)
+    canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT + 50)
     # canvas.place(x=175, y=130)
     # but1.place(x=WIDTH + 260, y=700)
     # but2.place(x=WIDTH + 360, y=700)
@@ -620,44 +620,51 @@ def sava(checkvar):
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
-    path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("JPEG", ".jpg")],
+    path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("PNG", ".png")],
                                         initialdir=os.getcwd() + '/ms_download', initialfile=txt)
     if path:
-        path = path.split('.')[0]
-        eps_path = path + '.eps'
-        jpg_path = path + '.jpg'
-        canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
+        # path = path.split('.')[0]
+        # eps_path = path + '.eps'
+        # jpg_path = path + '.jpg'
+        # canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
+        #
+        # size = 1024
+        # params = ['gs',
+        #           '-dDEVICEWIDTHPOINTS=900',
+        #           '-dDEVICEHEIGHTPOINTS=900',
+        #           '-dNOPAUSE', '-dBATCH',
+        #           '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
+        #           '-sDEVICE=jpeg', '-r300', '-o',
+        #           jpg_path]
+        #
+        # instance = gsapi.gsapi_new_instance(0)
+        #
+        # gsapi.gsapi_set_arg_encoding(instance, gsapi.GS_ARG_ENCODING_UTF8)
+        # gsapi.gsapi_init_with_args(instance, params)
+        #
+        # gsapi.gsapi_run_string_begin(instance, 0)
+        #
+        # with open(eps_path, "rb") as f:
+        #     while True:
+        #         data = f.read(size)
+        #         if not data:
+        #             break
+        #         gsapi.gsapi_run_string_continue(instance, data, 0)
+        #
+        # exitcode = gsapi.gsapi_run_string_end(instance, 0)
+        #
+        # end_gpdl(instance)
+        # os.remove(eps_path)
+        width = canvas.winfo_width()
+        height = canvas.winfo_height()
+        x0 = canvas.winfo_rootx()  # 帧在屏幕上的左上角 x 坐标
+        y0 = canvas.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
+        x1 = x0 + width  # 帧在屏幕上的右下角 x 坐标
+        y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
+        ImageGrab.grab(bbox=(x0, y0, x1, y1)).save(path)  # 截取屏幕区域并保存为图片
+        messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
 
-        size = 1024
-        params = ['gs',
-                  '-dDEVICEWIDTHPOINTS=900',
-                  '-dDEVICEHEIGHTPOINTS=900',
-                  '-dNOPAUSE', '-dBATCH',
-                  '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
-                  '-sDEVICE=jpeg', '-r300', '-o',
-                  jpg_path]
-
-        instance = gsapi.gsapi_new_instance(0)
-
-        gsapi.gsapi_set_arg_encoding(instance, gsapi.GS_ARG_ENCODING_UTF8)
-        gsapi.gsapi_init_with_args(instance, params)
-
-        gsapi.gsapi_run_string_begin(instance, 0)
-
-        with open(eps_path, "rb") as f:
-            while True:
-                data = f.read(size)
-                if not data:
-                    break
-                gsapi.gsapi_run_string_continue(instance, data, 0)
-
-        exitcode = gsapi.gsapi_run_string_end(instance, 0)
-
-        end_gpdl(instance)
-        os.remove(eps_path)
-        messagebox.showinfo("成功", f"保存成功,\n路径:{jpg_path}")
-
-        return exitcode
+        # return exitcode
 
 
 # 打开文件保存路径
@@ -812,17 +819,28 @@ len_entt.place(x=330, y=10)
 
 ttk.Button(win, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
 
-def download():
+download_path = './demo.png'
 
-    for i in T.all_instances:
-        attributes = vars(i)
-        # 遍历属性字典并打印
-        print(attributes)
-        # for attribute, value in attributes.items():
-        #     print(attribute, "=", value)
 
-ttk.Button(win, bootstyle="success-outline", text="保存", command=download).place(x=180, y=40)
+def download(path):
+    # for i in T.all_instances:
+    #     attributes = vars(i)
+    #     # 遍历属性字典并打印
+    #     print(attributes)
+    #     # for attribute, value in attributes.items():
+    #     #     print(attribute, "=", value)
+    # x = frame_info.winfo_x()
+    # y = frame_info.winfo_y()
+    width = canvas.winfo_width()
+    height = canvas.winfo_height()
+    x0 = canvas.winfo_rootx()  # 帧在屏幕上的左上角 x 坐标
+    y0 = canvas.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
+    x1 = x0 + width  # 帧在屏幕上的右下角 x 坐标
+    y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
+    ImageGrab.grab(bbox=(x0, y0, x1, y1)).save(path)  # 截取屏幕区域并保存为图片
 
+
+ttk.Button(win, bootstyle="success-outline", text="保存", command=partial(download, download_path)).place(x=180, y=40)
 
 # 障碍物
 ttk.Button(frame_temp_1, bootstyle=BUTTON_STYLE, text='进出口', command=gate).pack()
@@ -940,10 +958,10 @@ canvas.create_text(30, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选
 canvas.create_text(30, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
 
 # 水印
-# font = 0.16 if sys_name == 'Darwin' else 0.12
-# watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
-#                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
-#                                tags=("watermark", '不框选'), state='disabled')
+font = 0.16 if sys_name == 'Darwin' else 0.12
+watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+                               font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
+                               tags=("watermark", '不框选'), state='disabled')
 
 # 画图
 canvas.bind('<Button-1>', leftButtonDown)  # 鼠标左键点击事件
