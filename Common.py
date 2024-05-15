@@ -18,7 +18,7 @@ win = ttk.Window(
     title="路线设计",
     iconphoto='img/ic.png'
 )
-# enable_high_dpi_awareness(win, 1.1)
+# enable_high_dpi_awareness(win, 2.0)
 
 # 程序最大化
 W = win.winfo_screenwidth()

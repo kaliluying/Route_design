@@ -6,7 +6,6 @@ from tkinter import filedialog
 from Common import *
 from functools import partial
 
-import gsapi
 from Tools import *
 from scale import CreateImg, CreateTxt, CreateParameter, T
 
@@ -599,18 +598,6 @@ def save_0():
     sava(checkvar)
 
 
-def end_gpdl(instance):
-    """
-    结束 Ghostscript DLL 实例的函数。
-    参数：
-        instance：要结束的 Ghostscript DLL 实例。
-    返回：
-        没有任何
-    """
-    gsapi.gsapi_exit(instance)
-    gsapi.gsapi_delete_instance(instance)
-
-
 def sava(checkvar):
     """
     根据用户输入保存文件的函数。它提示用户选择保存文件的位置，将画布转换为 EPS 文件，
@@ -623,38 +610,6 @@ def sava(checkvar):
     path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("PNG", ".png")],
                                         initialdir=os.getcwd() + '/ms_download', initialfile=txt)
     if path:
-        # path = path.split('.')[0]
-        # eps_path = path + '.eps'
-        # jpg_path = path + '.jpg'
-        # canvas.postscript(file=eps_path, colormode='color', font=("微软雅黑", 15))
-        #
-        # size = 1024
-        # params = ['gs',
-        #           '-dDEVICEWIDTHPOINTS=900',
-        #           '-dDEVICEHEIGHTPOINTS=900',
-        #           '-dNOPAUSE', '-dBATCH',
-        #           '-dTextAlphaBits=4', '-dGraphicsAlphaBits=4', '-dEPSCrop',
-        #           '-sDEVICE=jpeg', '-r300', '-o',
-        #           jpg_path]
-        #
-        # instance = gsapi.gsapi_new_instance(0)
-        #
-        # gsapi.gsapi_set_arg_encoding(instance, gsapi.GS_ARG_ENCODING_UTF8)
-        # gsapi.gsapi_init_with_args(instance, params)
-        #
-        # gsapi.gsapi_run_string_begin(instance, 0)
-        #
-        # with open(eps_path, "rb") as f:
-        #     while True:
-        #         data = f.read(size)
-        #         if not data:
-        #             break
-        #         gsapi.gsapi_run_string_continue(instance, data, 0)
-        #
-        # exitcode = gsapi.gsapi_run_string_end(instance, 0)
-        #
-        # end_gpdl(instance)
-        # os.remove(eps_path)
         width = canvas.winfo_width()
         height = canvas.winfo_height()
         x0 = canvas.winfo_rootx()  # 帧在屏幕上的左上角 x 坐标
@@ -888,7 +843,7 @@ but_3.state(['!selected'])
 # but_4.pack()
 # but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
 # but_2.pack()
-ttk.Button(frame_mea_com_rig, bootstyle=BUTTON_STYLE, text='清屏', command=clear, width=width).pack(side='right')
+ttk.Button(frame_mea_com_rig, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).pack(side='right')
 # ttk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
 ttk.Button(frame_command_right, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).pack()
 ttk.Button(frame_command_right, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).pack()

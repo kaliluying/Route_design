@@ -364,6 +364,14 @@ class Focus:
         obj.app.itemconfig(obj.tag, image=obj.temp_path)
 
     def judge_abc(self, x1, x2, x3, obj):
+        """
+        ABC组合障碍双横木判断
+        :param x1:
+        :param x2:
+        :param x3:
+        :param obj:
+        :return:
+        """
         try:
             if ((x1.get() == x2.get() == x3.get() == '0') or
                     (x1.get() == x2.get() == x3.get() == '1')):
