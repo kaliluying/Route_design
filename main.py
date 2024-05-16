@@ -66,7 +66,7 @@ def oxer():
 # 三横木
 def tirail():
     global index_img
-    image_path = merge(10, 10)
+    image_path = merge(5, 0, oxer='tirail')
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='tirail').create()
     drag()

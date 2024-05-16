@@ -110,12 +110,13 @@ def is_number(s):
     return False
 
 
-def merge(m, m1=0, state=1):
+def merge(m, m1=0, state=1, oxer=None):
     """
     合并图片
     :param m: A B障碍的距离
     :param m1: B C障碍的距离
     :param state: 是否为双横木
+    :param oxer: 三横木
     :return: 调用函数添加行进方向并返回图片地址
     """
     img_obj = Image.open(get_one_path())
@@ -123,9 +124,9 @@ def merge(m, m1=0, state=1):
     w, h = img_obj.size
     result = Image.new(img_obj.mode, (m + m1 + 10, h))
     result.paste(img_obj, box=(0, 0))
-    a = 5 if m1 else 0
+    a = 5 if m1 or oxer else 0
     result.paste(img_obj2, box=(m + m1 + a, 0))
-    if m1:
+    if m1 or oxer:
         image3 = Image.open(get_one_path())
         result.paste(image3, box=(m, 0))
         result.save("img/com_2.png")
@@ -138,42 +139,51 @@ def merge(m, m1=0, state=1):
 
 def expand(path, state=1):
     """
-    图片扩展
-    :param path: 图片地址
-    :param state: 是否为双横木
-    :return:
-    """
-    img = Image.open(path)
-    w, h = img.size
-    l = r = t = b = 0
-    if w < h:
-        var_ex = h - w
-        l = var_ex // 2
-        r = var_ex - l
-    elif state and w > h:
-        var_ex = w - h
-        t = var_ex // 2
-        b = var_ex - t
+    对图片进行扩边处理。
 
+    :param path: 图片的文件路径。
+    :param state: 图片是否为横幅（宽大于高）的状态，1 表示是，其他值表示否。
+    :return: 扩边后图片的文件路径。
+    """
+    img = Image.open(path)  # 打开图片
+    w, h = img.size  # 获取图片的宽和高
+    l = r = t = b = 0  # 初始化各边的扩边长度
+
+    # 根据图片宽度和高度的关系以及state参数来计算需要扩边的长度
+    if w < h:
+        var_ex = h - w  # 高大于宽时，计算需要在宽度方向上扩展的长度
+        l = var_ex // 2  # 左边扩边长度
+        r = var_ex - l  # 右边扩边长度
+    elif state and w > h:
+        var_ex = w - h  # 宽大于高且state为1时，计算需要在高度方向上扩展的长度
+        t = var_ex // 2  # 上边扩边长度
+        b = var_ex - t  # 下边扩边长度
+
+    # 计算扩边的四个方向的值
     left_pad = l
     top_pad = t
     right_pad = r
     bottom_pad = b
+    print(left_pad, top_pad, right_pad, bottom_pad)  # 打印扩边数值，用于调试
 
+    # 应用扩边操作
     padding = (left_pad, top_pad, right_pad, bottom_pad)
-    img2 = ImageOps.expand(img, padding, fill=(236, 236, 236, 0))
-    directory = os.path.dirname(path)
-    file_name = os.path.basename(path)
-    image_name = file_name.replace('.', '-exp.')
-    image_path = directory + "/" + image_name
-    img2.save(image_path)
-    return image_path
+    img2 = ImageOps.expand(img, padding, fill=(236, 236, 236, 0))  # 扩边，填充颜色为(236, 236, 236, 0)
+
+    # 处理图片保存的路径
+    directory = os.path.dirname(path)  # 获取图片文件路径的目录部分
+    file_name = os.path.basename(path)  # 获取图片文件的名称
+    image_name = file_name.replace('.', '-exp.')  # 替换文件名中的点为'-exp.'，用于标识扩边后的图片
+    image_path = directory + "/" + image_name  # 拼接扩边后图片的保存路径
+    img2.save(image_path)  # 保存扩边后的图片
+
+    return image_path  # 返回扩边后图片的文件路径
 
 
 def start_direction(image_path):
     """
     添加行进方向
-    :param image_path: 需要添加行进方向的地址
+    :param image_path: 需要添加行进方向的图片路径
     :return: 返回图片地址
     """
     img1 = Image.open(image_path)

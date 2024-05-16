@@ -282,8 +282,8 @@ class CreateImg(T):
             self.img_update(val)
         elif self.obstacle == "tirail":
             val_a = float(self.info[0]) * 10
-            val_b = float(self.info[1]) * 10
-            self.img_update(val_a, val_b)
+            # val_b = float(self.info[1]) * 10
+            self.img_update(val_a, oxer='tirail')
         elif self.obstacle == "combination_ab":
             temp = {}
             for key, val in self.com_info.items():
@@ -334,10 +334,10 @@ class CreateImg(T):
             self.app.itemconfig(self.tag, image=self.temp_path)
         self.to_rotate(self.tag, self.angle)
 
-    def img_update(self, m1, m2=0.0):
+    def img_update(self, m1, m2=0.0, oxer=None):
         m1 = int(m1)
         m2 = int(m2)
-        self.img_path = merge(m1, m1=m2)
+        self.img_path = merge(m1, m1=m2, oxer=oxer)
         self.img = Image.open(self.img_path)
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(self.tag, image=self.temp_path)
