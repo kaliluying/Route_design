@@ -110,11 +110,10 @@ def is_number(s):
     return False
 
 
-def merge(m, m1=0, state=1, oxer=None):
+def merge(m, state=1, oxer=None):
     """
     合并图片
     :param m: A B障碍的距离
-    :param m1: B C障碍的距离
     :param state: 是否为双横木
     :param oxer: 三横木
     :return: 调用函数添加行进方向并返回图片地址
@@ -122,16 +121,24 @@ def merge(m, m1=0, state=1, oxer=None):
     img_obj = Image.open(get_one_path())
     img_obj2 = Image.open(get_one_path())
     w, h = img_obj.size
-    result = Image.new(img_obj.mode, (m + m1 + 10, h))
+    result = Image.new(img_obj.mode, (m + 10, h))
     result.paste(img_obj, box=(0, 0))
-    a = 5 if m1 or oxer else 0
-    result.paste(img_obj2, box=(m + m1 + a, 0))
-    if m1 or oxer:
+    result.paste(img_obj2, box=(m, 0))
+    if oxer == 'tirail':
         image3 = Image.open(get_one_path())
-        result.paste(image3, box=(m, 0))
+        result.paste(image3, box=(m // 2, 0))
         result.save("img/com_2.png")
         com_image = "img/com_2.png"
         return start_direction(expand(com_image, state))
+    elif oxer == 'four':
+        image3 = Image.open(get_one_path())
+        image4 = Image.open(get_one_path())
+        result.paste(image3, box=(int(m // 3), 0))
+        result.paste(image4, box=(int(m // 3 * 2), 0))
+        result.save("img/com_four.png")
+        com_image = "img/com_four.png"
+        return start_direction(expand(com_image, state))
+
     com_image = "img/com.png"
     result.save(com_image)
     return start_direction(expand(com_image, state))
@@ -164,7 +171,6 @@ def expand(path, state=1):
     top_pad = t
     right_pad = r
     bottom_pad = b
-    print(left_pad, top_pad, right_pad, bottom_pad)  # 打印扩边数值，用于调试
 
     # 应用扩边操作
     padding = (left_pad, top_pad, right_pad, bottom_pad)
@@ -182,22 +188,35 @@ def expand(path, state=1):
 
 def start_direction(image_path):
     """
-    添加行进方向
-    :param image_path: 需要添加行进方向的图片路径
-    :return: 返回图片地址
+    为指定图片添加行进方向标志。
+
+    :param image_path: 需要添加行进方向的图片的文件路径。
+    :return: 返回添加了行进方向后的图片的新文件路径。
     """
+    # 打开输入图片
     img1 = Image.open(image_path)
+    # 获取输入图片的尺寸
     w, h = img1.size
+    # 打开方向图
     img2 = Image.open(direction_image)
+    # 获取方向图的尺寸
     w1, h1 = img2.size
+    # 将方向图调整至与输入图片宽度相同
     img2 = img2.resize((w, h1))
+    # 分离方向图的RGBA通道，为后续透明叠加做准备
     r, g, b, alpha = img2.split()
+    # 将方向图透明叠加在输入图片的中央偏上位置
     img1.paste(img2, (0, h // 2 - 5), alpha)
+    # 获取输入图片的目录路径和文件名
     directory = os.path.dirname(image_path)
     file_name = os.path.basename(image_path)
+    # 生成添加行进方向后图片的新文件名
     image_name = file_name.replace('.', '-dir.')
+    # 拼接生成新图片的完整路径
     image_path = directory + "/" + image_name
+    # 保存处理后的图片
     img1.save(image_path)
+    # 返回新图片的路径
     return image_path
 
 
@@ -285,10 +304,10 @@ def merge_ab(state, m1=0, m2=0):
 
 def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
     """
-
-    :param stare_a:障碍A是否为双横木
-    :param state_b:障碍B是否为双横木
-    :param state_c:障碍C是否为双横木
+    ABC组合障碍是否为双横木更新
+    :param stare_a: 障碍A是否为双横木
+    :param state_b: 障碍B是否为双横木
+    :param state_c: 障碍C是否为双横木
     :param a:
     :param b:
     :param c:
@@ -341,7 +360,7 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
     img_obj2 = Image.open(b_img)
     c_img = merge(c if c else 0, state=0)
     image3 = Image.open(c_img)
-    result = Image.new(img_obj.mode, (a + b + c + a_b + b_c + 50, 40))
+    result = Image.new(img_obj.mode, (a + b + c + a_b + b_c + 55, 40))
     result.paste(img_obj, box=(0, 0))
     result.paste(img_obj2, box=(a + a_b + (10 if a else 5), 0))
     result.paste(image3, box=(a + b + a_b + b_c + (10 if a else 5) + (10 if b else 5), 0))
@@ -353,7 +372,6 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
 
 def obs_ab(a=0, b=0, a_b=30):
     """
-
     :param a:
     :param b:
     :param a_b:
@@ -363,10 +381,11 @@ def obs_ab(a=0, b=0, a_b=30):
     img_obj = Image.open(a_img)
     b_img = merge(b if b else 0, state=0)
     img_obj2 = Image.open(b_img)
-    result = Image.new(img_obj.mode, (a + b + a_b + 45, 40))
+    result = Image.new(img_obj.mode, (a + b + a_b + 50, 40))
     result.paste(img_obj, box=(0, 0))
     result.paste(img_obj2, box=(a + a_b + (10 if a else 5), 0))
-    result.save("img/obs_ab.png")
+    # result.paste(img_obj2, box=(a + a_b + (10 if a else 5), 0))
+    # result.save("img/obs_ab.png")
     com_image = "img/obs_ab.png"
     result.save(com_image)
     return com_image

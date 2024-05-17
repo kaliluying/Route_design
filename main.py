@@ -66,9 +66,21 @@ def oxer():
 # 三横木
 def tirail():
     global index_img
-    image_path = merge(5, 0, oxer='tirail')
+    image_path = merge(10, oxer='tirail')
     index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle='tirail').create()
+    drag()
+
+
+def four():
+    """
+    四横木
+    :return:
+    """
+    global index_img
+    image_path = merge(15, oxer='four')
+    index_img += 1
+    CreateImg(canvas, index_img, image_path, obstacle='four').create()
     drag()
 
 
@@ -948,6 +960,11 @@ edit()
 
 # 菜单栏
 menu = ttk.Menu(win)
+
+# 障碍
+obstacle_menu = ttk.Menu(menu, tearoff=0)
+menu.add_cascade(label="障碍", menu=obstacle_menu)
+obstacle_menu.add_command(label="四横木", command=four)
 
 # 工具栏
 menuType = ttk.Menu(menu, tearoff=0)

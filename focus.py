@@ -52,15 +52,7 @@ class Focus:
             a_b.grid(row=0, column=1, sticky='w', padx=5, pady=5)
             ttk.Button(self.frame, bootstyle=CONFIRM_STYLE, text="确认").grid(row=1, column=1, sticky='w', padx=5, pady=5)
 
-        elif obstacle == "tirail":
-            # ttk.Label(self.frame, text='A-->B(m):').grid(row=0, column=0, sticky='e', padx=5, pady=5)
-            # var_a_b = ttk.StringVar(value=info[0] if info else '')
-            # a_b = Entry(self.frame, textvariable=var_a_b, width=5, )
-            # a_b.grid(row=0, column=1, sticky='w', padx=5, pady=5)
-            # ttk.Label(self.frame, text='B-->C(m):').grid(row=1, column=0, sticky='e', padx=5, pady=5)
-            # var_b_c = ttk.StringVar(value=info[1] if info else '')
-            # b_c = Entry(self.frame, textvariable=var_b_c, width=5)
-            # b_c.grid(row=1, column=1, sticky='w', padx=5, pady=5)
+        elif obstacle == "tirail" or obstacle == "four":
             ttk.Label(self.frame, text='障碍长度(m):').grid(row=0, column=0, sticky='e', padx=5, pady=5)
             var = ttk.StringVar(value=info[0] if info else '')
             a_b = Entry(self.frame, textvariable=var, width=5, )

@@ -171,7 +171,7 @@ class CreateImg(T):
         self.butt()
         if what.get() == '3':
             self.temp_angle = self.angle
-        if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'water', 'live']:
+        if self.obstacle in ["oxer", "tirail", "four", "combination_ab", "combination_abc", 'water', 'live']:
             self.frame_input, button = self.focus.update(self, self.obstacle, info=self.info,
                                                                     state=self.state, com_info=self.com_info)
             button.config(command=self.update_img)
@@ -277,13 +277,9 @@ class CreateImg(T):
                 messagebox.showerror("错误", "请输入数字")
                 i.delete(0, 'end')
                 return
-        if self.obstacle == "oxer":
-            val = int(float(self.info[0]) * 10)
-            self.img_update(val)
-        elif self.obstacle == "tirail":
-            val_a = float(self.info[0]) * 10
-            # val_b = float(self.info[1]) * 10
-            self.img_update(val_a, oxer='tirail')
+        if self.obstacle == "oxer" or self.obstacle == "tirail" or self.obstacle == "four":
+            val = float(self.info[0]) * 10
+            self.img_update(val, oxer=self.obstacle)
         elif self.obstacle == "combination_ab":
             temp = {}
             for key, val in self.com_info.items():
@@ -334,10 +330,8 @@ class CreateImg(T):
             self.app.itemconfig(self.tag, image=self.temp_path)
         self.to_rotate(self.tag, self.angle)
 
-    def img_update(self, m1, m2=0.0, oxer=None):
-        m1 = int(m1)
-        m2 = int(m2)
-        self.img_path = merge(m1, m1=m2, oxer=oxer)
+    def img_update(self, m, oxer=None):
+        self.img_path = merge(int(m), oxer=oxer)
         self.img = Image.open(self.img_path)
         self.temp_path = ImageTk.PhotoImage(self.img)
         self.app.itemconfig(self.tag, image=self.temp_path)
