@@ -8,18 +8,19 @@ class T:
     all_instances = []
 
     def __init__(self, app, index):
-        self.__class__.all_instances.append(self)   # 添加实例
-        self.tag = None                             # 标签
-        self.startx = 160                           # 鼠标开始x位置
-        self.starty = 25                            # 鼠标开始y位置
-        self.current_x = 160                        # 障碍当前x位置
-        self.current_y = 25                         # 障碍当前y位置
-        self.angle = 0                              # 障碍当前角度
-        self.temp_angle = 0                         # 障碍临时角度
-        self.app = app                              # 画布
-        self.index = str(index)                     # 障碍索引
-        self.line_tag = None                        # 障碍线标签
-        self.id = None                              # 障碍id
+        self.__class__.all_instances.append(self)  # 添加实例
+        self.tag = None  # 标签
+        self.startx = 160  # 鼠标开始x位置
+        self.starty = 25  # 鼠标开始y位置
+        self.current_x = 160  # 障碍当前x位置
+        self.current_y = 25  # 障碍当前y位置
+        self.angle = 0  # 障碍当前角度
+        self.temp_angle = 0  # 障碍临时角度
+        self.lest_angle = 0  # 障碍临时角度
+        self.app = app  # 画布
+        self.index = str(index)  # 障碍索引
+        self.line_tag = None  # 障碍线标签
+        self.id = None  # 障碍id
 
     def mousedown(self, tag, event):
         """
@@ -39,18 +40,18 @@ class T:
         except Exception as e:
             print(e)
             logging.warning(e)
-        if what.get() == 0:
-            try:
-                self.startx = event.x
-                self.starty = event.y
-                move_x.set(event.x)
-                move_y.set(event.y)
-            except:
-                self.startx = event[0]
-                self.starty = event[1]
-            self.tag = tag
-            set_cur(self.id)
-            self.app.lift(self.tag)
+        # if what.get() == 0:
+        try:
+            self.startx = event.x
+            self.starty = event.y
+            move_x.set(event.x)
+            move_y.set(event.y)
+        except:
+            self.startx = event[0]
+            self.starty = event[1]
+        self.tag = tag
+        set_cur(self.id)
+        self.app.lift(self.tag)
 
     def drag(self, tag, event):
         """
@@ -70,13 +71,14 @@ class T:
 
             self.startx = event.x
             self.starty = event.y
-            self.app.itemconfig('障碍x', text=f'x:{self.current_x/10-1.5:.2f}')
-            self.app.itemconfig('障碍y', text=f'y:{self.current_y/10-5:.2f}')
+            self.app.itemconfig('障碍x', text=f'x:{self.current_x / 10 - 1.5:.2f}')
+            self.app.itemconfig('障碍y', text=f'y:{self.current_y / 10 - 5:.2f}')
 
     def mouseup(self, event):
         # set_frame_stare(True)
         dx = event.x - move_x.get()
         dy = event.y - move_y.get()
+        self.lest_angle = self.angle
         if dx or dy:
             stack.append(('移动', (self.id,), (dx, dy)))
         if what.get() == 3 and self.temp_angle != self.angle:
@@ -94,9 +96,10 @@ class CreateTxt(T):
         """
         self.tag = "txt-" + self.index
         # 字符串外圆圈的位置
-        length = 7+2*len(txt)
+        length = 7 + 2 * len(txt)
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
-        circle = canvas.create_oval(self.startx-length, self.starty-length, self.startx+length, self.starty+length, tags=self.tag)
+        circle = canvas.create_oval(self.startx - length, self.starty - length, self.startx + length,
+                                    self.starty + length, tags=self.tag)
         self.id = text
         # 撤销记录
         stack.append(('创建', (text, circle)))
@@ -129,20 +132,20 @@ class CreateParameter(T):
 class CreateImg(T):
     def __init__(self, app, index, img_path, obstacle=None):
         super(CreateImg, self).__init__(app, index)
-        self.var = None                                 # 输入框
-        self.img = None                                 # 图片
-        self.frame_input = None                         # 输入框列表
-        self.img_path = img_path                        # 图片路径
-        self.img_obj = Image.open(self.img_path)        # 图片对象
-        self.temp_path = None                           # 临时路径
+        self.var = None  # 输入框
+        self.img = None  # 图片
+        self.frame_input = None  # 输入框列表
+        self.img_path = img_path  # 图片路径
+        self.img_obj = Image.open(self.img_path)  # 图片对象
+        self.temp_path = None  # 临时路径
         self.img_file = None
-        self.obstacle = obstacle                        # 障碍类别
-        self.focus = focus                              # 聚焦对象
-        self.info = []                                  # 输入框信息
-        self.com_info = {}                              # 组合障碍输入框内容
-        self.state = {}                                 # 输入框状态
-        self.name = ''                                  # 备注
-        self.state_line = 0                             # 辅助线状态
+        self.obstacle = obstacle  # 障碍类别
+        self.focus = focus  # 聚焦对象
+        self.info = []  # 输入框信息
+        self.com_info = {}  # 组合障碍输入框内容
+        self.state = {}  # 输入框状态
+        self.name = ''  # 备注
+        self.state_line = 0  # 辅助线状态
 
     def create(self):
         self.tag = "img-" + self.index
@@ -173,7 +176,7 @@ class CreateImg(T):
             self.temp_angle = self.angle
         if self.obstacle in ["oxer", "tirail", "four", "combination_ab", "combination_abc", 'water', 'live']:
             self.frame_input, button = self.focus.update(self, self.obstacle, info=self.info,
-                                                                    state=self.state, com_info=self.com_info)
+                                                         state=self.state, com_info=self.com_info)
             button.config(command=self.update_img)
         else:
             if frame_function.winfo_children()[0].winfo_children()[1].winfo_name() == '障碍编辑容器':
@@ -290,7 +293,7 @@ class CreateImg(T):
                 else:
                     temp[key] = 0
             a, a_b, b = temp.values()
-            a, a_b, b = round(a)+5 if a else 0, round(a_b), round(b)+5 if b else 0,
+            a, a_b, b = round(a) + 5 if a else 0, round(a_b), round(b) + 5 if b else 0,
             self.img_path = obs_ab(a, b, a_b)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
@@ -305,11 +308,11 @@ class CreateImg(T):
                 else:
                     temp[key] = 0
             a, a_b, b, b_c, c = temp.values()
-            a, a_b, b, b_c, c = (round(a)+5 if a else 0,
+            a, a_b, b, b_c, c = (round(a) + 5 if a else 0,
                                  round(a_b),
-                                 round(b)+5 if b else 0,
+                                 round(b) + 5 if b else 0,
                                  round(b_c),
-                                 round(c)+5 if c else 0)
+                                 round(c) + 5 if c else 0)
             self.img_path = oxer_obs_abc(a, b, c, a_b, b_c)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
@@ -380,7 +383,8 @@ class CreateImg(T):
         ttk.Label(frame_focus_z_ladel, text="备注： ", font=("微软雅黑", 10)).pack()
         var_name = ttk.StringVar(value=self.name if self.name else self.tag)
         Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
-        ttk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name), bootstyle=CONFIRM_STYLE).pack()
+        ttk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name),
+                   bootstyle=CONFIRM_STYLE).pack()
         w = 5 if sys_name == 'Darwin' else 10
         ttk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w,
                    bootstyle=BUTTON_STYLE).pack()
@@ -416,23 +420,26 @@ class CreateImg(T):
         """
         T.drag(self, tag, event)
         if what.get() == 3:
-            x = event.x
-            # x = event.x - self.startx
-            # y = event.y - self.starty
-            # if x != 0 and y != 0:
-            #     if (x < 0 and y >= 0) or (x < 0 and y < 0):
-            #         self.angle += (math.sqrt(x * x + y * y))
-            #     elif (y < 0 and x >= 0) or (y > 0 and x > 0):
-            #         self.angle += -(math.sqrt(x * x + y * y))
-            # else:
-            #     self.angle += (x + y)
-            if x < 0:
-                x = -x
-            self.angle = (x - canvas.winfo_width() / 2) * 2
-            # self.angle += x / 15
-            self.to_rotate(tag, self.angle, state=False)
-            # self.startx = event.x
-            # self.starty = event.y
+            # 定义点的坐标
+            origin = (self.current_x, self.current_y)
+            start = (self.startx, self.starty)
+            end = (event.x, event.y)
+
+            origin_start = (start[0] - origin[0], start[1] - origin[1])
+            origin_end = (end[0] - origin[0], end[1] - origin[1])
+
+            # 计算向量 AB 和 AC 的角度
+            angle_AB = math.atan2(origin_start[1], origin_start[0])
+            angle_AC = math.atan2(origin_end[1], origin_end[0])
+
+            # 计算夹角
+            angle = self.lest_angle + math.degrees(angle_AB - angle_AC)
+
+            # 确保角度在 0 到 360 度范围内
+            if angle < 0:
+                angle += 360
+
+            self.to_rotate(tag, angle, state=False)
 
     def to_rotate(self, id, var, state=True):
         try:
