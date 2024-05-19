@@ -344,6 +344,7 @@ def create_line(x1, y1, x2, y2):
 def leftButtonMove(event):
     global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare
     shu(event)
+    # 画线
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
                                       fill='#000000', width=font_size, tags=("line", '不框选'), smooth=True)
@@ -396,6 +397,7 @@ def leftButtonUp(event):
     global lastDraw, click_num, px, choice_tup, choice_start, remove_px
     end.append(lastDraw)
     current_frame_stare = get_frame_stare()
+    # 画线
     if what.get() == 1:
         if click_num == 1:
             if move_x.get() != event.x or move_y.get() != event.y:
@@ -425,6 +427,7 @@ def leftButtonUp(event):
             # remove_px[lastDraw] = px
             start_x.set(end_x.get())
             start_y.set(end_y.get())
+    # 画弧
     elif what.get() == 4:
         if click_num == 1:
             start_x.set(event.x)
@@ -449,6 +452,8 @@ def leftButtonUp(event):
         # TODO
         items = canvas.find_withtag('choice_start')
         stack.append(('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
+    if len(canvas.find_withtag('choice_start')) == 1:
+        canvas.delete('choice')
 
 
 # def create_arc(x1, y1, x2, y2):
@@ -481,13 +486,20 @@ def leftButtonUp(event):
 
 # 拖动
 def drag():
+    """
+    拖动
+    :return:
+    """
     what.set(0)
     set_color()
     no_what.set(0)
 
 
-# 铅笔
 def pen():
+    """
+    铅笔
+    :return:
+    """
     global click_num
     what.set(1)
     set_color()
@@ -495,22 +507,31 @@ def pen():
     click_num = 1
 
 
-# 橡皮擦
 def remove():
+    """
+    橡皮擦
+    :return:
+    """
     what.set(2)
     set_color()
     no_what.set(2)
 
 
-# 旋转
 def rotate():
+    """
+    旋转
+    :return:
+    """
     what.set(3)
     set_color()
     no_what.set(3)
 
 
-# 画弧
 def arc():
+    """
+    画弧
+    :return:
+    """
     what.set(4)
     set_color()
     no_what.set(4)
@@ -763,28 +784,32 @@ def del_fg():
     canvas.delete('bg')
 
 
+frame_map = ttk.Frame(win, name="路线图").place(x=10, y=10)
+
 # 路线图长度
-ttk.Label(win, text="长度(m):", font=FONT).place(x=10, y=10)
+ttk.Label(frame_map, text="长度(m):", font=FONT).grid(row=1, column=0, sticky='e', padx=5, pady=5)
 var_l_w = ttk.StringVar()
 var_l_w.set('90')
-var_l_w_inp = Entry(win, textvariable=var_l_w, width=5)
-var_l_w_inp.place(x=80, y=10)
+var_l_w_inp = Entry(frame_map, textvariable=var_l_w, width=5)
+var_l_w_inp.grid(row=1, column=1, sticky='e', padx=5, pady=5)
 
 # 路线图宽度
-ttk.Label(win, text="宽度(m):", font=FONT).place(x=10, y=40)
+ttk.Label(frame_map, text="宽度(m):", font=FONT).grid(row=2, column=0, sticky='e', padx=5, pady=5)
 var_l_h = ttk.StringVar()
 var_l_h.set("60")
-var_l_h_inp = Entry(win, textvariable=var_l_h, width=5)
-var_l_h_inp.place(x=80, y=40)
+var_l_h_inp = Entry(frame_map, textvariable=var_l_h, width=5)
+var_l_h_inp.grid(row=2, column=1, sticky='e', padx=5, pady=5)
 
-ttk.Button(win, bootstyle=CONFIRM_STYLE, text="确认", command=found).place(x=50, y=70)
+ttk.Button(win, bootstyle=CONFIRM_STYLE, text="确认", command=found).grid(row=3, column=1, sticky='e', padx=5, pady=5)
 
-ttk.Label(win, text='全局障碍长度(m):', font=FONT).place(x=200, y=10)
+ttk.Label(frame_map, text='全局障碍长度(m):', font=FONT).grid(row=1, column=3, sticky='e', padx=5, pady=5)
 var_len = ttk.StringVar(value='4')
-len_entt = Entry(win, textvariable=var_len, width=4)
-len_entt.place(x=330, y=10)
+len_entt = Entry(frame_map, textvariable=var_len, width=4)
+len_entt.grid(row=1, column=4, sticky='e', padx=5, pady=5)
 
-ttk.Button(win, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).place(x=300, y=40)
+ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).grid(row=2, column=4,
+                                                                                                    sticky='e', padx=5,
+                                                                                                    pady=5)
 
 download_path = './demo.png'
 
