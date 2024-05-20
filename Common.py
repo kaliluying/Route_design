@@ -56,7 +56,7 @@ elif sys_name == 'Windows':
 X = ttk.IntVar(value=0)
 Y = ttk.IntVar(value=0)
 what = ttk.IntVar(value=0)
-no_what = ttk.IntVar(value=0)
+# no_what = ttk.IntVar(value=0)
 
 # 样式
 CONFIRM_STYLE = 'success-outline'
@@ -215,11 +215,6 @@ frame_function.place(x=5, y=150)
 
 # 工作模块容器
 frame_job = ttk.Frame(frame_function, name='工作模块')
-# # 辅助模块容器
-# frame_aux = ttk.Frame(frame_function, name='辅助模块')
-# # 测量模块容器
-# frame_mea = ttk.Frame(frame_function, name='测量模块')
-
 frame_job.pack(side='top')
 
 frame_aux_mea = ttk.Frame(frame_function, name='辅助模块')
@@ -234,11 +229,6 @@ frame_mea.pack()
 # 功能容器
 frame_command = ttk.Frame(frame_job, name='功能容器')
 frame_command.pack()
-frame_command_left = ttk.Frame(frame_command)
-frame_command_right = ttk.Frame(frame_command)
-# ttk.Label(frame_command, text='操作模块').pack()
-frame_command_left.pack(side="left")
-frame_command_right.pack(side="right")
 
 # 旋转、备注编辑主容器
 frame_edit = ttk.Frame(frame_job, name='旋转、备注', bootstyle="info")
@@ -264,70 +254,18 @@ frame_focus_z_but.pack(side='bottom')
 frame_focus_z_ladel.pack(side='left')
 frame_focus_z_ent.pack(side='right')
 
-# 辅助功能容器
-frame_aux_com = ttk.Frame(frame_aux, name='辅助功能容器')
-# frame_aux_com = ttk.Frame(frame_aux, name='辅助功能容器')
-frame_aux_com.pack()
-# ttk.Label(frame_aux_com, text='辅助模块').pack()
-frame_aux_com_lef = ttk.Frame(frame_aux_com)
-frame_aux_com_rig = ttk.Frame(frame_aux_com)
-frame_aux_com_lef.pack(side='left')
-frame_aux_com_rig.pack(side='right')
-
 # 辅助信息容器
 frame_aux_info = ttk.Frame(frame_aux, name='辅助信息容器')
 frame_aux_info.pack()
 
-frame_aux_info_1 = ttk.Frame(frame_aux_info)
-frame_aux_info_2 = ttk.Frame(frame_aux_info)
-frame_aux_tit = ttk.Frame(frame_aux_info_1)
-frame_aux_inp = ttk.Frame(frame_aux_info_1)
-frame_aux_tit2 = ttk.Frame(frame_aux_info)
-frame_aux_inp2 = ttk.Frame(frame_aux_info)
-frame_aux_but = ttk.Frame(frame_aux_info)
-
-frame_aux_info_1.pack()
-frame_aux_info_2.pack()
-
-frame_aux_tit.pack(side='left')
-frame_aux_inp.pack(side='right')
-
-frame_aux_tit2.pack(side='left')
-frame_aux_inp2.pack(side='left')
-frame_aux_but.pack(side='bottom')
 
 # 测量功能容器
 frame_mea_com = ttk.Frame(frame_mea, name='测量功能容器')
-# frame_mea_com = ttk.Frame(frame_mea, name='测量功能容器')
 frame_mea_com.pack()
-frame_mea_com_lef = ttk.Frame(frame_mea_com)
-frame_mea_com_rig = ttk.Frame(frame_mea_com)
-frame_mea_com_lef.pack(side='left')
-frame_mea_com_rig.pack(side='right')
 
 # 障碍按键容器
 frame_create = ttk.Frame(win, name='按键')
 frame_create.place(x=400, y=5)
-# ttk.Label(frame_create, text='生产模块').pack()
-frame_temp_1 = ttk.Frame(frame_create)
-frame_temp_2 = ttk.Frame(frame_create)
-frame_temp_3 = ttk.Frame(frame_create)
-frame_temp_4 = ttk.Frame(frame_create)
-frame_temp_5 = ttk.Frame(frame_create)
-frame_temp_6 = ttk.Frame(frame_create)
-frame_temp_7 = ttk.Frame(frame_create)
-frame_temp_8 = ttk.Frame(frame_create)
-frame_temp_9 = ttk.Frame(frame_create)
-
-frame_temp_1.pack(side="left")
-frame_temp_2.pack(side="left")
-frame_temp_3.pack(side="left")
-frame_temp_4.pack(side="left")
-frame_temp_5.pack(side="left")
-frame_temp_6.pack(side="left")
-frame_temp_7.pack(side="left")
-frame_temp_8.pack(side="bottom")
-frame_temp_9.pack(side="top")
 
 from focus import Focus
 
