@@ -11,7 +11,6 @@ from ttkbootstrap.utility import enable_high_dpi_awareness
 
 from Middleware import *
 
-
 # 创建窗口
 # win = ttk.Tk()
 win = ttk.Window(
@@ -65,17 +64,6 @@ BUTTON_STYLE = 'outline'
 canvas = ttk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 80, highlightthickness=0)
 canvas.place(x=175, y=100)
 
-# img = Image.open('./img/bg1.png')
-# img = img.resize((900, 600))
-# img_obj = ImageTk.PhotoImage(img)
-# canvas.create_image(15, 50, image=img_obj, anchor='nw', tags=('不框选', 'bg'))
-
-#
-# def d():
-#     canvas.delete('bg')
-#
-#
-# ttk.Button(win, text='del', command=d).place(x=0, y=0)
 
 fg_img = None
 fg_path = None
@@ -257,7 +245,6 @@ frame_focus_z_ent.pack(side='right')
 # 辅助信息容器
 frame_aux_info = ttk.Frame(frame_aux, name='辅助信息容器')
 frame_aux_info.pack()
-
 
 # 测量功能容器
 frame_mea_com = ttk.Frame(frame_mea, name='测量功能容器')

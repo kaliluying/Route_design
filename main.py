@@ -1,4 +1,6 @@
+import json
 import subprocess
+import sys
 import time
 import tkinter.simpledialog
 import webbrowser
@@ -784,7 +786,73 @@ def del_fg():
     canvas.delete('bg')
 
 
-frame_map = ttk.Frame(win, name="路线图").place(x=10, y=10)
+def is_serializable(value):
+    """
+    检查值是否可序列化
+    :param value:
+    :return:
+    """
+    try:
+        json.dumps(value)
+        return True
+    except TypeError:
+        return False
+
+
+def download():
+    """
+    保存成路线图数据
+    :return:
+    """
+    if not os.path.exists('./backup'):
+        os.mkdir('./backup')
+
+    current_time = time.strftime("%Y%m%d-%H%M%S")
+    txt = temp_txt if temp_txt else '路线设计_' + current_time
+
+    path = filedialog.asksaveasfilename(title='保存路线图数据', filetypes=[("JSON files", "*.json")],
+                                        initialdir=os.getcwd() + '/backup', initialfile=txt)
+    if path:
+        obj_dict = {}  # 创建一个空字典来存储属性
+
+        for i in T.all_instances:
+            data_dict = {}
+            instance_attributes = vars(i)  # 获取实例的属性字典
+            for attribute, value in instance_attributes.items():
+                if is_serializable(value):  # 检查值是否可序列化
+                    data_dict[attribute] = value
+            obj_dict[i.__str__()] = data_dict
+
+        with open(path, 'w', encoding='utf-8') as file:  # 假设你想将结果保存到文件中，这里以'w'模式打开
+            json.dump(obj_dict, file, ensure_ascii=False)
+
+
+def reload_window():
+    """
+    重新启动程序
+    :return:
+    """
+    python = sys.executable
+    os.execl(python, python, *sys.argv)  # 使用os.execl重新执行当前脚本
+
+
+def load():
+
+    file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+    # reload_window()
+    if file_path:
+        try:
+            with open(file_path, 'r') as file:
+                state = json.load(file)
+
+
+            messagebox.showinfo("加载成功", "程序状态已从文件加载")
+        except Exception as e:
+            messagebox.showerror("加载失败", f"无法加载文件: {e}")
+
+
+frame_map = ttk.Frame(win, name="路线图")
+frame_map.place(x=10, y=10)
 
 # 路线图长度
 ttk.Label(frame_map, text="长度(m):", font=FONT).grid(row=1, column=0, sticky='e', padx=5, pady=5)
@@ -800,7 +868,7 @@ var_l_h.set("60")
 var_l_h_inp = Entry(frame_map, textvariable=var_l_h, width=5)
 var_l_h_inp.grid(row=2, column=1, sticky='e', padx=5, pady=5)
 
-ttk.Button(win, bootstyle=CONFIRM_STYLE, text="确认", command=found).grid(row=3, column=1, sticky='w')
+ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text="确认", command=found).grid(row=3, column=1, sticky='w')
 
 ttk.Label(frame_map, text='全局障碍长度(m):', font=FONT).grid(row=1, column=3, sticky='e', padx=5, pady=5)
 var_len = ttk.StringVar(value='4')
@@ -810,29 +878,6 @@ len_entt.grid(row=1, column=4, sticky='e', padx=5, pady=5)
 ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).grid(row=2, column=4,
                                                                                                     sticky='e', padx=5,
                                                                                                     pady=5)
-
-download_path = './demo.png'
-
-
-def download(path):
-    # for i in T.all_instances:
-    #     attributes = vars(i)
-    #     # 遍历属性字典并打印
-    #     print(attributes)
-    #     # for attribute, value in attributes.items():
-    #     #     print(attribute, "=", value)
-    # x = frame_info.winfo_x()
-    # y = frame_info.winfo_y()
-    width = canvas.winfo_width()
-    height = canvas.winfo_height()
-    x0 = canvas.winfo_rootx()  # 帧在屏幕上的左上角 x 坐标
-    y0 = canvas.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
-    x1 = x0 + width  # 帧在屏幕上的右下角 x 坐标
-    y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
-    ImageGrab.grab(bbox=(x0, y0, x1, y1)).save(path)  # 截取屏幕区域并保存为图片
-
-
-ttk.Button(win, bootstyle="success-outline", text="保存", command=partial(download, download_path)).place(x=180, y=40)
 
 # 障碍物
 ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='进出口', command=gate).grid(row=0, column=0)
@@ -882,11 +927,14 @@ but_3.state(['!selected'])
 # but_2.pack()
 
 # ttk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
-ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).grid(row=0, column=1, padx=0, pady=0)
-ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).grid(row=1, column=1, padx=0, pady=0)
+ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).grid(row=0, column=1,
+                                                                                                    padx=0, pady=0)
+ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).grid(row=1, column=1, padx=0,
+                                                                                              pady=0)
 
 # 辅助模块
-ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='网格辅助线', command=grid, width=width).grid(row=2, column=1, padx=0, pady=0)
+ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='网格辅助线', command=grid, width=width).grid(row=2, column=1,
+                                                                                                     padx=0, pady=0)
 aux_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
 aux_info.grid(row=2, column=0, padx=0, pady=0)
 aux_info.state(['selected'])
@@ -897,7 +945,8 @@ var_parameter = ttk.StringVar()
 e_parameter = Entry(frame_aux_info, textvariable=var_parameter, width=5)
 e_parameter.grid(row=0, column=1, padx=0, pady=0)
 
-ttk.Button(frame_aux_info, bootstyle=CONFIRM_STYLE, text='确认', command=parameter).grid(row=1, column=0, padx=0, pady=0)
+ttk.Button(frame_aux_info, bootstyle=CONFIRM_STYLE, text='确认', command=parameter).grid(row=1, column=0, padx=0,
+                                                                                         pady=0)
 par_state = ttk.Button(frame_aux_info, bootstyle="success-outline", text='隐藏', command=hidden)
 par_state.grid(row=1, column=1, padx=0, pady=0)
 
@@ -906,13 +955,15 @@ ttk.Label(frame_aux_info, text="圆(m)：", font=FONT).grid(row=2, column=0, pad
 var_cir = ttk.StringVar()
 e_id = Entry(frame_aux_info, textvariable=var_cir, width=5)
 e_id.grid(row=2, column=1, sticky='w')
-ttk.Button(frame_aux_info, bootstyle=CONFIRM_STYLE, text='确认', command=circular).grid(row=3, column=1, padx=0, pady=0, sticky='w')
+ttk.Button(frame_aux_info, bootstyle=CONFIRM_STYLE, text='确认', command=circular).grid(row=3, column=1, padx=0, pady=0,
+                                                                                        sticky='w')
 
 # 测量模块
 but_1 = ttk.Checkbutton(frame_mea_com, bootstyle="round-toggle", text='长度测量', command=pen, width=width)
 but_1.grid(row=0, column=0, padx=1, pady=1)
 
-ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1, padx=0, pady=0)
+ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1,
+                                                                                                    padx=0, pady=0)
 
 canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
@@ -1009,6 +1060,10 @@ function_menuType.add_command(label="清屏", command=clear)
 function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件下载位置", command=open_file)
 function_menuType.add_command(label="下载", command=save_1)
+function_menuType.add_command(label="保存", command=download)
+function_menuType.add_command(label="加载", command=load)
+# ttk.Button(win, bootstyle="success-outline", text="保存", command=download).place(x=180, y=40)
+
 
 # def save():
 #     with open('ms.pkl', 'wb') as f:
@@ -1114,5 +1169,4 @@ def delete(event):
 win.bind('<Button-1>', unfocus_click)
 win.bind('<BackSpace>', delete)
 # win.protocol("WM_DELETE_WINDOW", save)
-print(frame_aux_mea.winfo_children())
 win.mainloop()

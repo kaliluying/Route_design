@@ -21,6 +21,10 @@ class T:
         self.index = str(index)  # 障碍索引
         self.line_tag = None  # 障碍线标签
         self.id = None  # 障碍id
+        self.txt = None  # 障碍文字标签
+
+    def load(self, **kwargs):
+        print(kwargs)
 
     def mousedown(self, tag, event):
         """
@@ -88,6 +92,9 @@ class T:
 
 class CreateTxt(T):
 
+    def __str__(self):
+        return f"障碍号:{self.txt}"
+
     def create(self, txt):
         """
         创建障碍号
@@ -95,6 +102,7 @@ class CreateTxt(T):
         :return:
         """
         self.tag = "txt-" + self.index
+        self.txt = txt
         # 字符串外圆圈的位置
         length = 7 + 2 * len(txt)
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
@@ -112,12 +120,17 @@ class CreateTxt(T):
 
 
 class CreateParameter(T):
+
+    def __str__(self):
+        return f'障碍备注:{self.txt}'
+
     def create(self, txt):
         """
         创建障碍备注
         :param txt: 备注字符串
         :return:
         """
+        self.txt = txt
         self.tag = "parameter-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', self.tag))
         self.id = text
@@ -130,6 +143,10 @@ class CreateParameter(T):
 
 
 class CreateImg(T):
+
+    def __str__(self):
+        return f"障碍:{self.obstacle}-{self.index}"
+
     def __init__(self, app, index, img_path, obstacle=None):
         super(CreateImg, self).__init__(app, index)
         self.var = None  # 输入框
@@ -386,8 +403,8 @@ class CreateImg(T):
         ttk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name),
                    bootstyle=CONFIRM_STYLE).pack()
         w = 5 if sys_name == 'Darwin' else 10
-        ttk.Button(frame_aux_com_rig, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w,
-                   bootstyle=BUTTON_STYLE).pack()
+        ttk.Button(frame_command, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w,
+                   bootstyle=BUTTON_STYLE).grid(row=3, column=1)
 
     def bar_aux(self):
         # if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
