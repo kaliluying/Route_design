@@ -1,5 +1,7 @@
 from functools import partial
 
+import data_url
+
 from Common import *
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
 
@@ -25,6 +27,16 @@ class T:
 
     def load(self, **kwargs):
         print(kwargs)
+
+    def save(self):
+        """
+        保存障碍
+        :return:
+        """
+        save_dict = {'startx': self.startx, 'starty': self.starty, 'current_x': self.current_x,
+                     'current_y': self.current_y, 'angle': self.angle, 'temp_angle': self.temp_angle,
+                     'lest_angle': self.lest_angle, 'txt': self.txt}
+        return save_dict
 
     def mousedown(self, tag, event):
         """
@@ -95,6 +107,9 @@ class CreateTxt(T):
     def __str__(self):
         return f"障碍号:{self.txt}"
 
+    def save(self):
+        return {self.__str__(): T.save(self)}
+
     def create(self, txt):
         """
         创建障碍号
@@ -105,8 +120,8 @@ class CreateTxt(T):
         self.txt = txt
         # 字符串外圆圈的位置
         length = 7 + 2 * len(txt)
-        text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
-        circle = canvas.create_oval(self.startx - length, self.starty - length, self.startx + length,
+        text = self.app.create_text(self.current_x, self.current_y, text=txt, tags=self.tag)
+        circle = canvas.create_oval(self.current_x - length, self.current_y - length, self.startx + length,
                                     self.starty + length, tags=self.tag)
         self.id = text
         # 撤销记录
@@ -124,6 +139,9 @@ class CreateParameter(T):
     def __str__(self):
         return f'障碍备注:{self.txt}'
 
+    def save(self):
+        return {self.__str__(): T.save(self)}
+
     def create(self, txt):
         """
         创建障碍备注
@@ -132,7 +150,7 @@ class CreateParameter(T):
         """
         self.txt = txt
         self.tag = "parameter-" + self.index
-        text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', self.tag))
+        text = self.app.create_text(self.current_x, self.current_y, text=txt, tags=('parameter', self.tag))
         self.id = text
         stack.append(('创建', text))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
@@ -164,10 +182,36 @@ class CreateImg(T):
         self.name = ''  # 备注
         self.state_line = 0  # 辅助线状态
 
+    def load(self, **kwargs):
+        """
+        加载障碍信息
+        :param kwargs:
+        :return:
+        """
+        self.img_path = kwargs.get('img_path')
+        print(self.img_path)
+    def save(self):
+        """
+        保存障碍信息
+        :return:
+        """
+        t_dict = T.save(self)
+
+        with open(self.img_path, 'rb') as image:
+            data = image.read()
+        img_obj = data_url.construct_data_url(
+            mime_type='image/jpeg',
+            base64_encode=True,
+            data=data,
+        )
+        save_dict = {'img_path': self.img_path, 'img_obj': img_obj, 'obstacle': self.obstacle, 'name': self.name,
+                     'state_line': self.state_line, 'info': self.info, 'com_info': self.com_info, 'state': self.state}
+        return {self.__str__(): {**t_dict, **save_dict}}
+
     def create(self):
         self.tag = "img-" + self.index
         self.img_file = ImageTk.PhotoImage(self.img_obj)
-        img_id = self.app.create_image(self.startx, self.starty, image=self.img_file,
+        img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file,
                                        tag=self.tag)
         self.id = img_id
         stack.append(('创建', img_id))

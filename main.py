@@ -804,27 +804,31 @@ def download():
     保存成路线图数据
     :return:
     """
-    if not os.path.exists('./backup'):
-        os.mkdir('./backup')
-
-    current_time = time.strftime("%Y%m%d-%H%M%S")
-    txt = temp_txt if temp_txt else '路线设计_' + current_time
-
-    path = filedialog.asksaveasfilename(title='保存路线图数据', filetypes=[("JSON files", "*.json")],
-                                        initialdir=os.getcwd() + '/backup', initialfile=txt)
-    if path:
-        obj_dict = {}  # 创建一个空字典来存储属性
-
-        for i in T.all_instances:
-            data_dict = {}
-            instance_attributes = vars(i)  # 获取实例的属性字典
-            for attribute, value in instance_attributes.items():
-                if is_serializable(value):  # 检查值是否可序列化
-                    data_dict[attribute] = value
-            obj_dict[i.__str__()] = data_dict
-
-        with open(path, 'w', encoding='utf-8') as file:  # 假设你想将结果保存到文件中，这里以'w'模式打开
-            json.dump(obj_dict, file, ensure_ascii=False)
+    save_dict = {}
+    for i in T.all_instances:
+        save_dict.update(i.save())
+    print(save_dict)
+    # if not os.path.exists('./backup'):
+    #     os.mkdir('./backup')
+    #
+    # current_time = time.strftime("%Y%m%d-%H%M%S")
+    # txt = temp_txt if temp_txt else '路线设计_' + current_time
+    #
+    # path = filedialog.asksaveasfilename(title='保存路线图数据', filetypes=[("JSON files", "*.json")],
+    #                                     initialdir=os.getcwd() + '/backup', initialfile=txt)
+    # if path:
+    #     obj_dict = {}  # 创建一个空字典来存储属性
+    #
+    #     for i in T.all_instances:
+    #         data_dict = {}
+    #         instance_attributes = vars(i)  # 获取实例的属性字典
+    #         for attribute, value in instance_attributes.items():
+    #             if is_serializable(value):  # 检查值是否可序列化
+    #                 data_dict[attribute] = value
+    #         obj_dict[i.__str__()] = data_dict
+    #
+    #     with open(path, 'w', encoding='utf-8') as file:  # 假设你想将结果保存到文件中，这里以'w'模式打开
+    #         json.dump(obj_dict, file, ensure_ascii=False)
 
 
 def reload_window():
