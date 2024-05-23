@@ -51,7 +51,7 @@ def monorail():
     image_path = expand(get_one_path())
     image_path = start_direction(image_path)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle='monorail').create()
+    CreateImg(canvas, index_img, obstacle='monorail').create(image_path)
     drag()
 
 
@@ -61,7 +61,7 @@ def oxer():
     image_path = merge(10)
     image_path = start_direction(image_path)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle='oxer').create()
+    CreateImg(canvas, index_img, obstacle='oxer').create(image_path)
     drag()
 
 
@@ -70,7 +70,7 @@ def tirail():
     global index_img
     image_path = merge(10, oxer='tirail')
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle='tirail').create()
+    CreateImg(canvas, index_img, obstacle='tirail').create(image_path)
     drag()
 
 
@@ -82,7 +82,7 @@ def four():
     global index_img
     image_path = merge(15, oxer='four')
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle='four').create()
+    CreateImg(canvas, index_img, obstacle='four').create(image_path)
     drag()
 
 
@@ -91,7 +91,7 @@ def combination_ab():
     global index_img
     image_path = merge_ab(state=1, m1=30)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create()
+    CreateImg(canvas, index_img, obstacle="combination_ab").create(image_path)
     drag()
 
 
@@ -100,7 +100,7 @@ def combination_abc():
     global index_img
     image_path = merge_ab(state=1, m1=30, m2=30)
     index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create()
+    CreateImg(canvas, index_img, obstacle="combination_abc").create(image_path)
     drag()
 
 
@@ -110,7 +110,7 @@ def live():
     index_img += 1
     # image_path = expand(get_live_path())
     image_path = live_one_tool()
-    CreateImg(canvas, index_img, image_path, obstacle='live').create()
+    CreateImg(canvas, index_img, obstacle='live').create(image_path)
     drag()
 
 
@@ -118,7 +118,7 @@ def live():
 def force():
     global index_img
     index_img += 1
-    CreateImg(canvas, index_img, force_image).create()
+    CreateImg(canvas, index_img).create(force_image)
     drag()
 
 
@@ -127,7 +127,7 @@ def compass():
     global index_img
     index_img += 1
     image_path = expand(compass_image)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, index_img).create(image_path)
     drag()
 
 
@@ -137,7 +137,7 @@ def water_barrier():
     index_img += 1
     image_path = expand(water_barrier_iamge)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path, obstacle='water').create()
+    CreateImg(canvas, index_img, obstacle='water').create(image_path)
     drag()
 
 
@@ -146,7 +146,7 @@ def brick_wall():
     global index_img
     index_img += 1
     image_path = expand(brick_wall_image)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, index_img).create(image_path)
     drag()
 
 
@@ -156,7 +156,7 @@ def line():
     index_img += 1
     image_path = expand(line_image)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, index_img).create(image_path)
     drag()
 
 
@@ -165,7 +165,7 @@ def gate():
     global index_img
     index_img += 1
     image_path = expand(gate_image)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, index_img).create(image_path)
     drag()
 
 
@@ -178,7 +178,7 @@ def circular():
     img = img.resize((cir, cir))
     img.save('./img/cir.png')
     cir_path = './img/cir.png'
-    CreateImg(canvas, index_img, cir_path).create()
+    CreateImg(canvas, index_img).create(cir_path)
     drag()
 
 
@@ -767,7 +767,7 @@ def custom():
     # image_path = start_direction(image_path)
     # image_path = start_direction(img_path)
     index_img += 1
-    CreateImg(canvas, index_img, img_path).create()
+    CreateImg(canvas, index_img).create(img_path)
     drag()
 
 
@@ -786,49 +786,29 @@ def del_fg():
     canvas.delete('bg')
 
 
-def is_serializable(value):
-    """
-    检查值是否可序列化
-    :param value:
-    :return:
-    """
-    try:
-        json.dumps(value)
-        return True
-    except TypeError:
-        return False
-
-
 def download():
     """
     保存成路线图数据
     :return:
     """
-    save_dict = {}
-    for i in T.all_instances:
-        save_dict.update(i.save())
-    print(save_dict)
-    # if not os.path.exists('./backup'):
-    #     os.mkdir('./backup')
-    #
-    # current_time = time.strftime("%Y%m%d-%H%M%S")
-    # txt = temp_txt if temp_txt else '路线设计_' + current_time
-    #
-    # path = filedialog.asksaveasfilename(title='保存路线图数据', filetypes=[("JSON files", "*.json")],
-    #                                     initialdir=os.getcwd() + '/backup', initialfile=txt)
-    # if path:
-    #     obj_dict = {}  # 创建一个空字典来存储属性
-    #
-    #     for i in T.all_instances:
-    #         data_dict = {}
-    #         instance_attributes = vars(i)  # 获取实例的属性字典
-    #         for attribute, value in instance_attributes.items():
-    #             if is_serializable(value):  # 检查值是否可序列化
-    #                 data_dict[attribute] = value
-    #         obj_dict[i.__str__()] = data_dict
-    #
-    #     with open(path, 'w', encoding='utf-8') as file:  # 假设你想将结果保存到文件中，这里以'w'模式打开
-    #         json.dump(obj_dict, file, ensure_ascii=False)
+
+    if not os.path.exists('./backup'):
+        os.mkdir('./backup')
+
+    current_time = time.strftime("%Y%m%d-%H%M%S")
+    txt = temp_txt if temp_txt else '路线设计_' + current_time
+
+    path = filedialog.asksaveasfilename(title='保存路线图数据', filetypes=[("JSON files", "*.json")],
+                                        initialdir=os.getcwd() + '/backup', initialfile=txt)
+    if path:
+        save_dict = {}
+        for i in T.all_instances:
+            save_dict.update(i.save())
+        # print(save_dict)
+
+        with open(path, 'w', encoding='utf-8') as file:
+            json.dump(save_dict, file, ensure_ascii=False)
+        messagebox.showinfo("保存成功", f"程序状态已保存至{path}")
 
 
 def reload_window():
@@ -841,17 +821,22 @@ def reload_window():
 
 
 def load():
-
     file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
     # reload_window()
     if file_path:
         try:
             with open(file_path, 'r') as file:
                 state = json.load(file)
-
-
+            for key, value in state.items():
+                if '障碍组件' in key:
+                    CreateImg(canvas, value['index'], value['img_path'], ).load(**value)
+                elif '障碍号' in key:
+                    CreateTxt(canvas, value['index']).load(**value)
+                elif '障碍备注' in key:
+                    CreateParameter(canvas, value['index']).load(**value)
             messagebox.showinfo("加载成功", "程序状态已从文件加载")
         except Exception as e:
+            print(e)
             messagebox.showerror("加载失败", f"无法加载文件: {e}")
 
 

@@ -1,3 +1,5 @@
+import base64
+import io
 from functools import partial
 
 import data_url
@@ -26,7 +28,14 @@ class T:
         self.txt = None  # 障碍文字标签
 
     def load(self, **kwargs):
-        print(kwargs)
+        self.startx = kwargs.get('startx', 160)
+        self.starty = kwargs.get('starty', 25)
+        self.current_x = kwargs.get('current_x', 160)
+        self.current_y = kwargs.get('current_y', 25)
+        self.angle = kwargs.get('angle', 0)
+        self.temp_angle = kwargs.get('temp_angle', 0)
+        self.lest_angle = kwargs.get('lest_angle', 0)
+        self.index = kwargs.get('index', str(index))
 
     def save(self):
         """
@@ -35,7 +44,7 @@ class T:
         """
         save_dict = {'startx': self.startx, 'starty': self.starty, 'current_x': self.current_x,
                      'current_y': self.current_y, 'angle': self.angle, 'temp_angle': self.temp_angle,
-                     'lest_angle': self.lest_angle, 'txt': self.txt}
+                     'lest_angle': self.lest_angle, 'txt': self.txt, 'index': self.index}
         return save_dict
 
     def mousedown(self, tag, event):
@@ -110,6 +119,10 @@ class CreateTxt(T):
     def save(self):
         return {self.__str__(): T.save(self)}
 
+    def load(self, **kwargs):
+        T.load(self, **kwargs)
+        self.create(kwargs.get('txt'))
+
     def create(self, txt):
         """
         创建障碍号
@@ -120,9 +133,10 @@ class CreateTxt(T):
         self.txt = txt
         # 字符串外圆圈的位置
         length = 7 + 2 * len(txt)
+        circle = canvas.create_oval(self.current_x - length, self.current_y - length, self.current_x + length,
+                                    self.current_y + length, tags=self.tag, fill='white')
         text = self.app.create_text(self.current_x, self.current_y, text=txt, tags=self.tag)
-        circle = canvas.create_oval(self.current_x - length, self.current_y - length, self.startx + length,
-                                    self.starty + length, tags=self.tag)
+
         self.id = text
         # 撤销记录
         stack.append(('创建', (text, circle)))
@@ -131,7 +145,7 @@ class CreateTxt(T):
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, self.tag))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
-        self.mousedown(self.tag, [200, 100])
+        # self.mousedown(self.tag, [200, 100])
 
 
 class CreateParameter(T):
@@ -141,6 +155,10 @@ class CreateParameter(T):
 
     def save(self):
         return {self.__str__(): T.save(self)}
+
+    def load(self, **kwargs):
+        T.load(self, **kwargs)
+        self.create(kwargs.get('txt'))
 
     def create(self, txt):
         """
@@ -157,21 +175,21 @@ class CreateParameter(T):
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
-        self.mousedown(self.tag, [200, 100])
+        # self.mousedown(self.tag, [200, 100])
 
 
 class CreateImg(T):
 
     def __str__(self):
-        return f"障碍:{self.obstacle}-{self.index}"
+        return f"障碍组件:{self.obstacle}-{self.index}"
 
-    def __init__(self, app, index, img_path, obstacle=None):
+    def __init__(self, app, index, obstacle=None):
         super(CreateImg, self).__init__(app, index)
-        self.var = None  # 输入框
+        self.var = None  # 旋转输入框
         self.img = None  # 图片
         self.frame_input = None  # 输入框列表
-        self.img_path = img_path  # 图片路径
-        self.img_obj = Image.open(self.img_path)  # 图片对象
+        self.img_path = None  # 图片路径
+        self.img_obj = None  # 图片对象
         self.temp_path = None  # 临时路径
         self.img_file = None
         self.obstacle = obstacle  # 障碍类别
@@ -182,14 +200,6 @@ class CreateImg(T):
         self.name = ''  # 备注
         self.state_line = 0  # 辅助线状态
 
-    def load(self, **kwargs):
-        """
-        加载障碍信息
-        :param kwargs:
-        :return:
-        """
-        self.img_path = kwargs.get('img_path')
-        print(self.img_path)
     def save(self):
         """
         保存障碍信息
@@ -208,8 +218,20 @@ class CreateImg(T):
                      'state_line': self.state_line, 'info': self.info, 'com_info': self.com_info, 'state': self.state}
         return {self.__str__(): {**t_dict, **save_dict}}
 
-    def create(self):
+    def load(self, **kwargs):
+        T.load(self, **kwargs)
+
+        img_url = kwargs.get('img_obj')
+
+        image_data = base64.b64decode(img_url.split(",")[1])
+        image = Image.open(io.BytesIO(image_data))
+        self.create(kwargs.get('img_path'), img_obj=image)
+        self.to_rotate(self.tag, self.angle)
+
+    def create(self, img_path, img_obj=None):
         self.tag = "img-" + self.index
+        self.img_path = img_path
+        self.img_obj = img_obj if img_obj else Image.open(self.img_path)
         self.img_file = ImageTk.PhotoImage(self.img_obj)
         img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file,
                                        tag=self.tag)
