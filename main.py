@@ -807,6 +807,7 @@ def download():
         # print(save_dict)
 
         with open(path, 'w', encoding='utf-8') as file:
+            # print(save_dict)
             json.dump(save_dict, file, ensure_ascii=False)
         messagebox.showinfo("保存成功", f"程序状态已保存至{path}")
 
@@ -827,6 +828,8 @@ def load():
         try:
             with open(file_path, 'r') as file:
                 state = json.load(file)
+            for i in T.all_instances:
+                canvas.delete(i.tag)
             for key, value in state.items():
                 if '障碍组件' in key:
                     CreateImg(canvas, value['index'], value['img_path'], ).load(**value)

@@ -215,13 +215,18 @@ class CreateImg(T):
             data=data,
         )
         save_dict = {'img_path': self.img_path, 'img_obj': img_obj, 'obstacle': self.obstacle, 'name': self.name,
-                     'state_line': self.state_line, 'info': self.info, 'com_info': self.com_info, 'state': self.state}
+                     'state_line': self.state_line, 'info': self.info, 'com_info': self.com_info}
         return {self.__str__(): {**t_dict, **save_dict}}
 
     def load(self, **kwargs):
         T.load(self, **kwargs)
 
         img_url = kwargs.get('img_obj')
+        self.info = kwargs.get('info')
+        self.com_info = kwargs.get('com_info')
+        self.state_line = kwargs.get('state_line')
+        self.obstacle = kwargs.get('obstacle')
+        # self.state = kwargs.get('state')
 
         image_data = base64.b64decode(img_url.split(",")[1])
         image = Image.open(io.BytesIO(image_data))
