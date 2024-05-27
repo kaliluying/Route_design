@@ -2,11 +2,13 @@
 
 dist
 build
-download
-ms_download
 __pycache__
-demo
+
+ms_download
+backup
 temp_img
-*log
 TEST
-TODO.md
+
+
+demo
+*log
