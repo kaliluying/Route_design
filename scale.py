@@ -226,6 +226,7 @@ class CreateImg(T):
         self.com_info = kwargs.get('com_info')
         self.state_line = kwargs.get('state_line')
         self.obstacle = kwargs.get('obstacle')
+        self.name = kwargs.get('name')
         # self.state = kwargs.get('state')
 
         image_data = base64.b64decode(img_url.split(",")[1])

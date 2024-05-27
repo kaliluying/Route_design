@@ -184,7 +184,7 @@ def circular():
 
 # 赛事信息确认
 def dle():
-    global temp_txt, entry_list, label_list
+    global temp_txt, entry_list, label_list, filtered_dict
     try:
         data_dict = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
                      '障碍高度': '', '行进速度': '', '路线长度': '', '允许时间': '', '限制时间': '', '障碍数量': '',
@@ -227,8 +227,7 @@ def edit(current_dist=None):
     global entry_list, label_list
     data_dict = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
                  '障碍高度': '', '行进速度': '', '路线长度': '', '允许时间': '', '限制时间': '', '障碍数量': '',
-                 '跳跃数量': '',
-                 '附加赛': '', '路线设计师': ''}
+                 '跳跃数量': '', '附加赛': '', '路线设计师': ''}
 
     try:
         data_dict.update(current_dist)
@@ -303,10 +302,14 @@ def found():
     canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 60)
     canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 70)
     canvas.delete('bg')
-    img = Image.open(fg_path)
-    img = img.resize((WIDTH, HEIGHT))
-    fg_img = ImageTk.PhotoImage(img)
-    canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
+    try:
+        img = Image.open(fg_path)
+        img = img.resize((WIDTH, HEIGHT))
+        fg_img = ImageTk.PhotoImage(img)
+        canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
+    except AttributeError as e:
+        print('背景图错误：', e)
+
     if state_f:
         font = 0.16 if sys_name == 'Darwin' else 0.12
         watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
@@ -323,7 +326,7 @@ def found():
 
 # 鼠标左键按下
 def leftButtonDown(event):
-    global choice_tup
+    global choice_tup, current_line
     if choice_tup and not (min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
                            and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3])):
         canvas.delete('choice')
@@ -333,6 +336,7 @@ def leftButtonDown(event):
     Y.set(event.y)
     move_x.set(event.x)
     move_y.set(event.y)
+    current_line = [(event.x, event.y)]
 
 
 def create_line(x1, y1, x2, y2):
@@ -344,13 +348,17 @@ def create_line(x1, y1, x2, y2):
 
 # 鼠标左键滚动事件
 def leftButtonMove(event):
-    global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare
+    global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare, current_line
     shu(event)
     # 画线
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
                                       fill='#000000', width=font_size, tags=("line", '不框选'), smooth=True)
+
+        current_line.append((event.x, event.y))
+
         x1, y1, x2, y2 = canvas.coords(lastDraw)
+
         px += (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
         temp_px = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
         # x = abs(event.x - X.get())
@@ -396,7 +404,7 @@ def leftButtonMove(event):
 
 # 松开左键
 def leftButtonUp(event):
-    global lastDraw, click_num, px, choice_tup, choice_start, remove_px
+    global lastDraw, click_num, px, choice_tup, choice_start, remove_px, lines, current_line
     end.append(lastDraw)
     current_frame_stare = get_frame_stare()
     # 画线
@@ -411,6 +419,9 @@ def leftButtonUp(event):
             start_x.set(event.x)
             start_y.set(event.y)
             click_num = 2
+            lines.append(current_line)
+            current_line = None
+
         elif click_num == 2:
             end_x.set(event.x)
             end_y.set(event.y)
@@ -429,6 +440,7 @@ def leftButtonUp(event):
             # remove_px[lastDraw] = px
             start_x.set(end_x.get())
             start_y.set(end_y.get())
+
     # 画弧
     elif what.get() == 4:
         if click_num == 1:
@@ -804,21 +816,17 @@ def download():
         save_dict = {}
         for i in T.all_instances:
             save_dict.update(i.save())
-        # print(save_dict)
+
+        save_dict['var_l_w'] = var_l_w.get()
+        save_dict['var_l_h'] = var_l_h.get()
+        save_dict['filtered_dict'] = filtered_dict
+        save_dict['lines'] = lines
+        save_dict['var_len'] = var_len.get()
 
         with open(path, 'w', encoding='utf-8') as file:
-            # print(save_dict)
+            print(save_dict)
             json.dump(save_dict, file, ensure_ascii=False)
         messagebox.showinfo("保存成功", f"程序状态已保存至{path}")
-
-
-def reload_window():
-    """
-    重新启动程序
-    :return:
-    """
-    python = sys.executable
-    os.execl(python, python, *sys.argv)  # 使用os.execl重新执行当前脚本
 
 
 def load():
@@ -828,8 +836,12 @@ def load():
         try:
             with open(file_path, 'r') as file:
                 state = json.load(file)
+
+            # 删除画布障碍
             for i in T.all_instances:
                 canvas.delete(i.tag)
+
+            # 加载障碍
             for key, value in state.items():
                 if '障碍组件' in key:
                     CreateImg(canvas, value['index'], value['img_path'], ).load(**value)
@@ -837,6 +849,26 @@ def load():
                     CreateTxt(canvas, value['index']).load(**value)
                 elif '障碍备注' in key:
                     CreateParameter(canvas, value['index']).load(**value)
+
+            # 更新路线图
+            var_l_h.set(state['var_l_h'])
+            var_l_w.set(state['var_l_w'])
+            found()
+
+            # 更新赛事信息
+            edit(state['filtered_dict'])
+
+            # 加载路线
+            for line in state['lines']:
+                for i in range(len(line) - 1):
+                    x0, y0 = line[i]
+                    x1, y1 = line[i + 1]
+                    canvas.create_line(x0, y0, x1, y1, fill='#000000', width=font_size, tags=("line", '不框选'),
+                                       smooth=True)
+
+            # 全局障碍
+            set_len(state['var_len'])
+
             messagebox.showinfo("加载成功", "程序状态已从文件加载")
         except Exception as e:
             print(e)

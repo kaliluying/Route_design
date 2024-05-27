@@ -109,6 +109,15 @@ click = []
 # 记录每次旋转的角度
 rotate_ = [0]
 
+# 赛事信息
+filtered_dict = {}
+
+# 记录一次画线的坐标
+current_line = None
+
+# 总坐标
+lines = []
+
 lastDraw = 0
 end = [0]
 size = 1
