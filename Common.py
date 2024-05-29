@@ -54,9 +54,7 @@ def check_for_update(window):
                   f'请选择立即去下载更新[确定]，暂不更新[取消]？'
         result = messagebox.askokcancel(title='更新提示', message=message)
         if result:
-            browser_update(VERSION_URL, window)
-        else:
-            window.destroy()
+            browser_update('https://gitee.com/gmlwb/ms/releases/', window)
 
 
 def browser_update(ver, window):
@@ -65,12 +63,10 @@ def browser_update(ver, window):
 
 
 # 当前版本
-CURRENT_VERSION = "1.0.0"
+CURRENT_VERSION = "0.0.0"
 
 # 最新版本信息的URL
-VERSION_URL = "https://raw.githubusercontent.com/yourusername/yourrepo/main/version.txt"
-t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
-t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
+VERSION_URL = "https://github.com/kaliluying/Route_design/raw/dev/version.txt"
 
 win.report_callback_exception = log_error
 

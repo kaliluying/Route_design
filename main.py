@@ -1198,4 +1198,8 @@ def delete(event):
 win.bind('<Button-1>', unfocus_click)
 win.bind('<BackSpace>', delete)
 # win.protocol("WM_DELETE_WINDOW", save)
+# check_for_update(win)
+t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
+t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
+t.start()
 win.mainloop()
