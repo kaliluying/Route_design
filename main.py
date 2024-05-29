@@ -579,9 +579,10 @@ def set_color():
 
 # 清屏
 def clear():
-    global px, click_num, stack
+    global px, click_num, stack, lines
     canvas.delete("line")
     canvas.delete("rubber")
+    lines.clear()
     px = 0
     canvas.itemconfig('实时路线', text="%.2fm" % px)
     click_num = 1
@@ -824,12 +825,12 @@ def download():
         save_dict['var_len'] = var_len.get()
 
         with open(path, 'w', encoding='utf-8') as file:
-            print(save_dict)
             json.dump(save_dict, file, ensure_ascii=False)
         messagebox.showinfo("保存成功", f"程序状态已保存至{path}")
 
 
 def load():
+    global lines
     file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
     # reload_window()
     if file_path:
@@ -859,7 +860,8 @@ def load():
             edit(state['filtered_dict'])
 
             # 加载路线
-            for line in state['lines']:
+            lines = state['lines']
+            for line in lines:
                 for i in range(len(line) - 1):
                     x0, y0 = line[i]
                     x1, y1 = line[i + 1]
@@ -1135,7 +1137,7 @@ win.config(menu=menu)
 
 # 撤销
 def undo(event):
-    global px, route_click
+    global px, route_click, lines
     if stack and event.widget == win:
         item = stack.pop()
         if item[0] == '创建':
@@ -1148,8 +1150,11 @@ def undo(event):
                 canvas.itemconfig(i, state='normal')
         elif item[0] == '长度测量':
             id, temp_px = item[1]
+            temp_line = []
             for i in id:
+                temp_line.append(canvas.coords(i))
                 pop(i)
+            lines.pop()
             px -= temp_px
             canvas.itemconfig('实时路线', text="%.2fm" % px)
             x, y = route_click.pop()

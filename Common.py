@@ -1,7 +1,10 @@
 import logging
 import os
 import platform
+import threading
+import requests
 import traceback
+import webbrowser
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
 import math
@@ -23,8 +26,10 @@ win = ttk.Window(
 W = win.winfo_screenwidth()
 H = win.winfo_screenheight()
 win.geometry(f"{W}x{H}")
+
 # win.state("zoomed")
 # win.iconphoto(False, ttk.PhotoImage(file='img/ic.png'))
+
 
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
@@ -39,6 +44,33 @@ def log_error(exctype, value, tb):
     print(error_msg)
     logging.error("预料之外的错误: %s", error_msg, exc_info=True)
 
+
+def check_for_update(window):
+    response = requests.get(VERSION_URL)
+    response.raise_for_status()
+    latest_version = response.text.strip()
+    if latest_version != CURRENT_VERSION:
+        message = f'当前版本[{CURRENT_VERSION}], 有新版本[{latest_version}],更新前请关闭相关打开文件.\n' \
+                  f'请选择立即去下载更新[确定]，暂不更新[取消]？'
+        result = messagebox.askokcancel(title='更新提示', message=message)
+        if result:
+            browser_update(VERSION_URL, window)
+        else:
+            window.destroy()
+
+
+def browser_update(ver, window):
+    webbrowser.open(ver)
+    window.destroy()
+
+
+# 当前版本
+CURRENT_VERSION = "1.0.0"
+
+# 最新版本信息的URL
+VERSION_URL = "https://raw.githubusercontent.com/yourusername/yourrepo/main/version.txt"
+t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
+t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
 
 win.report_callback_exception = log_error
 
@@ -63,7 +95,6 @@ BUTTON_STYLE = 'outline'
 
 canvas = ttk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 80, highlightthickness=0)
 canvas.place(x=175, y=100)
-
 
 fg_img = None
 fg_path = None
