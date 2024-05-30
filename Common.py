@@ -46,12 +46,14 @@ def log_error(exctype, value, tb):
 
 
 def check_for_update(window):
-    response = requests.get(VERSION_URL)
-    response.raise_for_status()
-    latest_version = response.text.strip()
+    try:
+        response = requests.get(VERSION_URL)
+        response.raise_for_status()
+        latest_version = response.text.strip()
+    except:
+        return
     if latest_version != CURRENT_VERSION:
-        message = f'当前版本[{CURRENT_VERSION}], 有新版本[{latest_version}],更新前请关闭相关打开文件.\n' \
-                  f'请选择立即去下载更新[确定]，暂不更新[取消]？'
+        message = f'当前版本[{CURRENT_VERSION}], 有新版本[{latest_version}]'
         result = messagebox.askokcancel(title='更新提示', message=message)
         if result:
             browser_update('https://gitee.com/gmlwb/ms/releases/', window)
@@ -63,7 +65,7 @@ def browser_update(ver, window):
 
 
 # 当前版本
-CURRENT_VERSION = "0.0.0"
+CURRENT_VERSION = "1.0.0"
 
 # 最新版本信息的URL
 VERSION_URL = "https://github.com/kaliluying/Route_design/raw/dev/version.txt"

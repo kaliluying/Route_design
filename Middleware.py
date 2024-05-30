@@ -9,6 +9,27 @@ live_state = 0
 # 全局障碍长度
 bar_len = 4
 
+# 当前障碍对象
+current_obstacle = None
+
+
+def set_obstacle(obstacle):
+    """
+    设置障碍对象
+    :param obstacle:
+    :return:
+    """
+    global current_obstacle
+    current_obstacle = obstacle
+
+
+def get_obstacle():
+    """
+    获取障碍对象
+    :return:
+    """
+    return current_obstacle
+
 
 def set_cur(cur):
     """

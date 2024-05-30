@@ -26,6 +26,7 @@ class T:
         self.line_tag = None  # 障碍线标签
         self.id = None  # 障碍id
         self.txt = None  # 障碍文字标签
+        self.ui_state = 1
 
     def load(self, **kwargs):
         self.startx = kwargs.get('startx', 160)
@@ -56,6 +57,7 @@ class T:
         """
         global choice_tup
         set_frame_stare(False)
+        set_obstacle(self)
         try:
             if choice_tup and not (min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
                                    and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3])):
@@ -139,7 +141,7 @@ class CreateTxt(T):
 
         self.id = text
         # 撤销记录
-        stack.append(('创建', (text, circle)))
+        stack.append(('创建', (text, circle), self))
 
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, self.tag))
@@ -170,7 +172,7 @@ class CreateParameter(T):
         self.tag = "parameter-" + self.index
         text = self.app.create_text(self.current_x, self.current_y, text=txt, tags=('parameter', self.tag))
         self.id = text
-        stack.append(('创建', text))
+        stack.append(('创建', text, self))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -242,7 +244,7 @@ class CreateImg(T):
         img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file,
                                        tag=self.tag)
         self.id = img_id
-        stack.append(('创建', img_id))
+        stack.append(('创建', img_id, self))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
         # self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))

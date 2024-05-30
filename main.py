@@ -691,7 +691,11 @@ def set_state():
 def pop(id=None):
     if id:
         cur, line = get_cur()
-        canvas.delete(id)
+        try:
+            for i in id:
+                canvas.delete(i)
+        except:
+            canvas.delete(id)
         if id == cur:
             remove_from_not_com()
         return
@@ -705,6 +709,7 @@ def pop(id=None):
         canvas.itemconfig(cur, state='hidden')
         canvas.itemconfig(line, state='hidden')
         stack.append(('删除', (cur, line)))
+        get_obstacle().ui_state = 0
 
     remove_from_not_com()
 
@@ -816,7 +821,8 @@ def download():
     if path:
         save_dict = {}
         for i in T.all_instances:
-            save_dict.update(i.save())
+            if i.ui_state:
+                save_dict.update(i.save())
 
         save_dict['var_l_w'] = var_l_w.get()
         save_dict['var_l_h'] = var_l_h.get()
@@ -875,6 +881,49 @@ def load():
         except Exception as e:
             print(e)
             messagebox.showerror("加载失败", f"无法加载文件: {e}")
+
+
+def unfocus_click(event):
+    if 'ent' not in str(event.widget):
+        win.focus_set()
+
+
+def delete(event):
+    if 'ent' not in str(event.widget):
+        pop()
+
+
+# 撤销
+def undo(event):
+    global px, route_click, lines
+    if stack and event.widget == win:
+        item = stack.pop()
+        if item[0] == '创建':
+            pop(id=item[1])
+            item[-1].ui_state = 0
+        elif item[0] == '移动':
+            for i in item[1]:
+                canvas.move(i, -item[2][0], -item[2][1])
+        elif item[0] == '删除':
+            for i in item[1]:
+                canvas.itemconfig(i, state='normal')
+                item[-1].ui_state = 1
+        elif item[0] == '长度测量':
+            id, temp_px = item[1]
+            temp_line = []
+            for i in id:
+                temp_line.append(canvas.coords(i))
+                pop(i)
+            lines.pop()
+            px -= temp_px
+            canvas.itemconfig('实时路线', text="%.2fm" % px)
+            x, y = route_click.pop()
+            start_x.set(x)
+            start_y.set(y)
+        elif item[0] == '旋转':
+            obj = item[1]
+            rotate_.pop()
+            obj.rotate(obj.id, rotate_[-1])
 
 
 frame_map = ttk.Frame(win, name="路线图")
@@ -1028,7 +1077,7 @@ canvas.create_text(30, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选
 canvas.create_text(30, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
 
 # 水印
-font = 0.16 if sys_name == 'Darwin' else 0.12
+font = 0.16 if sys_name == 'Darwin' else 0.1
 watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                tags=("watermark", '不框选'), state='disabled')
@@ -1134,72 +1183,16 @@ app_help.add_command(label="帮助文档", command=open_web)
 
 win.config(menu=menu)
 
-
-# 撤销
-def undo(event):
-    global px, route_click, lines
-    if stack and event.widget == win:
-        item = stack.pop()
-        if item[0] == '创建':
-            pop(id=item[1])
-        elif item[0] == '移动':
-            for i in item[1]:
-                canvas.move(i, -item[2][0], -item[2][1])
-        elif item[0] == '删除':
-            for i in item[1]:
-                canvas.itemconfig(i, state='normal')
-        elif item[0] == '长度测量':
-            id, temp_px = item[1]
-            temp_line = []
-            for i in id:
-                temp_line.append(canvas.coords(i))
-                pop(i)
-            lines.pop()
-            px -= temp_px
-            canvas.itemconfig('实时路线', text="%.2fm" % px)
-            x, y = route_click.pop()
-            start_x.set(x)
-            start_y.set(y)
-        elif item[0] == '旋转':
-            obj = item[1]
-            rotate_.pop()
-            obj.rotate(obj.id, rotate_[-1])
-
-
 # 绑定ctrl+z兼容Mac和win
 win.bind("<Command-KeyPress-z>", undo)
 win.bind("<Control-KeyPress-z>", undo)
 
-
-def get_all_widgets(root):
-    widgets = []
-    for widget in root.winfo_children():
-        widgets.append(widget)
-        widgets.extend(get_all_widgets(widget))
-    return widgets
-
-
-def save():
-    widgets = get_all_widgets(win)
-    # print(widgets)
-    win.destroy()
-
-
-def unfocus_click(event):
-    if 'ent' not in str(event.widget):
-        win.focus_set()
-
-
-def delete(event):
-    if 'ent' not in str(event.widget):
-        pop()
-
-
 win.bind('<Button-1>', unfocus_click)
 win.bind('<BackSpace>', delete)
-# win.protocol("WM_DELETE_WINDOW", save)
-# check_for_update(win)
+
+# 版本检测
 t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
 t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
 t.start()
+
 win.mainloop()
