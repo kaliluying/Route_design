@@ -182,6 +182,35 @@ def circular():
     drag()
 
 
+# 自定义障碍
+def custom():
+    global index_img
+
+    img_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+
+    # image_path = expand(adjust_image_size(img_path))
+    # image_path = start_direction(image_path)
+    # image_path = start_direction(img_path)
+    index_img += 1
+    CreateImg(canvas, index_img).create(img_path)
+    drag()
+
+
+# 设置背景图
+def fg():
+    global fg_img, fg_path
+    fg_path = filedialog.askopenfilename(title='选择图片', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+    img = Image.open(fg_path)
+    img = img.resize((WIDTH, HEIGHT))
+    fg_img = ImageTk.PhotoImage(img)
+    canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
+
+
+# 删除背景图
+def del_fg():
+    canvas.delete('bg')
+
+
 # 赛事信息确认
 def dle():
     global temp_txt, entry_list, label_list, filtered_dict
@@ -696,7 +725,9 @@ def pop(id=None):
                 canvas.delete(i)
         except:
             canvas.delete(id)
+
         if id == cur:
+            canvas.delete(line)
             remove_from_not_com()
         return
     items = canvas.find_withtag("choice_start")[:-1]
@@ -773,35 +804,6 @@ def about():
 # 帮助文档
 def open_web():
     webbrowser.open("https://gitee.com/gmlwb/ms/blob/master/README.md")
-
-
-# 自定义障碍
-def custom():
-    global index_img
-
-    img_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
-
-    # image_path = expand(adjust_image_size(img_path))
-    # image_path = start_direction(image_path)
-    # image_path = start_direction(img_path)
-    index_img += 1
-    CreateImg(canvas, index_img).create(img_path)
-    drag()
-
-
-# 设置背景图
-def fg():
-    global fg_img, fg_path
-    fg_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
-    img = Image.open(fg_path)
-    img = img.resize((WIDTH, HEIGHT))
-    fg_img = ImageTk.PhotoImage(img)
-    canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
-
-
-# 删除背景图
-def del_fg():
-    canvas.delete('bg')
 
 
 def download():

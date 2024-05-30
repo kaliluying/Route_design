@@ -107,7 +107,7 @@ class T:
         dy = event.y - move_y.get()
         self.lest_angle = self.angle
         if dx or dy:
-            stack.append(('移动', (self.id,), (dx, dy)))
+            stack.append(('移动', (self.tag,), (dx, dy)))
         if what.get() == 3 and self.temp_angle != self.angle:
             rotate_.append(self.angle)
             stack.append(("旋转", self))
@@ -284,19 +284,18 @@ class CreateImg(T):
             ang = self.angle % 180
         else:
             ang = self.angle
-
         if self.angle == 90:
             x1 = x2 = self.current_x
             y1 = self.current_y - 150
             y2 = self.current_y + 150
 
-            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3))
+            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
             return
         elif self.angle == 180:
             y1 = y2 = self.current_y
             x1 = self.current_x - 150
             x2 = self.current_x + 150
-            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3))
+            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
             return
 
         k = math.tan(self.angle * math.pi / 180)
@@ -323,7 +322,7 @@ class CreateImg(T):
         # x2 = self.current_x + 100
         # y2 = -(((self.current_x + 100) * k) + b)
 
-        self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3))
+        self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
 
     def update_img(self):
         """
