@@ -676,15 +676,11 @@ def save_0():
 
 
 def sava(checkvar):
-    """
-    根据用户输入保存文件的函数。它提示用户选择保存文件的位置，将画布转换为 EPS 文件，
-    然后使用 Ghostscript 将 EPS 文件转换为 JPG 文件。返回 Ghostscript 进程的退出代码。
-    """
     current_time = time.strftime("%Y%m%d-%H%M%S")
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
-    path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("PNG", ".png")],
+    path = filedialog.asksaveasfilename(title='保存为图片', filetypes=[("JPEG", ".jpg")],
                                         initialdir=os.getcwd() + '/ms_download', initialfile=txt)
     if path:
         width = canvas.winfo_width()
@@ -693,6 +689,7 @@ def sava(checkvar):
         y0 = canvas.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
         x1 = x0 + width  # 帧在屏幕上的右下角 x 坐标
         y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
+        path += '.jpg'
         ImageGrab.grab(bbox=(x0, y0, x1, y1)).save(path)  # 截取屏幕区域并保存为图片
         messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
 
@@ -832,6 +829,8 @@ def download():
         save_dict['lines'] = lines
         save_dict['var_len'] = var_len.get()
 
+        path += '.json'
+
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(save_dict, file, ensure_ascii=False)
         messagebox.showinfo("保存成功", f"程序状态已保存至{path}")
@@ -843,7 +842,7 @@ def load():
     # reload_window()
     if file_path:
         try:
-            with open(file_path, 'r') as file:
+            with open(file_path, 'r', encoding='utf-8') as file:
                 state = json.load(file)
 
             # 删除画布障碍
@@ -986,10 +985,8 @@ e_id.grid(row=0, column=8)
 
 ttk.Button(frame_create, bootstyle=CONFIRM_STYLE, text='确认', command=insert).grid(row=1, column=8)
 
-if sys_name == 'Darwin':
-    width = 5
-elif sys_name == 'Windows':
-    width = 5
+width = 5
+
 # 工作模块
 but_0 = ttk.Checkbutton(frame_command, text='拖动', command=drag, width=width, bootstyle="round-toggle")
 but_0.grid(row=0, column=0, padx=0, pady=0)
@@ -1003,7 +1000,6 @@ but_3.state(['!selected'])
 # but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
 # but_2.pack()
 
-# ttk.Button(frame_command_right, text='撤销', command=back, width=width, height=1).pack()
 ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).grid(row=0, column=1,
                                                                                                     padx=0, pady=0)
 ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).grid(row=1, column=1, padx=0,
@@ -1136,33 +1132,9 @@ function_menuType.add_command(label="清屏", command=clear)
 # function_menuType.add_command(label="撤销", command=back)
 function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件下载位置", command=open_file)
-function_menuType.add_command(label="下载", command=save_1)
-function_menuType.add_command(label="保存", command=download)
-function_menuType.add_command(label="加载", command=load)
-# ttk.Button(win, bootstyle="success-outline", text="保存", command=download).place(x=180, y=40)
-
-
-# def save():
-#     with open('ms.pkl', 'wb') as f:
-#         for i in T.all_instances:
-#             print(i.__dict__)
-#             dill.dump(i.__dict__, f)
-
-# dill.dump_session('ms.pkl')
-
-
-# function_menuType.add_command(label="保存", command=save)
-
-
-# def load():
-#     with open('ms.pkl', 'rb') as f:
-#         circle_data = dill.load(f)
-#         circle = T(**circle_data)
-#         circle.create()
-# dill.load_session('ms.pkl')
-
-
-# function_menuType.add_command(label="加载", command=load)
+function_menuType.add_command(label="下载路线图", command=save_1)
+function_menuType.add_command(label="保存路线图", command=download)
+function_menuType.add_command(label="加载路线图", command=load)
 function_menuType.add_command(label="删除背景", command=del_fg)
 
 # menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
