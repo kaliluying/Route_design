@@ -689,8 +689,10 @@ def sava(checkvar):
         y0 = canvas.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
         x1 = x0 + width  # 帧在屏幕上的右下角 x 坐标
         y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
-        path += '.jpg'
-        ImageGrab.grab(bbox=(x0, y0, x1, y1)).save(path)  # 截取屏幕区域并保存为图片
+        if sys_name == 'Windows':
+            path += '.jpg'
+        ImageGrab.grab(bbox=(x0, y0, x1, y1)).convert("RGB").save(path)
+
         messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
 
         # return exitcode
@@ -829,7 +831,8 @@ def download():
         save_dict['lines'] = lines
         save_dict['var_len'] = var_len.get()
 
-        path += '.json'
+        if sys_name == 'Windows':
+            path += '.json'
 
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(save_dict, file, ensure_ascii=False)

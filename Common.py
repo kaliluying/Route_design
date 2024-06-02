@@ -14,6 +14,12 @@ from ttkbootstrap.utility import enable_high_dpi_awareness
 
 from Middleware import *
 
+# 当前版本
+CURRENT_VERSION = "1.0.1"
+
+# 最新版本信息的URL
+VERSION_URL = "https://github.com/kaliluying/Route_design/raw/dev/version.txt"
+
 # 创建窗口
 # win = ttk.Tk()
 win = ttk.Window(
@@ -45,6 +51,9 @@ def log_error(exctype, value, tb):
     logging.error("预料之外的错误: %s", error_msg, exc_info=True)
 
 
+win.report_callback_exception = log_error
+
+
 def check_for_update(window):
     try:
         response = requests.get(VERSION_URL)
@@ -56,21 +65,9 @@ def check_for_update(window):
         message = f'当前版本[{CURRENT_VERSION}], 有新版本[{latest_version}]'
         result = messagebox.askokcancel(title='更新提示', message=message)
         if result:
-            browser_update('https://gitee.com/gmlwb/ms/releases/', window)
+            webbrowser.open('https://gitee.com/gmlwb/ms/releases/')
+            window.destroy()
 
-
-def browser_update(ver, window):
-    webbrowser.open(ver)
-    window.destroy()
-
-
-# 当前版本
-CURRENT_VERSION = "1.0.0"
-
-# 最新版本信息的URL
-VERSION_URL = "https://github.com/kaliluying/Route_design/raw/dev/version.txt"
-
-win.report_callback_exception = log_error
 
 # 当前系统
 sys_name = platform.system()
