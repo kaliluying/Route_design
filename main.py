@@ -722,6 +722,7 @@ def pop(id=None):
         try:
             for i in id:
                 canvas.delete(i)
+
         except:
             canvas.delete(id)
 
@@ -739,7 +740,7 @@ def pop(id=None):
         canvas.itemconfig(cur, state='hidden')
         canvas.itemconfig(line, state='hidden')
         stack.append(('删除', (cur, line)))
-        get_obstacle().ui_state = 0
+        get_obstacle().ui_state = not get_obstacle().ui_state
 
     remove_from_not_com()
 
@@ -949,14 +950,18 @@ var_l_h_inp.grid(row=2, column=1, sticky='e', padx=5, pady=5)
 
 ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text="确认", command=found).grid(row=3, column=1, sticky='w')
 
-ttk.Label(frame_map, text='全局障碍长度(m):', font=FONT).grid(row=1, column=3, sticky='e', padx=5, pady=5)
+frame_obstacle_length = ttk.Frame(win, name="全局障碍")
+frame_obstacle_length.place(x=160, y=10)
+ttk.Label(frame_obstacle_length, text='全局障碍长度(m):', font=FONT).grid(row=1, column=3, sticky='e', padx=5, pady=5)
 var_len = ttk.StringVar(value='4')
-len_entt = Entry(frame_map, textvariable=var_len, width=4)
+len_entt = Entry(frame_obstacle_length, textvariable=var_len, width=4)
 len_entt.grid(row=1, column=4, sticky='e', padx=5, pady=5)
 
-ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).grid(row=2, column=4,
-                                                                                                    sticky='e', padx=5,
-                                                                                                    pady=5)
+ttk.Button(frame_obstacle_length, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).grid(row=2,
+                                                                                                                column=4,
+                                                                                                                sticky='e',
+                                                                                                                padx=5,
+                                                                                                                pady=5)
 
 # 障碍物
 ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='进出口', command=gate).grid(row=0, column=0)

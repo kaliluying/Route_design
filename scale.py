@@ -26,7 +26,7 @@ class T:
         self.line_tag = None  # 障碍线标签
         self.id = None  # 障碍id
         self.txt = None  # 障碍文字标签
-        self.ui_state = 1
+        self.ui_state = True
 
     def load(self, **kwargs):
         self.startx = kwargs.get('startx', 160)
