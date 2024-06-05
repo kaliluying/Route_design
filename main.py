@@ -313,7 +313,7 @@ def found():
     WIDTH = int(float(w) * 10)
     HEIGHT = int(float(h) * 10)
     canvas.config(width=WIDTH + 30, height=HEIGHT + 80)
-    canvas.coords('实际画布', 15, 50, WIDTH + 15, HEIGHT + 50)
+    canvas.coords('实际画布', 30, 50, WIDTH + 15, HEIGHT + 50)
     # canvas.place(x=175, y=130)
     # but1.place(x=WIDTH + 260, y=700)
     # but2.place(x=WIDTH + 360, y=700)
@@ -326,8 +326,8 @@ def found():
     canvas.coords('长', WIDTH - 40, 60)
     canvas.coords('宽', WIDTH - 40, 80)
     canvas.coords('实时路线', WIDTH - 40, 30)
-    canvas.coords('障碍x', 20, HEIGHT + 60)
-    canvas.coords('障碍y', 20, HEIGHT + 70)
+    canvas.coords('障碍x', 35, HEIGHT + 60)
+    canvas.coords('障碍y', 35, HEIGHT + 70)
     canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 60)
     canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 70)
     canvas.delete('bg')
@@ -341,7 +341,7 @@ def found():
 
     if state_f:
         font = 0.16 if sys_name == 'Darwin' else 0.12
-        watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+        watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
                                        font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                        tags=("watermark", '不框选'))
         canvas.lower("watermark")
@@ -667,15 +667,15 @@ def currency_remove():
 
 def save_1():
     checkvar = '1'
-    sava(checkvar)
+    download()
 
 
 def save_0():
     checkvar = '0'
-    sava(checkvar)
+    download()
 
 
-def sava(checkvar):
+def download():
     current_time = time.strftime("%Y%m%d-%H%M%S")
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
@@ -806,7 +806,7 @@ def open_web():
     webbrowser.open("https://gitee.com/gmlwb/ms/blob/master/README.md")
 
 
-def download():
+def save():
     """
     保存成路线图数据
     :return:
@@ -909,6 +909,8 @@ def undo(event):
         elif item[0] == '移动':
             for i in item[1]:
                 canvas.move(i, -item[2][0], -item[2][1])
+                x, y = canvas.coords(i)
+                item[-1].current_x, item[-1].current_y = x, y
         elif item[0] == '删除':
             for i in item[1]:
                 canvas.itemconfig(i, state='normal')
@@ -954,8 +956,8 @@ frame_obstacle_length = ttk.Frame(win, name="全局障碍")
 frame_obstacle_length.place(x=160, y=10)
 ttk.Label(frame_obstacle_length, text='全局障碍长度(m):', font=FONT).grid(row=1, column=3, sticky='e', padx=5, pady=5)
 var_len = ttk.StringVar(value='4')
-len_entt = Entry(frame_obstacle_length, textvariable=var_len, width=4)
-len_entt.grid(row=1, column=4, sticky='e', padx=5, pady=5)
+len_ent = Entry(frame_obstacle_length, textvariable=var_len, width=4)
+len_ent.grid(row=1, column=4, sticky='e', padx=5, pady=5)
 
 ttk.Button(frame_obstacle_length, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).grid(row=2,
                                                                                                                 column=4,
@@ -997,10 +999,10 @@ width = 5
 
 # 工作模块
 but_0 = ttk.Checkbutton(frame_command, text='拖动', command=drag, width=width, bootstyle="round-toggle")
-but_0.grid(row=0, column=0, padx=0, pady=0)
+but_0.grid(row=0, column=1, padx=0, pady=0)
 but_0.state(['selected'])
 but_3 = ttk.Checkbutton(frame_command, text='旋转', command=rotate, width=width, bootstyle="round-toggle")
-but_3.grid(row=1, column=0, padx=0, pady=0)
+but_3.grid(row=1, column=1, padx=0, pady=0)
 but_3.state(['!selected'])
 
 # but_4 = ttk.Button(frame_command_left, text='画弧', command=arc, width=width, height=1)
@@ -1008,16 +1010,16 @@ but_3.state(['!selected'])
 # but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
 # but_2.pack()
 
-ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).grid(row=0, column=1,
+ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).grid(row=0, column=0,
                                                                                                     padx=0, pady=0)
-ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).grid(row=1, column=1, padx=0,
+ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).grid(row=1, column=0, padx=0,
                                                                                               pady=0)
 
 # 辅助模块
-ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='网格辅助线', command=grid, width=width).grid(row=2, column=1,
+ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='网格辅助线', command=grid, width=width).grid(row=2, column=0,
                                                                                                      padx=0, pady=0)
 aux_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
-aux_info.grid(row=2, column=0, padx=0, pady=0)
+aux_info.grid(row=2, column=1, padx=0, pady=0)
 aux_info.state(['selected'])
 
 # 障碍参数
@@ -1046,7 +1048,7 @@ but_1.grid(row=0, column=0, padx=1, pady=1)
 ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1,
                                                                                                     padx=0, pady=0)
 
-canvas.create_rectangle(15, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
+canvas.create_rectangle(30, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
 
 # 右上角显示路线长宽
 w = WIDTH / 10
@@ -1055,10 +1057,10 @@ h1 = canvas.create_text(WIDTH - 40, 60, text=f"长：{w}m", tags=('辅助信息'
 h2 = canvas.create_text(WIDTH - 40, 80, text=f"宽：{h}m", tags=('辅助信息', '不框选', '宽'))
 
 # 左上角显示 5m的距离
-canvas.create_text(45, 60, text="5m", tags=('辅助信息', '不框选'))
-canvas.create_line(20, 65, 20, 70, tags=('辅助信息', '不框选'))
-canvas.create_line(70, 65, 70, 70, tags=('辅助信息', '不框选'))
-canvas.create_line(20, 70, 70, 70, tags=('辅助信息', '不框选'))
+canvas.create_text(60, 60, text="5m", tags=('辅助信息', '不框选'))
+canvas.create_line(35, 65, 35, 70, tags=('辅助信息', '不框选'))
+canvas.create_line(85, 65, 85, 70, tags=('辅助信息', '不框选'))
+canvas.create_line(35, 70, 85, 70, tags=('辅助信息', '不框选'))
 
 # 右上显示，路线长度
 canvas.create_text(WIDTH - 40, 30, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
@@ -1079,12 +1081,12 @@ canvas.create_text(WIDTH - 10, HEIGHT + 70, text='y:', tags=('辅助信息', '�
 canvas.bind('<Motion>', shu)
 
 # 左下显示当前障碍坐标
-canvas.create_text(30, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
-canvas.create_text(30, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
+canvas.create_text(35, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
+canvas.create_text(35, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
 
 # 水印
 font = 0.16 if sys_name == 'Darwin' else 0.1
-watermark = canvas.create_text(WIDTH / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                tags=("watermark", '不框选'), state='disabled')
 
@@ -1141,7 +1143,7 @@ function_menuType.add_command(label="清屏", command=clear)
 function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件下载位置", command=open_file)
 function_menuType.add_command(label="下载路线图", command=save_1)
-function_menuType.add_command(label="保存路线图", command=download)
+function_menuType.add_command(label="保存路线图", command=save)
 function_menuType.add_command(label="加载路线图", command=load)
 function_menuType.add_command(label="删除背景", command=del_fg)
 

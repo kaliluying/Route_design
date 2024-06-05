@@ -15,7 +15,7 @@ from ttkbootstrap.utility import enable_high_dpi_awareness
 from Middleware import *
 
 # 当前版本
-CURRENT_VERSION = "1.0.1"
+CURRENT_VERSION = "1.0.0"
 
 # 最新版本信息的URL
 VERSION_URL = "https://github.com/kaliluying/Route_design/raw/dev/version.txt"
