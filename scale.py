@@ -3,6 +3,7 @@ import io
 from functools import partial
 
 import data_url
+from PIL import ImageFilter
 
 from Common import *
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
@@ -572,4 +573,10 @@ class CreateImg(T):
         img = Image.open(self.img_path)
         img2 = img.convert('RGBA')
         img2 = img2.rotate(angle, expand=True)
+        # 更强的平滑滤镜
+        # img2 = img2.filter(ImageFilter.SMOOTH_MORE)
+        # 锐化
+        img2 = img2.filter(ImageFilter.SHARPEN)
+        # 细节增强
+        img2 = img2.filter(ImageFilter.DETAIL)
         return img2
