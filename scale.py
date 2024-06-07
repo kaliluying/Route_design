@@ -8,6 +8,44 @@ from PIL import ImageFilter
 from Common import *
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
 
+"""
+from tkinter import Canvas, Tk, PhotoImage
+
+
+class ImageCreator:
+    def __init__(self, canvas):
+        self.canvas = canvas
+        self.img = None
+
+    def create_image(self, x, y, image_path):
+        # 加载图片
+        self.img = PhotoImage(file=image_path)
+        # 在canvas上创建图片
+        image_id = self.canvas.create_image(x, y, image=self.img)
+        # 将类实例绑定到canvas上的图片对象
+        self.canvas.tag_bind(image_id, '<Button-1>', self.on_image_id_click)
+        # 关联图片id与类实例
+        self.canvas.image_data = {'image_id': image_id, 'instance': self}
+
+    def on_image_id_click(self, event):
+        # 通过事件获取类实例
+        instance = event.widget.image_data['instance']
+        print(event.widget.image_data)
+        print(f"Clicked on an image from instance {instance}")
+
+
+# 主程序
+root = Tk()
+canvas = Canvas(root, width=400, height=400)
+canvas.pack()
+
+creator = ImageCreator(canvas)
+creator.create_image(100, 100, "../img/com.png")
+
+root.mainloop()
+
+"""
+
 
 class T:
     all_instances = []
@@ -572,11 +610,11 @@ class CreateImg(T):
         """
         img = Image.open(self.img_path)
         img2 = img.convert('RGBA')
-        img2 = img2.rotate(angle, expand=True)
+        img2 = img2.rotate(angle, expand=True, resample=Image.BICUBIC)
         # 更强的平滑滤镜
         # img2 = img2.filter(ImageFilter.SMOOTH_MORE)
         # 锐化
-        img2 = img2.filter(ImageFilter.SHARPEN)
-        # 细节增强
-        img2 = img2.filter(ImageFilter.DETAIL)
+        # img2 = img2.filter(ImageFilter.SHARPEN)
+        # # 细节增强
+        # img2 = img2.filter(ImageFilter.DETAIL)
         return img2
