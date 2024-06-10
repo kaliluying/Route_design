@@ -3,48 +3,9 @@ import io
 from functools import partial
 
 import data_url
-from PIL import ImageFilter
 
 from Common import *
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
-
-"""
-from tkinter import Canvas, Tk, PhotoImage
-
-
-class ImageCreator:
-    def __init__(self, canvas):
-        self.canvas = canvas
-        self.img = None
-
-    def create_image(self, x, y, image_path):
-        # 加载图片
-        self.img = PhotoImage(file=image_path)
-        # 在canvas上创建图片
-        image_id = self.canvas.create_image(x, y, image=self.img)
-        # 将类实例绑定到canvas上的图片对象
-        self.canvas.tag_bind(image_id, '<Button-1>', self.on_image_id_click)
-        # 关联图片id与类实例
-        self.canvas.image_data = {'image_id': image_id, 'instance': self}
-
-    def on_image_id_click(self, event):
-        # 通过事件获取类实例
-        instance = event.widget.image_data['instance']
-        print(event.widget.image_data)
-        print(f"Clicked on an image from instance {instance}")
-
-
-# 主程序
-root = Tk()
-canvas = Canvas(root, width=400, height=400)
-canvas.pack()
-
-creator = ImageCreator(canvas)
-creator.create_image(100, 100, "../img/com.png")
-
-root.mainloop()
-
-"""
 
 
 class T:
@@ -66,6 +27,7 @@ class T:
         self.id = None  # 障碍id
         self.txt = None  # 障碍文字标签
         self.ui_state = True
+
 
     def load(self, **kwargs):
         self.startx = kwargs.get('startx', 160)
@@ -146,7 +108,7 @@ class T:
         dy = event.y - move_y.get()
         self.lest_angle = self.angle
         if dx or dy:
-            stack.append(('移动', (self.tag,), (dx, dy), self))
+            stack.append(('移动', (self.id,), (dx, dy)))
         if what.get() == 3 and self.temp_angle != self.angle:
             rotate_.append(self.angle)
             stack.append(("旋转", self))
@@ -179,6 +141,7 @@ class CreateTxt(T):
         text = self.app.create_text(self.current_x, self.current_y, text=txt, tags=self.tag)
 
         self.id = text
+        self.app.image_data.update({self.id: self})
         # 撤销记录
         stack.append(('创建', (text, circle), self))
 
@@ -211,6 +174,7 @@ class CreateParameter(T):
         self.tag = "parameter-" + self.index
         text = self.app.create_text(self.current_x, self.current_y, text=txt, tags=('parameter', self.tag))
         self.id = text
+        self.app.image_data.update({self.id: self})
         stack.append(('创建', text, self))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
@@ -283,6 +247,8 @@ class CreateImg(T):
         img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file,
                                        tag=self.tag)
         self.id = img_id
+        self.app.image_data.update({self.id: self})
+
         stack.append(('创建', img_id, self))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))

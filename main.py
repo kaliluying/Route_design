@@ -733,13 +733,16 @@ def pop(id=None):
     items = canvas.find_withtag("choice_start")[:-1]
     if items:
         canvas.itemconfig('choice_start', state='hidden')
+        canvas.dtag('choice_start', 'choice_start')
+        for i in items:
+            canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
         choice_tup.clear()
         stack.append(('删除', items))
     else:
         cur, line = get_cur()
         canvas.itemconfig(cur, state='hidden')
         canvas.itemconfig(line, state='hidden')
-        stack.append(('删除', (cur, line)))
+        stack.append(('删除', (cur, line), get_obstacle()))
         get_obstacle().ui_state = not get_obstacle().ui_state
 
     remove_from_not_com()
@@ -907,14 +910,16 @@ def undo(event):
             pop(id=item[1])
             item[-1].ui_state = 0
         elif item[0] == '移动':
-            for i in item[1]:
-                canvas.move(i, -item[2][0], -item[2][1])
-                x, y = canvas.coords(i)
-                item[-1].current_x, item[-1].current_y = x, y
+            for index, value in enumerate(item[1]):
+                canvas.move(value, -item[2][0], -item[2][1])
+                if index == len(item[1]) - 1:
+                    break
+                x, y = canvas.coords(value)
+                canvas.image_data[value].current_x, canvas.image_data[value].current_y = x, y
         elif item[0] == '删除':
             for i in item[1]:
                 canvas.itemconfig(i, state='normal')
-                item[-1].ui_state = 1
+                canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
         elif item[0] == '长度测量':
             id, temp_px = item[1]
             temp_line = []
