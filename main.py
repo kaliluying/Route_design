@@ -378,7 +378,7 @@ def leftButtonDown(event):
 
 def create_line(x1, y1, x2, y2):
     id = canvas.create_line(x1, y1, x2, y2, tags=("line", '不框选'))
-    # a = canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
+    a = canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
     # canvas.create_rectangle(x1, y1, x2, y2, tags='line')
     return id
 

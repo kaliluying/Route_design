@@ -28,7 +28,6 @@ class T:
         self.txt = None  # 障碍文字标签
         self.ui_state = True
 
-
     def load(self, **kwargs):
         self.startx = kwargs.get('startx', 160)
         self.starty = kwargs.get('starty', 25)
@@ -283,50 +282,11 @@ class CreateImg(T):
         辅助线
         :return:
         """
-        if 90 < self.angle < 180 or 270 < self.angle <= 359:
-            ang = 90 - self.angle % 90
-        elif 180 < self.angle < 270:
-            ang = self.angle % 180
-        else:
-            ang = self.angle
-        if self.angle == 90:
-            x1 = x2 = self.current_x
-            y1 = self.current_y - 150
-            y2 = self.current_y + 150
 
-            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
-            return
-        elif self.angle == 180:
-            y1 = y2 = self.current_y
-            x1 = self.current_x - 150
-            x2 = self.current_x + 150
-            self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
-            return
-
-        k = math.tan(self.angle * math.pi / 180)
-        b = -self.current_y - k * self.current_x
-        if ang <= 45:
-            x1 = self.current_x - 150
-            y1 = -(((self.current_x - 150) * k) + b)
-            x2 = self.current_x + 150
-            y2 = -(((self.current_x + 150) * k) + b)
-        elif ang > 45:
-            y1 = self.current_y - 150
-            y2 = self.current_y + 150
-            m1 = (y2 - b) / k
-            m2 = (y1 - b) / k
-            m = (m1 + m2) / 2
-            n = m - self.current_x
-            x1 = m1 - n
-            x2 = m2 - n
-
-        # k = math.tan(self.angle * math.pi / 180)
-        # b = -self.current_y - k * self.current_x
-        # x1 = self.current_x - 100
-        # y1 = -(((self.current_x - 100) * k) + b)
-        # x2 = self.current_x + 100
-        # y2 = -(((self.current_x + 100) * k) + b)
-
+        x1 = self.current_x + 150 * math.cos(math.radians(-self.angle))
+        y1 = self.current_y + 150 * math.sin(math.radians(-self.angle))
+        x2 = self.current_x - 150 * math.cos(math.radians(-self.angle))
+        y2 = self.current_y - 150 * math.sin(math.radians(-self.angle))
         self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
 
     def update_img(self):
