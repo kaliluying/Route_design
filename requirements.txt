@@ -1,2 +1,4 @@
+data_url==1.0.7
 Pillow==9.4.0
-ttkbootstrap~=1.10.1
+requests==2.32.2
+ttkbootstrap==1.10.1

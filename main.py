@@ -169,6 +169,14 @@ def gate():
     drag()
 
 
+def tree():
+    global index_img
+    index_img += 1
+    image_path = expand(tree_image)
+    CreateImg(canvas, index_img).create(image_path)
+    drag()
+
+
 # 圆
 def circular():
     global index_img
@@ -1130,6 +1138,7 @@ menu = ttk.Menu(win)
 obstacle_menu = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="障碍", menu=obstacle_menu)
 obstacle_menu.add_command(label="四横木", command=four)
+obstacle_menu.add_command(label="树", command=tree)
 
 # 工具栏
 menuType = ttk.Menu(menu, tearoff=0)

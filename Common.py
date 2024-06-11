@@ -227,6 +227,9 @@ brick_wall_image = "img/brick_wall.png"
 line_image = "img/line.png"
 # 进出口
 gate_image = "img/gate.png"
+# 树木
+tree_image = "img/tree.png"
+
 # icon
 icon_path = "img/ic.png"
 icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
