@@ -377,8 +377,8 @@ def leftButtonDown(event):
 
 
 def create_line(x1, y1, x2, y2):
-    id = canvas.create_line(x1, y1, x2, y2, tags=("line", '不框选'))
-    a = canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
+    id = canvas.create_line(x1, y1, x2, y2, tags=("line", '不框选'), smooth=True)
+    # a = canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
     # canvas.create_rectangle(x1, y1, x2, y2, tags='line')
     return id
 
@@ -703,8 +703,6 @@ def download():
 
         messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
 
-        # return exitcode
-
 
 # 打开文件保存路径
 def open_file():
@@ -772,10 +770,10 @@ def grid():
         index_x = 15
         index_y = 50
         for i in range(range_x):
-            canvas.create_line(index_x, 50, index_x, HEIGHT + 50, dash=(5, 3), tags=('grid', '不框选'))
+            canvas.create_line(index_x, 50, index_x, HEIGHT + 50, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
             index_x += 100
         for i in range(range_y):
-            canvas.create_line(15, index_y, WIDTH + 15, index_y, dash=(5, 3), tags=('grid', '不框选'))
+            canvas.create_line(15, index_y, WIDTH + 15, index_y, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
             index_y += 100
         create_grid = True
         grid_start = 1
