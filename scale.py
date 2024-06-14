@@ -283,10 +283,12 @@ class CreateImg(T):
         :return:
         """
 
+        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
         x1 = self.current_x + 150 * math.cos(math.radians(-self.angle))
         y1 = self.current_y + 150 * math.sin(math.radians(-self.angle))
         x2 = self.current_x - 150 * math.cos(math.radians(-self.angle))
         y2 = self.current_y - 150 * math.sin(math.radians(-self.angle))
+
         self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
 
     def update_img(self):
@@ -541,6 +543,6 @@ class CreateImg(T):
         # img2 = img2.filter(ImageFilter.SMOOTH_MORE)
         # 锐化
         # img2 = img2.filter(ImageFilter.SHARPEN)
-        # # 细节增强
+        # 细节增强
         # img2 = img2.filter(ImageFilter.DETAIL)
         return img2
