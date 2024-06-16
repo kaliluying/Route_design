@@ -282,7 +282,7 @@ def merge_ab(state, m1=0, m2=0):
     if state == 1:
         path = start_direction(expand(get_one_path()))
     if state == 2:
-        path = start_direction(merge(10))
+        path = start_direction(merge(5))
     img_obj = Image.open(path)
     img_obj2 = Image.open(path)
     var = 45

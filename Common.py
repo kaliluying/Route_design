@@ -40,6 +40,7 @@ win.geometry(f"{W}x{H}")
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
     filename='logging.log',
+    encoding='utf-8',
 )
 
 
