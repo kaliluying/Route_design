@@ -348,7 +348,7 @@ def found():
         print('背景图错误：', e)
 
     if state_f:
-        font = 0.16 if sys_name == 'Darwin' else 0.12
+        font = 0.16 if sys_name == 'Darwin' else 0.1
         watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
                                        font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                        tags=("watermark", '不框选'))
@@ -964,7 +964,7 @@ var_l_h_inp.grid(row=2, column=1, sticky='e', padx=5, pady=5)
 ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text="确认", command=found).grid(row=3, column=1, sticky='w')
 
 frame_obstacle_length = ttk.Frame(win, name="全局障碍")
-frame_obstacle_length.place(x=160, y=10)
+frame_obstacle_length.place(x=180, y=10)
 ttk.Label(frame_obstacle_length, text='全局障碍长度(m):', font=FONT).grid(row=1, column=3, sticky='e', padx=5, pady=5)
 var_len = ttk.StringVar(value='4')
 len_ent = Entry(frame_obstacle_length, textvariable=var_len, width=4)
@@ -1006,7 +1006,7 @@ e_id.grid(row=0, column=8)
 
 ttk.Button(frame_create, bootstyle=CONFIRM_STYLE, text='确认', command=insert).grid(row=1, column=8)
 
-width = 5
+width = 6
 
 # 工作模块
 but_0 = ttk.Checkbutton(frame_command, text='拖动', command=drag, width=width, bootstyle="round-toggle")
@@ -1053,7 +1053,7 @@ ttk.Button(frame_aux_info, bootstyle=CONFIRM_STYLE, text='确认', command=circu
                                                                                         sticky='w')
 
 # 测量模块
-but_1 = ttk.Checkbutton(frame_mea_com, bootstyle="round-toggle", text='长度测量', command=pen, width=width)
+but_1 = ttk.Checkbutton(frame_mea_com, bootstyle="round-toggle", text='画路线', command=pen, width=width)
 but_1.grid(row=0, column=0, padx=1, pady=1)
 
 ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1,

@@ -291,7 +291,7 @@ frame_mea_com.pack()
 
 # 障碍按键容器
 frame_create = ttk.Frame(win, name='按键')
-frame_create.place(x=400, y=5)
+frame_create.place(x=450, y=5)
 
 from focus import Focus
 

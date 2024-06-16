@@ -203,6 +203,9 @@ class CreateImg(T):
         self.state = {}  # 输入框状态
         self.name = ''  # 备注
         self.state_line = 0  # 辅助线状态
+        self.width = 100
+        self.height = 50
+        self.rectangle = None  # 矩形
 
     def save(self):
         """
@@ -243,8 +246,7 @@ class CreateImg(T):
         self.img_path = img_path
         self.img_obj = img_obj if img_obj else Image.open(self.img_path)
         self.img_file = ImageTk.PhotoImage(self.img_obj)
-        img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file,
-                                       tag=self.tag)
+        img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file, tag=self.tag)
         self.id = img_id
         self.app.image_data.update({self.id: self})
 
@@ -255,8 +257,40 @@ class CreateImg(T):
         self.mousedown(self.tag, [200, 100])
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
+        self.rectangle = self.create_rectangle_at_angle(self.angle)
         # no_what.set(0)
         # set_color()
+
+    def on_update(self):
+        """
+        初始化后会被调用，在这里绘制矩形
+        :return: None
+        """
+        self.app.create_rectangle(-1, -1, -2, -2, tag='side', dash=3, outline='grey')
+
+        for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
+            self.app.create_rectangle(-1, -1, -2, -2, tag=name, outline='blue')
+
+    def show(self, is_fill=False):
+        """
+        显示
+        :param is_fill: 是否填充
+        :return: None
+        """
+        width = self.current_x
+        height = self.current_y
+        self.app.coords('side', 6, 6, width - 6, height - 6)
+        self.app.coords('nw', 0, 0, 7, 7)
+        self.app.coords('sw', 0, height - 8, 7, height - 1)
+        self.app.coords('w', 0, (height - 7) / 2, 7, (height - 7) / 2 + 7)
+        self.app.coords('n', (width - 7) / 2, 0, (width - 7) / 2 + 7, 7)
+        self.app.coords('s', (width - 7) / 2, height - 8, (width - 7) / 2 + 7, height - 1)
+        self.app.coords('ne', width - 8, 0, width - 1, 7)
+        self.app.coords('se', width - 8, height - 8, width - 1, height - 1)
+        self.app.coords('e', width - 8, (height - 7) / 2, width - 1, (height - 7) / 2 + 7)
+        if is_fill:
+            for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
+                self.app.itemconfig(name, fill='blue')
 
     def mousedown(self, tag, event):
         """
@@ -276,6 +310,34 @@ class CreateImg(T):
         else:
             if frame_function.winfo_children()[0].winfo_children()[1].winfo_name() == '障碍编辑容器':
                 frame_function.winfo_children()[0].winfo_children()[1].destroy()
+        # self.on_update()
+        # self.show()
+
+
+    def create_rectangle_at_angle(self, angle):
+        radians = math.radians(angle)
+        cos_val = math.cos(radians)
+        sin_val = math.sin(radians)
+
+        half_width = self.width / 2
+        half_height = self.height / 2
+
+        points = [
+            (-half_width, -half_height),
+            (half_width, -half_height),
+            (half_width, half_height),
+            (-half_width, half_height),
+        ]
+
+        rotated_points = [
+            (
+                self.current_x + x * cos_val - y * sin_val,
+                self.current_y + x * sin_val + y * cos_val
+            )
+            for x, y in points
+        ]
+
+        return canvas.create_polygon(rotated_points, fill='', outline="black", tags=self.tag, )
 
     def guide(self):
         """
@@ -440,7 +502,7 @@ class CreateImg(T):
         Entry(frame_focus_z_ent, textvariable=var_name, width=5).pack()
         ttk.Button(frame_focus_z_but, text="确认", command=partial(self.set_name, var_name),
                    bootstyle=CONFIRM_STYLE).pack()
-        w = 5 if sys_name == 'Darwin' else 10
+        w = 6 if sys_name == 'Darwin' else 10
         ttk.Button(frame_command, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w,
                    bootstyle=BUTTON_STYLE).grid(row=3, column=0)
 
@@ -527,6 +589,8 @@ class CreateImg(T):
             self.app.delete(self.line_tag)
             self.guide()
             set_line(self.line_tag)
+            self.app.delete(self.rectangle)
+            self.rectangle = self.create_rectangle_at_angle(self.angle)
 
     def rotate_bound(self, angle):
         """
