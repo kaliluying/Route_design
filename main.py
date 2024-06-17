@@ -169,6 +169,7 @@ def gate():
     drag()
 
 
+# 树
 def tree():
     global index_img
     index_img += 1

@@ -91,6 +91,7 @@ class T:
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
+            self.app.move('point', event.x - self.startx, event.y - self.starty)
             if self.line_tag:
                 self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
             self.current_x += event.x - self.startx
@@ -245,19 +246,21 @@ class CreateImg(T):
         self.tag = "img-" + self.index
         self.img_path = img_path
         self.img_obj = img_obj if img_obj else Image.open(self.img_path)
+        self.width, self.height = self.img_obj.size
         self.img_file = ImageTk.PhotoImage(self.img_obj)
+        self.create_rectangle_at_angle(self.angle)
         img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file, tag=self.tag)
         self.id = img_id
         self.app.image_data.update({self.id: self})
 
         stack.append(('创建', img_id, self))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
-        self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
+        self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, self.tag))
         # self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
         self.mousedown(self.tag, [200, 100])
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
-        self.rectangle = self.create_rectangle_at_angle(self.angle)
+
         # no_what.set(0)
         # set_color()
 
@@ -277,9 +280,8 @@ class CreateImg(T):
         :param is_fill: 是否填充
         :return: None
         """
-        width = self.current_x
-        height = self.current_y
-        self.app.coords('side', 6, 6, width - 6, height - 6)
+        width = self.width
+        height = self.height
         self.app.coords('nw', 0, 0, 7, 7)
         self.app.coords('sw', 0, height - 8, 7, height - 1)
         self.app.coords('w', 0, (height - 7) / 2, 7, (height - 7) / 2 + 7)
@@ -288,9 +290,6 @@ class CreateImg(T):
         self.app.coords('ne', width - 8, 0, width - 1, 7)
         self.app.coords('se', width - 8, height - 8, width - 1, height - 1)
         self.app.coords('e', width - 8, (height - 7) / 2, width - 1, (height - 7) / 2 + 7)
-        if is_fill:
-            for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
-                self.app.itemconfig(name, fill='blue')
 
     def mousedown(self, tag, event):
         """
@@ -313,8 +312,13 @@ class CreateImg(T):
         # self.on_update()
         # self.show()
 
-
     def create_rectangle_at_angle(self, angle):
+        """
+        根据给定的角度创建一个旋转后的矩形，并在画布上绘制该矩形
+        :param angle: 矩形的旋转角度
+        :return:
+        """
+
         radians = math.radians(angle)
         cos_val = math.cos(radians)
         sin_val = math.sin(radians)
@@ -337,7 +341,35 @@ class CreateImg(T):
             for x, y in points
         ]
 
-        return canvas.create_polygon(rotated_points, fill='', outline="black", tags=self.tag, )
+        for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
+            self.app.create_rectangle(-1, -1, -2, -2, tag=(name, 'point'), outline='blue')
+
+        # 绘制旋转后的矩形
+        self.app.coords('nw', rotated_points[0][0], rotated_points[0][1], rotated_points[0][0] + 7,
+                        rotated_points[0][1] + 7)
+        self.app.coords('sw', rotated_points[3][0], rotated_points[3][1], rotated_points[3][0] + 7,
+                        rotated_points[3][1] - 7)
+        self.app.coords('w', rotated_points[0][0], (rotated_points[2][1] - rotated_points[0][1]) / 2,
+                        rotated_points[0][0] + 7,
+                        (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7)
+        self.app.coords('n', (rotated_points[1][0] - rotated_points[0][0]) / 2 + rotated_points[0][0],
+                        rotated_points[0][1],
+                        (rotated_points[1][0] - rotated_points[0][0]) / 2 + 7 + + rotated_points[0][0],
+                        rotated_points[0][1] + 7)
+
+        self.app.coords('s', (rotated_points[2][0] - rotated_points[3][0]) / 2 + rotated_points[3][0],
+                        rotated_points[3][1],
+                        (rotated_points[2][0] - rotated_points[3][0]) / 2 + 7 + rotated_points[3][0],
+                        rotated_points[3][1] - 7)
+        self.app.coords('ne', rotated_points[1][0], rotated_points[1][1], rotated_points[1][0] - 7,
+                        rotated_points[1][1] + 7)
+        self.app.coords('se', rotated_points[2][0], rotated_points[2][1], rotated_points[2][0] - 7,
+                        rotated_points[2][1] - 7)
+        self.app.coords('e', rotated_points[1][0], (rotated_points[3][1] - rotated_points[1][1]) / 2,
+                        rotated_points[1][0] - 7,
+                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7)
+
+        self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
 
     def guide(self):
         """
@@ -538,6 +570,7 @@ class CreateImg(T):
         :return:
         """
         T.drag(self, tag, event)
+
         if what.get() == 3:
             # 定义点的坐标
             origin = (self.current_x, self.current_y)
@@ -558,7 +591,7 @@ class CreateImg(T):
             if angle < 0:
                 angle += 360
 
-            self.to_rotate(tag, angle, state=False)
+            self.to_rotate(self.id, angle, state=False)
 
     def to_rotate(self, id, var, state=True):
         try:
@@ -568,6 +601,7 @@ class CreateImg(T):
         angle = angle % 360
         self.angle = angle
         self.rotate(id, angle)
+
         if state:
             rotate_.append(angle)
             stack.append(("旋转", self))
@@ -585,14 +619,13 @@ class CreateImg(T):
         self.var.set(str(int(angle)))
         set_cur(self.id)
         self.angle = angle
-
+        self.app.delete(self.rectangle)
+        self.create_rectangle_at_angle(-angle)
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc",
                              'monorail'] and self.state_line:
             self.app.delete(self.line_tag)
             self.guide()
             set_line(self.line_tag)
-            self.app.delete(self.rectangle)
-            self.rectangle = self.create_rectangle_at_angle(self.angle)
 
     def rotate_bound(self, angle):
         """
