@@ -92,8 +92,8 @@ class T:
             set_frame_stare(False)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
             self.app.move('point', event.x - self.startx, event.y - self.starty)
-            if self.line_tag:
-                self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
+            # if self.line_tag:
+            #     self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
             self.current_x += event.x - self.startx
             self.current_y += event.y - self.starty
 
@@ -341,38 +341,56 @@ class CreateImg(T):
             for x, y in points
         ]
 
-        for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
-            self.app.create_rectangle(-1, -1, -2, -2, tag=(name, 'point'), outline='blue')
+        for name in ('w', 'e',):
+            self.app.create_rectangle(0, 0, 0, 0, tag=(name, 'point'), outline='blue')
+            self.app.tag_bind(name, "<ButtonRelease-1>", self.mouseup)
 
-        # 绘制旋转后的矩形
-        self.app.coords('nw', rotated_points[0][0], rotated_points[0][1], rotated_points[0][0] + 7,
-                        rotated_points[0][1] + 7)
-        self.app.coords('sw', rotated_points[3][0], rotated_points[3][1], rotated_points[3][0] + 7,
-                        rotated_points[3][1] - 7)
-        # self.app.coords('w', rotated_points[0][0], (rotated_points[2][1] - rotated_points[0][1]) / 2,
-        #                 rotated_points[0][0] + 7,
-        #                 (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7)
-        # self.app.coords('n', (rotated_points[1][0] - rotated_points[0][0]) / 2 + rotated_points[0][0],
-        #                 rotated_points[0][1],
-        #                 (rotated_points[1][0] - rotated_points[0][0]) / 2 + 7 + + rotated_points[0][0],
-        #                 rotated_points[0][1] + 7)
+        print(rotated_points, 'rotated_points')
 
-        # self.app.coords('s', (rotated_points[2][0] - rotated_points[3][0]) / 2 + rotated_points[3][0],
-        #                 rotated_points[3][1],
-        #                 (rotated_points[2][0] - rotated_points[3][0]) / 2 + 7 + rotated_points[3][0],
-        #                 rotated_points[3][1] - 7)
-        self.app.coords('ne', rotated_points[1][0], rotated_points[1][1], rotated_points[1][0] - 7,
-                        rotated_points[1][1] + 7)
-        self.app.coords('se', rotated_points[2][0], rotated_points[2][1], rotated_points[2][0] - 7,
-                        rotated_points[2][1] - 7)
-        # self.app.coords('e', rotated_points[1][0], (rotated_points[3][1] - rotated_points[1][1]) / 2,
-        #                 rotated_points[1][0] - 7,
-        #                 (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7)
+        self.app.coords('w', rotated_points[0][0], (rotated_points[2][1] - rotated_points[0][1]) / 2,
+                        rotated_points[0][0] + 7,
+                        (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7)
+        self.app.coords('e', rotated_points[1][0], (rotated_points[3][1] - rotated_points[1][1]) / 2,
+                        rotated_points[1][0] - 7,
+                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7)
         if self.rectangle:
             flat_points = [coord for point in rotated_points for coord in point]
+            print(flat_points, 'flat_points')
             self.app.coords(self.rectangle, flat_points)
             return
         self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
+
+    def arc(self):
+        x1, y1, x2, y2 = self.app.coords('w')
+        rect1_center = (x1 + x2) / 2, (y1 + y2) / 2
+        x1, y1, x2, y2 = self.app.coords('e')
+        rect2_center = (x1 + x2) / 2, (y1 + y2) / 2
+        self.arc = self._create_arc(rect1_center, rect2_center)
+
+    def _create_arc(self, start, end):
+        """
+        绘制弧线
+        :param start: 矩形1的中心坐标
+        :param end: 矩形2的中心坐标
+        :return:
+        """
+        x1, y1 = start
+        x2, y2 = end
+
+        # 计算两个点之间的中点
+        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+
+        # 计算控制点，使弧线在任意角度都能正确连接
+        dx, dy = x2 - x1, y2 - y1
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        offset = distance / 2
+
+        if y1 < y2:
+            ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+        else:
+            ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+
+        return self.canvas.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True)
 
     def guide(self):
         """
@@ -542,6 +560,8 @@ class CreateImg(T):
         w = 6 if sys_name == 'Darwin' else 10
         ttk.Button(frame_command, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w,
                    bootstyle=BUTTON_STYLE).grid(row=3, column=0)
+        ttk.Button(frame_mea_com, text='弧线', command=self.arc, name='弧线', width=w,
+                   bootstyle=BUTTON_STYLE).grid(row=1, column=0)
 
     def bar_aux(self):
         # if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
