@@ -349,26 +349,29 @@ class CreateImg(T):
                         rotated_points[0][1] + 7)
         self.app.coords('sw', rotated_points[3][0], rotated_points[3][1], rotated_points[3][0] + 7,
                         rotated_points[3][1] - 7)
-        self.app.coords('w', rotated_points[0][0], (rotated_points[2][1] - rotated_points[0][1]) / 2,
-                        rotated_points[0][0] + 7,
-                        (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7)
-        self.app.coords('n', (rotated_points[1][0] - rotated_points[0][0]) / 2 + rotated_points[0][0],
-                        rotated_points[0][1],
-                        (rotated_points[1][0] - rotated_points[0][0]) / 2 + 7 + + rotated_points[0][0],
-                        rotated_points[0][1] + 7)
+        # self.app.coords('w', rotated_points[0][0], (rotated_points[2][1] - rotated_points[0][1]) / 2,
+        #                 rotated_points[0][0] + 7,
+        #                 (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7)
+        # self.app.coords('n', (rotated_points[1][0] - rotated_points[0][0]) / 2 + rotated_points[0][0],
+        #                 rotated_points[0][1],
+        #                 (rotated_points[1][0] - rotated_points[0][0]) / 2 + 7 + + rotated_points[0][0],
+        #                 rotated_points[0][1] + 7)
 
-        self.app.coords('s', (rotated_points[2][0] - rotated_points[3][0]) / 2 + rotated_points[3][0],
-                        rotated_points[3][1],
-                        (rotated_points[2][0] - rotated_points[3][0]) / 2 + 7 + rotated_points[3][0],
-                        rotated_points[3][1] - 7)
+        # self.app.coords('s', (rotated_points[2][0] - rotated_points[3][0]) / 2 + rotated_points[3][0],
+        #                 rotated_points[3][1],
+        #                 (rotated_points[2][0] - rotated_points[3][0]) / 2 + 7 + rotated_points[3][0],
+        #                 rotated_points[3][1] - 7)
         self.app.coords('ne', rotated_points[1][0], rotated_points[1][1], rotated_points[1][0] - 7,
                         rotated_points[1][1] + 7)
         self.app.coords('se', rotated_points[2][0], rotated_points[2][1], rotated_points[2][0] - 7,
                         rotated_points[2][1] - 7)
-        self.app.coords('e', rotated_points[1][0], (rotated_points[3][1] - rotated_points[1][1]) / 2,
-                        rotated_points[1][0] - 7,
-                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7)
-
+        # self.app.coords('e', rotated_points[1][0], (rotated_points[3][1] - rotated_points[1][1]) / 2,
+        #                 rotated_points[1][0] - 7,
+        #                 (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7)
+        if self.rectangle:
+            flat_points = [coord for point in rotated_points for coord in point]
+            self.app.coords(self.rectangle, flat_points)
+            return
         self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
 
     def guide(self):
@@ -619,7 +622,7 @@ class CreateImg(T):
         self.var.set(str(int(angle)))
         set_cur(self.id)
         self.angle = angle
-        self.app.delete(self.rectangle)
+        # self.app.delete(self.rectangle)
         self.create_rectangle_at_angle(-angle)
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc",
                              'monorail'] and self.state_line:
