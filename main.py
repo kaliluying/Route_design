@@ -584,9 +584,18 @@ def arc():
     画弧
     :return:
     """
-    what.set(4)
-    set_color()
-    # no_what.set(4)
+    # what.set(4)
+    # set_color()
+    # # no_what.set(4)
+    if check_var.get():
+        for i in T.all_instances:
+            try:
+                print(i)
+                i.draw_rectangles()
+            except AttributeError:
+                pass
+    else:
+        canvas.delete("arc")
 
 
 def set_color():
@@ -1033,6 +1042,12 @@ ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='网格辅助线', comman
 aux_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
 aux_info.grid(row=2, column=1, padx=0, pady=0)
 aux_info.state(['selected'])
+
+# 创建一个变量来跟踪 Checkbutton 的状态
+check_var = ttk.BooleanVar()
+
+arc_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='弧线', command=arc, width=width, variable=check_var,)
+arc_info.grid(row=3, column=1, padx=0, pady=0)
 
 # 障碍参数
 ttk.Label(frame_aux_info, text="障碍备注：", font=FONT).grid(row=0, column=0, padx=0, pady=0)

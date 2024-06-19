@@ -91,7 +91,7 @@ class T:
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
-            self.app.move('point', event.x - self.startx, event.y - self.starty)
+            # self.app.move('point', event.x - self.startx, event.y - self.starty)
             # if self.line_tag:
             #     self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
             self.current_x += event.x - self.startx
@@ -190,6 +190,7 @@ class CreateImg(T):
 
     def __init__(self, app, index, obstacle=None):
         super(CreateImg, self).__init__(app, index)
+        self.small_rect_size = 10
         self.var = None  # 旋转输入框
         self.img = None  # 图片
         self.frame_input = None  # 输入框列表
@@ -207,6 +208,7 @@ class CreateImg(T):
         self.width = 100
         self.height = 50
         self.rectangle = None  # 矩形
+        self.drag_data = {"x": 0, "y": 0, "item": None}
 
     def save(self):
         """
@@ -248,7 +250,7 @@ class CreateImg(T):
         self.img_obj = img_obj if img_obj else Image.open(self.img_path)
         self.width, self.height = self.img_obj.size
         self.img_file = ImageTk.PhotoImage(self.img_obj)
-        self.create_rectangle_at_angle(self.angle)
+        # self.create_rectangle_at_angle(self.angle)
         img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file, tag=self.tag)
         self.id = img_id
         self.app.image_data.update({self.id: self})
@@ -309,58 +311,160 @@ class CreateImg(T):
         else:
             if frame_function.winfo_children()[0].winfo_children()[1].winfo_name() == '障碍编辑容器':
                 frame_function.winfo_children()[0].winfo_children()[1].destroy()
-        # self.on_update()
-        # self.show()
+        # self.draw_rectangles()
+        self.drag_data["item"] = self.app.find_closest(event.x, event.y)
+        self.drag_data["x"] = event.x
+        self.drag_data["y"] = event.y
 
-    def create_rectangle_at_angle(self, angle):
+    def draw_rectangles(self):
         """
-        根据给定的角度创建一个旋转后的矩形，并在画布上绘制该矩形
-        :param angle: 矩形的旋转角度
+        绘制主矩形和小矩形
         :return:
         """
+        self.app.delete(self.tag + 'point')
+        angle_rad = math.radians(-self.angle)
+        cos_angle = math.cos(angle_rad)
+        sin_angle = math.sin(angle_rad)
 
-        radians = math.radians(angle)
-        cos_val = math.cos(radians)
-        sin_val = math.sin(radians)
+        # 计算主矩形坐标
+        half_w = self.width / 2
+        half_h = self.height / 2
 
-        half_width = self.width / 2
-        half_height = self.height / 2
+        p1 = self.rotate_point(-half_w, -half_h, cos_angle, sin_angle)
+        p2 = self.rotate_point(half_w, -half_h, cos_angle, sin_angle)
+        p3 = self.rotate_point(half_w, half_h, cos_angle, sin_angle)
+        p4 = self.rotate_point(-half_w, half_h, cos_angle, sin_angle)
 
-        points = [
-            (-half_width, -half_height),
-            (half_width, -half_height),
-            (half_width, half_height),
-            (-half_width, half_height),
-        ]
+        self.main_rect = self.app.create_polygon(
+            p1[0] + self.current_x, p1[1] + self.current_y,
+            p2[0] + self.current_x, p2[1] + self.current_y,
+            p3[0] + self.current_x, p3[1] + self.current_y,
+            p4[0] + self.current_x, p4[1] + self.current_y,
+            fill="", outline="black", tags=(self.tag, self.tag + 'point', 'arc')
+        )
+        canvas.tag_lower(self.main_rect, self.id)
 
-        rotated_points = [
-            (
-                self.current_x + x * cos_val - y * sin_val,
-                self.current_y + x * sin_val + y * cos_val
-            )
-            for x, y in points
-        ]
+        # 计算小矩形坐标
+        small_half = self.small_rect_size / 2
+        small_offset = half_w + small_half - 10  # 增加保证金
 
-        for name in ('w', 'e',):
-            self.app.create_rectangle(0, 0, 0, 0, tag=(name, 'point'), outline='blue')
-            self.app.tag_bind(name, "<ButtonRelease-1>", self.mouseup)
+        left_center_x = self.current_x - small_offset * cos_angle
+        left_center_y = self.current_y - small_offset * sin_angle
 
-        # print(rotated_points, 'rotated_points')
+        right_center_x = self.current_x + small_offset * cos_angle
+        right_center_y = self.current_y + small_offset * sin_angle
 
-        self.app.coords('w', rotated_points[0][0],
-                        ((rotated_points[2][1] - rotated_points[0][1]) / 2 + rotated_points[0][1]),
-                        rotated_points[0][0] + 7,
-                        (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7 + rotated_points[0][1])
-        self.app.coords('e', rotated_points[1][0],
-                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + rotated_points[1][1],
-                        rotated_points[1][0] - 7,
-                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7 + rotated_points[1][1])
-        if self.rectangle:
-            flat_points = [coord for point in rotated_points for coord in point]
-            # print(flat_points, 'flat_points')
-            self.app.coords(self.rectangle, flat_points)
-            return
-        self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
+        self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red")
+        self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green")
+        canvas.tag_lower(self.left_rect, self.id)
+        canvas.tag_lower(self.right_rect, self.id)
+        # self.app.tag_bind(self.left_rect, '<B1-Motion>', self.on_rect_drag)
+        # self.app.tag_bind(self.right_rect, '<B1-Motion>', self.on_rect_drag)
+
+    def on_rect_drag(self, event):
+        rect = self.app.find_withtag(ttk.CURRENT)[0]
+        x, y = event.x, event.y
+        dx, dy = x - self.drag_data['x'], y - self.drag_data['y']
+
+        # 移动矩形
+        self.app.move(rect, dx, dy)
+        self.drag_data = {'x': x, 'y': y}
+
+        # 更新矩形中心点
+        if rect == self.rect1:
+            self.rect1_center = self._get_center(self.rect1)
+        else:
+            self.rect2_center = self._get_center(self.rect2)
+
+        # 更新弧线
+        self._update_arc(self.rect1_center, self.rect2_center)
+
+    def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color):
+        """
+        绘制旋转矩形
+        :param center_x:
+        :param center_y:
+        :param half_size:
+        :param angle_rad:
+        :param color:
+        :return:
+        """
+        cos_angle = math.cos(angle_rad)
+        sin_angle = math.sin(angle_rad)
+
+        p1 = self.rotate_point(-half_size, -half_size, cos_angle, sin_angle)
+        p2 = self.rotate_point(half_size, -half_size, cos_angle, sin_angle)
+        p3 = self.rotate_point(half_size, half_size, cos_angle, sin_angle)
+        p4 = self.rotate_point(-half_size, half_size, cos_angle, sin_angle)
+
+        return self.app.create_polygon(
+            p1[0] + center_x, p1[1] + center_y,
+            p2[0] + center_x, p2[1] + center_y,
+            p3[0] + center_x, p3[1] + center_y,
+            p4[0] + center_x, p4[1] + center_y,
+            fill=color, tags=(self.tag, self.tag + 'point', 'arc')
+        )
+
+    def rotate_point(self, x, y, cos_angle, sin_angle):
+        """
+        旋转坐标点
+        :param x:
+        :param y:
+        :param cos_angle:
+        :param sin_angle:
+        :return:
+        """
+        return x * cos_angle - y * sin_angle, x * sin_angle + y * cos_angle
+
+    # def create_rectangle_at_angle(self, angle):
+    #     """
+    #     根据给定的角度创建一个旋转后的矩形，并在画布上绘制该矩形
+    #     :param angle: 矩形的旋转角度
+    #     :return:
+    #     """
+    #
+    #     radians = math.radians(angle)
+    #     cos_val = math.cos(radians)
+    #     sin_val = math.sin(radians)
+    #
+    #     half_width = self.width / 2
+    #     half_height = self.height / 2
+    #
+    #     points = [
+    #         (-half_width, -half_height),
+    #         (half_width, -half_height),
+    #         (half_width, half_height),
+    #         (-half_width, half_height),
+    #     ]
+    #
+    #     rotated_points = [
+    #         (
+    #             self.current_x + x * cos_val - y * sin_val,
+    #             self.current_y + x * sin_val + y * cos_val
+    #         )
+    #         for x, y in points
+    #     ]
+    #
+    #     for name in ('w', 'e',):
+    #         self.app.create_rectangle(0, 0, 0, 0, tag=(name, 'point'), outline='blue')
+    #         self.app.tag_bind(name, "<ButtonRelease-1>", self.mouseup)
+    #
+    #     # print(rotated_points, 'rotated_points')
+    #
+    #     self.app.coords('w', rotated_points[0][0],
+    #                     ((rotated_points[2][1] - rotated_points[0][1]) / 2 + rotated_points[0][1]),
+    #                     rotated_points[0][0] + 7,
+    #                     (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7 + rotated_points[0][1])
+    #     self.app.coords('e', rotated_points[1][0],
+    #                     (rotated_points[3][1] - rotated_points[1][1]) / 2 + rotated_points[1][1],
+    #                     rotated_points[1][0] - 7,
+    #                     (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7 + rotated_points[1][1])
+    #     if self.rectangle:
+    #         flat_points = [coord for point in rotated_points for coord in point]
+    #         # print(flat_points, 'flat_points')
+    #         self.app.coords(self.rectangle, flat_points)
+    #         return
+    #     self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
 
     def arc(self):
         x1, y1, x2, y2 = self.app.coords('w')
@@ -618,6 +722,34 @@ class CreateImg(T):
 
             self.to_rotate(self.id, angle, state=False)
 
+            dx = event.x - self.drag_data["x"]
+            dy = event.y - self.drag_data["y"]
+            self.drag_data["x"] = event.x
+            self.drag_data["y"] = event.y
+
+            if self.drag_data["item"]:
+
+                item = self.drag_data["item"][0]
+                if item == self.main_rect:
+                    self.current_x += dx
+                    self.current_y += dy
+                    self.draw_rectangles()
+                else:
+                    # center_x_diff = event.x - self.current_x
+                    # center_y_diff = event.y - self.current_y
+                    # self.angle = math.degrees(math.atan2(center_y_diff, center_x_diff))
+                    self.draw_rectangles()
+
+    def mouseup(self, event):
+        """
+        鼠标松开
+        :param event:
+        :return:
+        """
+        T.mouseup(self, event)
+        if what.get() == 3:
+            self.drag_data["item"] = None
+
     def to_rotate(self, id, var, state=True):
         try:
             angle = int(var.get())
@@ -645,7 +777,7 @@ class CreateImg(T):
         set_cur(self.id)
         self.angle = angle
         # self.app.delete(self.rectangle)
-        self.create_rectangle_at_angle(-angle)
+        # self.create_rectangle_at_angle(-angle)
         if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc",
                              'monorail'] and self.state_line:
             self.app.delete(self.line_tag)

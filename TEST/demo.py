@@ -1,81 +1,150 @@
 import tkinter as tk
-import math
+from math import cos, sin, radians, atan2, degrees
 
 
-class ConnectNodesApp:
+class DraggableRectangles:
     def __init__(self, root):
         self.root = root
         self.canvas = tk.Canvas(root, width=800, height=600, bg='white')
         self.canvas.pack()
 
-        # 画两个矩形
-        self.rect1 = self.canvas.create_rectangle(100, 200, 200, 300, outline='black', fill='white')
-        self.rect2 = self.canvas.create_rectangle(500, 300, 600, 400, outline='black', fill='white')
+        # 定义初始参数
+        self.rect_width = 100
+        self.rect_height = 60
+        self.small_rect_size = 20
+        self.center_x = 400
+        self.center_y = 300
+        self.angle = 0
 
-        # 获取矩形中心点
-        self.rect1_center = self._get_center(self.rect1)
-        self.rect2_center = self._get_center(self.rect2)
+        # 绘制主矩形和小矩形
+        self.draw_rectangles()
 
-        # 绘制初始弧线
-        self.arc = self._create_arc(self.rect1_center, self.rect2_center)
+        # Bind mouse events
+        self.canvas.bind("<Button-1>", self.on_click)
+        self.canvas.bind("<B1-Motion>", self.on_drag)
+        self.canvas.bind("<ButtonRelease-1>", self.on_release)
 
-        # 绑定事件
-        self.canvas.tag_bind(self.rect1, '<ButtonPress-1>', self.on_rect_click)
-        self.canvas.tag_bind(self.rect2, '<ButtonPress-1>', self.on_rect_click)
-        self.canvas.tag_bind(self.rect1, '<B1-Motion>', self.on_rect_drag)
-        self.canvas.tag_bind(self.rect2, '<B1-Motion>', self.on_rect_drag)
+        self.drag_data = {"x": 0, "y": 0, "item": None}
 
-    def _get_center(self, rect):
-        x1, y1, x2, y2 = self.canvas.coords(rect)
-        return (x1 + x2) / 2, (y1 + y2) / 2
+    def draw_rectangles(self):
+        """
+        绘制主矩形和小矩形
+        :return:
+        """
+        self.canvas.delete("all")
+        angle_rad = radians(self.angle)
+        cos_angle = cos(angle_rad)
+        sin_angle = sin(angle_rad)
 
-    def _create_arc(self, start, end):
-        x1, y1 = start
-        x2, y2 = end
+        # 计算主矩形坐标
+        half_w = self.rect_width / 2
+        half_h = self.rect_height / 2
 
-        # 计算两个点之间的中点
-        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+        p1 = self.rotate_point(-half_w, -half_h, cos_angle, sin_angle)
+        p2 = self.rotate_point(half_w, -half_h, cos_angle, sin_angle)
+        p3 = self.rotate_point(half_w, half_h, cos_angle, sin_angle)
+        p4 = self.rotate_point(-half_w, half_h, cos_angle, sin_angle)
 
-        # 计算控制点，使弧线在任意角度都能正确连接
-        dx, dy = x2 - x1, y2 - y1
-        distance = math.sqrt(dx ** 2 + dy ** 2)
-        offset = distance / 2
+        self.main_rect = self.canvas.create_polygon(
+            p1[0] + self.center_x, p1[1] + self.center_y,
+            p2[0] + self.center_x, p2[1] + self.center_y,
+            p3[0] + self.center_x, p3[1] + self.center_y,
+            p4[0] + self.center_x, p4[1] + self.center_y,
+            fill="blue"
+        )
 
-        if y1 < y2:
-            ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
-        else:
-            ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+        # 计算小矩形坐标
+        small_half = self.small_rect_size / 2
+        small_offset = half_w + small_half + 10  # 增加保证金
 
-        return self.canvas.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True)
+        left_center_x = self.center_x - small_offset * cos_angle
+        left_center_y = self.center_y - small_offset * sin_angle
 
-    def _update_arc(self, start, end):
-        # 删除旧弧线并创建新弧线
-        self.canvas.delete(self.arc)
-        self.arc = self._create_arc(start, end)
+        right_center_x = self.center_x + small_offset * cos_angle
+        right_center_y = self.center_y + small_offset * sin_angle
 
-    def on_rect_click(self, event):
-        self.drag_data = {'x': event.x, 'y': event.y}
+        self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red")
+        self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green")
 
-    def on_rect_drag(self, event):
-        rect = self.canvas.find_withtag(tk.CURRENT)[0]
-        x, y = event.x, event.y
-        dx, dy = x - self.drag_data['x'], y - self.drag_data['y']
+    def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color):
+        """
+        绘制旋转矩形
+        :param center_x:
+        :param center_y:
+        :param half_size:
+        :param angle_rad:
+        :param color:
+        :return:
+        """
+        cos_angle = cos(angle_rad)
+        sin_angle = sin(angle_rad)
 
-        # 移动矩形
-        self.canvas.move(rect, dx, dy)
-        self.drag_data = {'x': x, 'y': y}
+        p1 = self.rotate_point(-half_size, -half_size, cos_angle, sin_angle)
+        p2 = self.rotate_point(half_size, -half_size, cos_angle, sin_angle)
+        p3 = self.rotate_point(half_size, half_size, cos_angle, sin_angle)
+        p4 = self.rotate_point(-half_size, half_size, cos_angle, sin_angle)
 
-        # 更新矩形中心点
-        if rect == self.rect1:
-            self.rect1_center = self._get_center(self.rect1)
-        else:
-            self.rect2_center = self._get_center(self.rect2)
+        return self.canvas.create_polygon(
+            p1[0] + center_x, p1[1] + center_y,
+            p2[0] + center_x, p2[1] + center_y,
+            p3[0] + center_x, p3[1] + center_y,
+            p4[0] + center_x, p4[1] + center_y,
+            fill=color
+        )
 
-        # 更新弧线
-        self._update_arc(self.rect1_center, self.rect2_center)
+    def rotate_point(self, x, y, cos_angle, sin_angle):
+        """
+        旋转坐标点
+        :param x:
+        :param y:
+        :param cos_angle:
+        :param sin_angle:
+        :return:
+        """
+        return x * cos_angle - y * sin_angle, x * sin_angle + y * cos_angle
+
+    def on_click(self, event):
+        """
+        鼠标点击事件
+        :param event:
+        :return:
+        """
+        self.drag_data["item"] = self.canvas.find_closest(event.x, event.y)
+        self.drag_data["x"] = event.x
+        self.drag_data["y"] = event.y
+
+    def on_drag(self, event):
+        """
+        鼠标拖动事件
+        :param event:
+        :return:
+        """
+        dx = event.x - self.drag_data["x"]
+        dy = event.y - self.drag_data["y"]
+        self.drag_data["x"] = event.x
+        self.drag_data["y"] = event.y
+
+        if self.drag_data["item"]:
+            item = self.drag_data["item"][0]
+            if item == self.main_rect:
+                self.center_x += dx
+                self.center_y += dy
+                self.draw_rectangles()
+            else:
+                center_x_diff = event.x - self.center_x
+                center_y_diff = event.y - self.center_y
+                self.angle = degrees(atan2(center_y_diff, center_x_diff))
+                self.draw_rectangles()
+
+    def on_release(self, event):
+        """
+        鼠标释放事件
+        :param event:
+        :return:
+        """
+        self.drag_data["item"] = None
 
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ConnectNodesApp(root)
-    root.mainloop()
+root = tk.Tk()
+app = DraggableRectangles(root)
+root.mainloop()
