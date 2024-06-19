@@ -345,17 +345,19 @@ class CreateImg(T):
             self.app.create_rectangle(0, 0, 0, 0, tag=(name, 'point'), outline='blue')
             self.app.tag_bind(name, "<ButtonRelease-1>", self.mouseup)
 
-        print(rotated_points, 'rotated_points')
+        # print(rotated_points, 'rotated_points')
 
-        self.app.coords('w', rotated_points[0][0], (rotated_points[2][1] - rotated_points[0][1]) / 2,
+        self.app.coords('w', rotated_points[0][0],
+                        ((rotated_points[2][1] - rotated_points[0][1]) / 2 + rotated_points[0][1]),
                         rotated_points[0][0] + 7,
-                        (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7)
-        self.app.coords('e', rotated_points[1][0], (rotated_points[3][1] - rotated_points[1][1]) / 2,
+                        (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7 + rotated_points[0][1])
+        self.app.coords('e', rotated_points[1][0],
+                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + rotated_points[1][1],
                         rotated_points[1][0] - 7,
-                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7)
+                        (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7 + rotated_points[1][1])
         if self.rectangle:
             flat_points = [coord for point in rotated_points for coord in point]
-            print(flat_points, 'flat_points')
+            # print(flat_points, 'flat_points')
             self.app.coords(self.rectangle, flat_points)
             return
         self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
