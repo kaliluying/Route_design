@@ -26,10 +26,12 @@ class ConnectNodesApp:
         self.canvas.tag_bind(self.rect2, '<B1-Motion>', self.on_rect_drag)
 
     def _get_center(self, rect):
+        # 获取矩形的中心点
         x1, y1, x2, y2 = self.canvas.coords(rect)
         return (x1 + x2) / 2, (y1 + y2) / 2
 
     def _create_arc(self, start, end):
+        # 创建连接两个点的弧线
         x1, y1 = start
         x2, y2 = end
 
@@ -38,9 +40,6 @@ class ConnectNodesApp:
 
         # 计算控制点，使弧线在任意角度都能正确连接
         dx, dy = x2 - x1, y2 - y1
-        # distance = math.sqrt(dx ** 2 + dy ** 2)
-        # offset = distance / 2
-
         if y1 < y2:
             ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
         else:
@@ -49,14 +48,17 @@ class ConnectNodesApp:
         return self.canvas.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2)
 
     def _update_arc(self, start, end):
-        # 删除旧弧线并创建新弧线
+        # 更新弧线
         self.canvas.delete(self.arc)
         self.arc = self._create_arc(start, end)
 
     def on_rect_click(self, event):
+        # 处理矩形点击事件
         self.drag_data = {'x': event.x, 'y': event.y}
+        print(self.drag_data)
 
     def on_rect_drag(self, event):
+        # 处理矩形拖动事件
         rect = self.canvas.find_withtag(tk.CURRENT)[0]
         x, y = event.x, event.y
         dx, dy = x - self.drag_data['x'], y - self.drag_data['y']

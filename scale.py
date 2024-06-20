@@ -356,28 +356,56 @@ class CreateImg(T):
 
         self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red")
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green")
-        canvas.tag_lower(self.left_rect, self.id)
-        canvas.tag_lower(self.right_rect, self.id)
-        # self.app.tag_bind(self.left_rect, '<B1-Motion>', self.on_rect_drag)
-        # self.app.tag_bind(self.right_rect, '<B1-Motion>', self.on_rect_drag)
+        # canvas.tag_lower(self.left_rect, self.id)
+        # canvas.tag_lower(self.right_rect, self.id)
+        self.app.tag_bind(self.left_rect, '<Button-1>', partial(self.on_rect_click, self.left_rect))
+        self.app.tag_bind(self.right_rect, '<Button-1>', partial(self.on_rect_click, self.right_rect))
 
-    def on_rect_drag(self, event):
-        rect = self.app.find_withtag(ttk.CURRENT)[0]
-        x, y = event.x, event.y
-        dx, dy = x - self.drag_data['x'], y - self.drag_data['y']
+    def on_rect_click(self, tag, event):
+        global arc_click
+        x1, y1, x2, y2, x3, y3, x4, y4 = self.app.coords(tag)
+        points = [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
+        x_coords = [p[0] for p in points]
+        y_coords = [p[1] for p in points]
 
-        # 移动矩形
-        self.app.move(rect, dx, dy)
-        self.drag_data = {'x': x, 'y': y}
+        cx = sum(x_coords) / 4
+        cy = sum(y_coords) / 4
+        if arc_click:
+            set_arc_end((cx, cy))
+            arc_click = 0
 
-        # 更新矩形中心点
-        if rect == self.rect1:
-            self.rect1_center = self._get_center(self.rect1)
+            # 计算两个点之间的中点
+            cx, cy = get_arc_center()
+
+            # 计算控制点，使弧线在任意角度都能正确连接
+            dx, dy = x2 - x1, y2 - y1
+            if y1 < y2:
+                ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+            else:
+                ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+
+            return self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2)
         else:
-            self.rect2_center = self._get_center(self.rect2)
+            set_arc_start((cx, cy))
+            arc_click = 1
 
-        # 更新弧线
-        self._update_arc(self.rect1_center, self.rect2_center)
+    # def on_rect_drag(self, event):
+    #     rect = self.app.find_withtag(ttk.CURRENT)[0]
+    #     x, y = event.x, event.y
+    #     dx, dy = x - self.drag_data['x'], y - self.drag_data['y']
+    #
+    #     # 移动矩形
+    #     self.app.move(rect, dx, dy)
+    #     self.drag_data = {'x': x, 'y': y}
+    #
+    #     # 更新矩形中心点
+    #     if rect == self.rect1:
+    #         self.rect1_center = self._get_center(self.rect1)
+    #     else:
+    #         self.rect2_center = self._get_center(self.rect2)
+    #
+    #     # 更新弧线
+    #     self._update_arc(self.rect1_center, self.rect2_center)
 
     def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color):
         """

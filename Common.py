@@ -143,6 +143,9 @@ filtered_dict = {}
 # 记录一次画线的坐标
 current_line = None
 
+# 记录弧线点击次数
+arc_click = 0
+
 # 总坐标
 lines = []
 

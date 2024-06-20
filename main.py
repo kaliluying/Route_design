@@ -1046,7 +1046,8 @@ aux_info.state(['selected'])
 # 创建一个变量来跟踪 Checkbutton 的状态
 check_var = ttk.BooleanVar()
 
-arc_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='弧线', command=arc, width=width, variable=check_var,)
+arc_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='弧线', command=arc, width=width,
+                           variable=check_var, )
 arc_info.grid(row=3, column=1, padx=0, pady=0)
 
 # 障碍参数

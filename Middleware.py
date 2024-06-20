@@ -12,6 +12,60 @@ bar_len = 4
 # 当前障碍对象
 current_obstacle = None
 
+# 记录弧线的起始点
+arc_start = None
+
+# 记录弧线的终止点
+arc_end = None
+
+
+def set_arc_start(start):
+    """
+    设置弧线的起始点
+    :param start:
+    :return:
+    """
+    global arc_start
+    arc_start = start
+
+
+def set_arc_end(end):
+    """
+    设置弧线的终止点
+    :param end:
+    :return:
+    """
+    global arc_end
+    arc_end = end
+
+
+def get_arc_center():
+    """
+    获取弧线的中心点
+    :return:
+    """
+    x1, y1 = arc_start
+    x2, y2 = arc_end
+    x3 = (x1 + x2) / 2
+    y3 = (y1 + y2) / 2
+    return x3, y3
+
+
+def get_arc_start():
+    """
+    获取弧线的起始点
+    :return:
+    """
+    return arc_start
+
+
+def get_arc_end():
+    """
+    获取弧线的终止点
+    :return:
+    """
+    return arc_end
+
 
 def set_obstacle(obstacle):
     """
