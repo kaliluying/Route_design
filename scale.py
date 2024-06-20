@@ -373,21 +373,29 @@ class CreateImg(T):
         if arc_click:
             set_arc_end((cx, cy))
             arc_click = 0
+            self.create_arc()
 
-            # 计算两个点之间的中点
-            cx, cy = get_arc_center()
 
-            # 计算控制点，使弧线在任意角度都能正确连接
-            dx, dy = x2 - x1, y2 - y1
-            if y1 < y2:
-                ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
-            else:
-                ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
-
-            return self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2)
         else:
             set_arc_start((cx, cy))
             arc_click = 1
+
+    def create_arc(self):
+        start, end = get_arc_start_end()
+        x1, y1 = start
+        x2, y2 = end
+
+        # 计算两个点之间的中点
+        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+
+        # 计算控制点，使弧线在任意角度都能正确连接
+        dx, dy = x2 - x1, y2 - y1
+        if y1 < y2:
+            ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+        else:
+            ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+
+        return self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2)
 
     # def on_rect_drag(self, event):
     #     rect = self.app.find_withtag(ttk.CURRENT)[0]
@@ -493,38 +501,6 @@ class CreateImg(T):
     #         self.app.coords(self.rectangle, flat_points)
     #         return
     #     self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
-
-    def arc(self):
-        x1, y1, x2, y2 = self.app.coords('w')
-        rect1_center = (x1 + x2) / 2, (y1 + y2) / 2
-        x1, y1, x2, y2 = self.app.coords('e')
-        rect2_center = (x1 + x2) / 2, (y1 + y2) / 2
-        self.arc = self._create_arc(rect1_center, rect2_center)
-
-    def _create_arc(self, start, end):
-        """
-        绘制弧线
-        :param start: 矩形1的中心坐标
-        :param end: 矩形2的中心坐标
-        :return:
-        """
-        x1, y1 = start
-        x2, y2 = end
-
-        # 计算两个点之间的中点
-        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
-
-        # 计算控制点，使弧线在任意角度都能正确连接
-        dx, dy = x2 - x1, y2 - y1
-        distance = math.sqrt(dx ** 2 + dy ** 2)
-        offset = distance / 2
-
-        if y1 < y2:
-            ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
-        else:
-            ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
-
-        return self.canvas.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True)
 
     def guide(self):
         """

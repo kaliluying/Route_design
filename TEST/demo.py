@@ -1,150 +1,102 @@
 import tkinter as tk
-from math import cos, sin, radians, atan2, degrees
+import math
 
 
-class DraggableRectangles:
+class ConnectNodesApp:
     def __init__(self, root):
         self.root = root
         self.canvas = tk.Canvas(root, width=800, height=600, bg='white')
         self.canvas.pack()
 
-        # 定义初始参数
-        self.rect_width = 100
-        self.rect_height = 60
-        self.small_rect_size = 20
-        self.center_x = 400
-        self.center_y = 300
-        self.angle = 0
+        self.rectangles = []
+        self.arcs = []
+        self.selected_rects = []
 
-        # 绘制主矩形和小矩形
-        self.draw_rectangles()
+        self.create_rectangles()
+        self.connect_button = tk.Button(root, text="Connect Selected Rectangles", command=self.connect_rectangles)
+        self.connect_button.pack()
 
-        # Bind mouse events
-        self.canvas.bind("<Button-1>", self.on_click)
-        self.canvas.bind("<B1-Motion>", self.on_drag)
-        self.canvas.bind("<ButtonRelease-1>", self.on_release)
+    def create_rectangles(self):
+        # Create four rectangles on the canvas
+        rect1 = self.canvas.create_rectangle(100, 100, 200, 150, outline='black', fill='white')
+        rect2 = self.canvas.create_rectangle(300, 100, 400, 150, outline='black', fill='white')
+        rect3 = self.canvas.create_rectangle(100, 300, 200, 350, outline='black', fill='white')
+        rect4 = self.canvas.create_rectangle(300, 300, 400, 350, outline='black', fill='white')
 
-        self.drag_data = {"x": 0, "y": 0, "item": None}
+        self.rectangles.extend([rect1, rect2, rect3, rect4])
 
-    def draw_rectangles(self):
-        """
-        绘制主矩形和小矩形
-        :return:
-        """
-        self.canvas.delete("all")
-        angle_rad = radians(self.angle)
-        cos_angle = cos(angle_rad)
-        sin_angle = sin(angle_rad)
+        for rect in self.rectangles:
+            self.canvas.tag_bind(rect, '<ButtonPress-1>', self.on_rect_click)
+            self.canvas.tag_bind(rect, '<B1-Motion>', self.on_rect_drag)
 
-        # 计算主矩形坐标
-        half_w = self.rect_width / 2
-        half_h = self.rect_height / 2
+    def _get_center(self, rect):
+        x1, y1, x2, y2 = self.canvas.coords(rect)
+        return (x1 + x2) / 2, (y1 + y2) / 2
 
-        p1 = self.rotate_point(-half_w, -half_h, cos_angle, sin_angle)
-        p2 = self.rotate_point(half_w, -half_h, cos_angle, sin_angle)
-        p3 = self.rotate_point(half_w, half_h, cos_angle, sin_angle)
-        p4 = self.rotate_point(-half_w, half_h, cos_angle, sin_angle)
+    def _create_arc(self, start, end):
+        x1, y1 = start
+        x2, y2 = end
 
-        self.main_rect = self.canvas.create_polygon(
-            p1[0] + self.center_x, p1[1] + self.center_y,
-            p2[0] + self.center_x, p2[1] + self.center_y,
-            p3[0] + self.center_x, p3[1] + self.center_y,
-            p4[0] + self.center_x, p4[1] + self.center_y,
-            fill="blue"
-        )
+        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+        dx, dy = x2 - x1, y2 - y1
+        distance = math.sqrt(dx ** 2 + dy ** 2)
 
-        # 计算小矩形坐标
-        small_half = self.small_rect_size / 2
-        small_offset = half_w + small_half + 10  # 增加保证金
+        offset_x = -dy / distance * 50
+        offset_y = dx / distance * 50
 
-        left_center_x = self.center_x - small_offset * cos_angle
-        left_center_y = self.center_y - small_offset * sin_angle
+        ctrl_x1, ctrl_y1 = cx + offset_x, cy + offset_y
+        ctrl_x2, ctrl_y2 = cx - offset_x, cy - offset_y
 
-        right_center_x = self.center_x + small_offset * cos_angle
-        right_center_y = self.center_y + small_offset * sin_angle
+        return self.canvas.create_line(x1, y1, ctrl_x1, ctrl_y1, ctrl_x2, ctrl_y2, x2, y2, smooth=True, width=2)
 
-        self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red")
-        self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green")
+    def _update_arc(self, arc, start, end):
+        self.canvas.delete(arc)
+        return self._create_arc(start, end)
 
-    def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color):
-        """
-        绘制旋转矩形
-        :param center_x:
-        :param center_y:
-        :param half_size:
-        :param angle_rad:
-        :param color:
-        :return:
-        """
-        cos_angle = cos(angle_rad)
-        sin_angle = sin(angle_rad)
+    def on_rect_click(self, event):
+        rect = self.canvas.find_withtag(tk.CURRENT)[0]
+        if rect not in self.selected_rects:
+            self.selected_rects.append(rect)
+            self.canvas.itemconfig(rect, outline='blue')
+        else:
+            self.selected_rects.remove(rect)
+            self.canvas.itemconfig(rect, outline='black')
 
-        p1 = self.rotate_point(-half_size, -half_size, cos_angle, sin_angle)
-        p2 = self.rotate_point(half_size, -half_size, cos_angle, sin_angle)
-        p3 = self.rotate_point(half_size, half_size, cos_angle, sin_angle)
-        p4 = self.rotate_point(-half_size, half_size, cos_angle, sin_angle)
+        if len(self.selected_rects) > 2:
+            self.canvas.itemconfig(self.selected_rects.pop(0), outline='black')
 
-        return self.canvas.create_polygon(
-            p1[0] + center_x, p1[1] + center_y,
-            p2[0] + center_x, p2[1] + center_y,
-            p3[0] + center_x, p3[1] + center_y,
-            p4[0] + center_x, p4[1] + center_y,
-            fill=color
-        )
+        self.drag_data = {'x': event.x, 'y': event.y}
 
-    def rotate_point(self, x, y, cos_angle, sin_angle):
-        """
-        旋转坐标点
-        :param x:
-        :param y:
-        :param cos_angle:
-        :param sin_angle:
-        :return:
-        """
-        return x * cos_angle - y * sin_angle, x * sin_angle + y * cos_angle
+    def on_rect_drag(self, event):
+        rect = self.canvas.find_withtag(tk.CURRENT)[0]
+        x, y = event.x, event.y
+        dx, dy = x - self.drag_data['x'], y - self.drag_data['y']
 
-    def on_click(self, event):
-        """
-        鼠标点击事件
-        :param event:
-        :return:
-        """
-        self.drag_data["item"] = self.canvas.find_closest(event.x, event.y)
-        self.drag_data["x"] = event.x
-        self.drag_data["y"] = event.y
+        self.canvas.move(rect, dx, dy)
+        self.drag_data = {'x': x, 'y': y}
 
-    def on_drag(self, event):
-        """
-        鼠标拖动事件
-        :param event:
-        :return:
-        """
-        dx = event.x - self.drag_data["x"]
-        dy = event.y - self.drag_data["y"]
-        self.drag_data["x"] = event.x
-        self.drag_data["y"] = event.y
+        for arc, rect1, rect2 in self.arcs:
+            if rect in (rect1, rect2):
+                rect1_center = self._get_center(rect1)
+                rect2_center = self._get_center(rect2)
+                new_arc = self._update_arc(arc, rect1_center, rect2_center)
+                self.arcs.append((new_arc, rect1, rect2))
+                self.arcs.remove((arc, rect1, rect2))
 
-        if self.drag_data["item"]:
-            item = self.drag_data["item"][0]
-            if item == self.main_rect:
-                self.center_x += dx
-                self.center_y += dy
-                self.draw_rectangles()
-            else:
-                center_x_diff = event.x - self.center_x
-                center_y_diff = event.y - self.center_y
-                self.angle = degrees(atan2(center_y_diff, center_x_diff))
-                self.draw_rectangles()
+    def connect_rectangles(self):
+        if len(self.selected_rects) == 2:
+            rect1, rect2 = self.selected_rects
+            rect1_center = self._get_center(rect1)
+            rect2_center = self._get_center(rect2)
+            arc = self._create_arc(rect1_center, rect2_center)
+            self.arcs.append((arc, rect1, rect2))
 
-    def on_release(self, event):
-        """
-        鼠标释放事件
-        :param event:
-        :return:
-        """
-        self.drag_data["item"] = None
+            self.selected_rects = []
+            self.canvas.itemconfig(rect1, outline='black')
+            self.canvas.itemconfig(rect2, outline='black')
 
 
-root = tk.Tk()
-app = DraggableRectangles(root)
-root.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ConnectNodesApp(root)
+    root.mainloop()

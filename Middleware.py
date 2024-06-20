@@ -39,16 +39,12 @@ def set_arc_end(end):
     arc_end = end
 
 
-def get_arc_center():
+def get_arc_start_end():
     """
-    获取弧线的中心点
+    获取弧线的起始点和终止点
     :return:
     """
-    x1, y1 = arc_start
-    x2, y2 = arc_end
-    x3 = (x1 + x2) / 2
-    y3 = (y1 + y2) / 2
-    return x3, y3
+    return arc_start, arc_end
 
 
 def get_arc_start():
