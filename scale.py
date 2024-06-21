@@ -190,6 +190,7 @@ class CreateImg(T):
 
     def __init__(self, app, index, obstacle=None):
         super(CreateImg, self).__init__(app, index)
+        self.selected_rects = []
         self.small_rect_size = 10
         self.var = None  # 旋转输入框
         self.img = None  # 图片
@@ -208,7 +209,7 @@ class CreateImg(T):
         self.width = 100
         self.height = 50
         self.rectangle = None  # 矩形
-        self.drag_data = {"x": 0, "y": 0, "item": None}
+        self.arcs = []  # 弧线
 
     def save(self):
         """
@@ -311,10 +312,51 @@ class CreateImg(T):
         else:
             if frame_function.winfo_children()[0].winfo_children()[1].winfo_name() == '障碍编辑容器':
                 frame_function.winfo_children()[0].winfo_children()[1].destroy()
-        # self.draw_rectangles()
-        self.drag_data["item"] = self.app.find_closest(event.x, event.y)
-        self.drag_data["x"] = event.x
-        self.drag_data["y"] = event.y
+
+    def drag(self, tag, event):
+        """
+        拖动旋转
+        :param tag:
+        :param event:
+        :return:
+        """
+        T.drag(self, tag, event)
+
+        if what.get() == 3:
+            # 定义点的坐标
+            origin = (self.current_x, self.current_y)
+            start = (self.startx, self.starty)
+            end = (event.x, event.y)
+
+            origin_start = (start[0] - origin[0], start[1] - origin[1])
+            origin_end = (end[0] - origin[0], end[1] - origin[1])
+
+            # 计算向量 AB 和 AC 的角度
+            angle_AB = math.atan2(origin_start[1], origin_start[0])
+            angle_AC = math.atan2(origin_end[1], origin_end[0])
+
+            # 计算夹角
+            angle = self.lest_angle + math.degrees(angle_AB - angle_AC)
+
+            # 确保角度在 0 到 360 度范围内
+            if angle < 0:
+                angle += 360
+
+            self.to_rotate(self.id, angle, state=False)
+            # self.draw_rectangles()
+        if what.get() == 0:
+            for arc, rect1, rect2 in self.arcs:
+                if self.tag + 'point' in (rect1, rect2):
+                    rect1_center = self._get_center(rect1)
+                    rect2_center = self._get_center(rect2)
+                    self.app.delete(arc)
+                    new_arc = self.create_arc(rect1_center, rect2_center)
+                    self.arcs.append((new_arc, rect1, rect2))
+                    self.arcs.remove((arc, rect1, rect2))
+
+    def _get_center(self, rect):
+        x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
+        return (x1 + x2) / 2, (y1 + y2) / 2
 
     def draw_rectangles(self):
         """
@@ -340,13 +382,13 @@ class CreateImg(T):
             p2[0] + self.current_x, p2[1] + self.current_y,
             p3[0] + self.current_x, p3[1] + self.current_y,
             p4[0] + self.current_x, p4[1] + self.current_y,
-            fill="", outline="black", tags=(self.tag, self.tag + 'point', 'arc')
+            fill="", outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc')
         )
         canvas.tag_lower(self.main_rect, self.id)
 
         # 计算小矩形坐标
         small_half = self.small_rect_size / 2
-        small_offset = half_w + small_half - 10  # 增加保证金
+        small_offset = half_w + small_half - 5  # 偏移量
 
         left_center_x = self.current_x - small_offset * cos_angle
         left_center_y = self.current_y - small_offset * sin_angle
@@ -371,17 +413,20 @@ class CreateImg(T):
         cx = sum(x_coords) / 4
         cy = sum(y_coords) / 4
         if arc_click:
-            set_arc_end((cx, cy))
+            start = get_arc_start()
             arc_click = 0
-            self.create_arc()
+            arc = self.create_arc(start, (cx, cy))
+            rect1, rect2 = get_arc_start_obj(), self.tag + 'point'
+
+            self.arcs.append((arc, rect1, rect2))
 
 
         else:
             set_arc_start((cx, cy))
+            set_arc_start_obj(self.tag + 'point')
             arc_click = 1
 
-    def create_arc(self):
-        start, end = get_arc_start_end()
+    def create_arc(self, start, end):
         x1, y1 = start
         x2, y2 = end
 
@@ -391,9 +436,9 @@ class CreateImg(T):
         # 计算控制点，使弧线在任意角度都能正确连接
         dx, dy = x2 - x1, y2 - y1
         if y1 < y2:
-            ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
-        else:
             ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+        else:
+            ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
 
         return self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2)
 
@@ -438,7 +483,7 @@ class CreateImg(T):
             p2[0] + center_x, p2[1] + center_y,
             p3[0] + center_x, p3[1] + center_y,
             p4[0] + center_x, p4[1] + center_y,
-            fill=color, tags=(self.tag, self.tag + 'point', 'arc')
+            fill='', outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc')
         )
 
     def rotate_point(self, x, y, cos_angle, sin_angle):
@@ -670,8 +715,6 @@ class CreateImg(T):
         w = 6 if sys_name == 'Darwin' else 10
         ttk.Button(frame_command, text='障碍辅助线', command=self.bar_aux, name='障碍辅助线', width=w,
                    bootstyle=BUTTON_STYLE).grid(row=3, column=0)
-        ttk.Button(frame_mea_com, text='弧线', command=self.arc, name='弧线', width=w,
-                   bootstyle=BUTTON_STYLE).grid(row=1, column=0)
 
     def bar_aux(self):
         # if self.obstacle in ["oxer", "tirail", "combination_ab", "combination_abc", 'monorail']:
@@ -694,65 +737,6 @@ class CreateImg(T):
 
     def set_name(self, name):
         self.name = name.get()
-
-    def drag(self, tag, event):
-        """
-        拖动旋转
-        :param tag:
-        :param event:
-        :return:
-        """
-        T.drag(self, tag, event)
-
-        if what.get() == 3:
-            # 定义点的坐标
-            origin = (self.current_x, self.current_y)
-            start = (self.startx, self.starty)
-            end = (event.x, event.y)
-
-            origin_start = (start[0] - origin[0], start[1] - origin[1])
-            origin_end = (end[0] - origin[0], end[1] - origin[1])
-
-            # 计算向量 AB 和 AC 的角度
-            angle_AB = math.atan2(origin_start[1], origin_start[0])
-            angle_AC = math.atan2(origin_end[1], origin_end[0])
-
-            # 计算夹角
-            angle = self.lest_angle + math.degrees(angle_AB - angle_AC)
-
-            # 确保角度在 0 到 360 度范围内
-            if angle < 0:
-                angle += 360
-
-            self.to_rotate(self.id, angle, state=False)
-
-            dx = event.x - self.drag_data["x"]
-            dy = event.y - self.drag_data["y"]
-            self.drag_data["x"] = event.x
-            self.drag_data["y"] = event.y
-
-            if self.drag_data["item"]:
-
-                item = self.drag_data["item"][0]
-                if item == self.main_rect:
-                    self.current_x += dx
-                    self.current_y += dy
-                    self.draw_rectangles()
-                else:
-                    # center_x_diff = event.x - self.current_x
-                    # center_y_diff = event.y - self.current_y
-                    # self.angle = math.degrees(math.atan2(center_y_diff, center_x_diff))
-                    self.draw_rectangles()
-
-    def mouseup(self, event):
-        """
-        鼠标松开
-        :param event:
-        :return:
-        """
-        T.mouseup(self, event)
-        if what.get() == 3:
-            self.drag_data["item"] = None
 
     def to_rotate(self, id, var, state=True):
         try:

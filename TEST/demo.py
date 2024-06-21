@@ -82,6 +82,7 @@ class ConnectNodesApp:
                 new_arc = self._update_arc(arc, rect1_center, rect2_center)
                 self.arcs.append((new_arc, rect1, rect2))
                 self.arcs.remove((arc, rect1, rect2))
+                print(self.arcs)
 
     def connect_rectangles(self):
         if len(self.selected_rects) == 2:

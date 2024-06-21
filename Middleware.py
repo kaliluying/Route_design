@@ -18,6 +18,30 @@ arc_start = None
 # 记录弧线的终止点
 arc_end = None
 
+# 弧线起始对象
+arc_start_obj = None
+
+# 弧线终止对象
+arc_end_obj = None
+
+
+def set_arc_start_obj(obj):
+    """
+    设置弧线的起始对象
+    :param obj:
+    :return:
+    """
+    global arc_start_obj
+    arc_start_obj = obj
+
+
+def get_arc_start_obj():
+    """
+    获取弧线的起始对象
+    :return:
+    """
+    return arc_start_obj
+
 
 def set_arc_start(start):
     """
@@ -29,22 +53,12 @@ def set_arc_start(start):
     arc_start = start
 
 
-def set_arc_end(end):
+def get_arc_start():
     """
-    设置弧线的终止点
-    :param end:
+    获取弧线的起始点
     :return:
     """
-    global arc_end
-    arc_end = end
-
-
-def get_arc_start_end():
-    """
-    获取弧线的起始点和终止点
-    :return:
-    """
-    return arc_start, arc_end
+    return arc_start
 
 
 def get_arc_start():

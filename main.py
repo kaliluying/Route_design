@@ -590,12 +590,11 @@ def arc():
     if check_var.get():
         for i in T.all_instances:
             try:
-                print(i)
                 i.draw_rectangles()
             except AttributeError:
                 pass
     else:
-        canvas.delete("arc")
+        canvas.delete("rect_arc")
 
 
 def set_color():
