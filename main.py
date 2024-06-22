@@ -548,18 +548,6 @@ def leftButtonUp(event):
             start_x.set(end_x.get())
             start_y.set(end_y.get())
 
-    # 画弧
-    elif what.get() == 4:
-        if click_num == 1:
-            start_x.set(event.x)
-            start_y.set(event.y)
-            click_num = 2
-        elif click_num == 2:
-            end_x.set(event.x)
-            end_y.set(event.y)
-            # create_arc(start_x.get(), start_y.get(), end_x.get(), end_y.get())
-            start_x.set(end_x.get())
-            start_y.set(end_y.get())
     if current_frame_stare:
         canvas.addtag_overlapping('choice_start', X.get(), Y.get(), event.x, event.y)
         canvas.dtag('不框选', 'choice_start')

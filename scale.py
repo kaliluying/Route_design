@@ -264,12 +264,16 @@ class CreateImg(T):
         self.mousedown(self.tag, [200, 100])
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
+        self.app.tag_bind(self.tag + 'arc', "<BackSpace>", partial(self.dele, self.tag))
 
         if check_var.get():
             self.draw_rectangles()
 
         # no_what.set(0)
         # set_color()
+
+    def dele(self, tag):
+        canvas.delete(self.tag + 'arc')
 
     def on_update(self):
         """
@@ -459,7 +463,35 @@ class CreateImg(T):
         else:
             ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
 
-        return self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, tags=('不框选',))
+        arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=1)
+
+        self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
+        self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
+
+        return arc
+
+    def on_arc_click(self, event, arc):
+        self.current_arc = arc
+        self.drag_start = event.x, event.y
+
+    def on_arc_drag(self, event, arc):
+        if arc == self.current_arc:
+            set_frame_stare(False)
+            x, y = event.x, event.y
+            dx, dy = x - self.drag_start[0], y - self.drag_start[1]
+
+            coords = self.app.coords(arc)
+            x1, y1, ctrl_x1, ctrl_y1, x2, y2 = coords
+
+            if (x1, y1, x2, y2) == (coords[0], coords[1], coords[4], coords[5]):
+                ctrl_x1 += dx
+                ctrl_y1 += dy
+            else:
+                ctrl_x1 -= dx
+                ctrl_y1 -= dy
+
+            self.app.coords(arc, x1, y1, ctrl_x1, ctrl_y1, x2, y2)
+            self.drag_start = x, y
 
     def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color, tag):
         """
