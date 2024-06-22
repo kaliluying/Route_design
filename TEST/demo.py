@@ -17,7 +17,6 @@ class ConnectNodesApp:
         self.connect_button.pack()
 
     def create_rectangles(self):
-        # Create four rectangles on the canvas
         rect1 = self.canvas.create_rectangle(100, 100, 200, 150, outline='black', fill='white')
         rect2 = self.canvas.create_rectangle(300, 100, 400, 150, outline='black', fill='white')
         rect3 = self.canvas.create_rectangle(100, 300, 200, 350, outline='black', fill='white')
@@ -47,11 +46,30 @@ class ConnectNodesApp:
         ctrl_x1, ctrl_y1 = cx + offset_x, cy + offset_y
         ctrl_x2, ctrl_y2 = cx - offset_x, cy - offset_y
 
-        return self.canvas.create_line(x1, y1, ctrl_x1, ctrl_y1, ctrl_x2, ctrl_y2, x2, y2, smooth=True, width=2)
+        arc = self.canvas.create_line(x1, y1, ctrl_x1, ctrl_y1, ctrl_x2, ctrl_y2, x2, y2, smooth=True, width=2)
+        length = self._calculate_bezier_length((x1, y1), (ctrl_x1, ctrl_y1), (ctrl_x2, ctrl_y2), (x2, y2))
+        print(f"Arc length: {length:.2f}")
+        return arc
 
     def _update_arc(self, arc, start, end):
         self.canvas.delete(arc)
         return self._create_arc(start, end)
+
+    def _calculate_bezier_length(self, p0, p1, p2, p3, num_points=100):
+        def bezier(t, p0, p1, p2, p3):
+            return ((1 - t) ** 3 * p0[0] + 3 * (1 - t) ** 2 * t * p1[0] + 3 * (1 - t) * t ** 2 * p2[0] + t ** 3 * p3[0],
+                    (1 - t) ** 3 * p0[1] + 3 * (1 - t) ** 2 * t * p1[1] + 3 * (1 - t) * t ** 2 * p2[1] + t ** 3 * p3[1])
+
+        length = 0
+        prev_point = p0
+        for i in range(1, num_points + 1):
+            t = i / num_points
+            current_point = bezier(t, p0, p1, p2, p3)
+            segment_length = math.sqrt(
+                (current_point[0] - prev_point[0]) ** 2 + (current_point[1] - prev_point[1]) ** 2)
+            length += segment_length
+            prev_point = current_point
+        return length
 
     def on_rect_click(self, event):
         rect = self.canvas.find_withtag(tk.CURRENT)[0]
@@ -82,7 +100,6 @@ class ConnectNodesApp:
                 new_arc = self._update_arc(arc, rect1_center, rect2_center)
                 self.arcs.append((new_arc, rect1, rect2))
                 self.arcs.remove((arc, rect1, rect2))
-                print(self.arcs)
 
     def connect_rectangles(self):
         if len(self.selected_rects) == 2:

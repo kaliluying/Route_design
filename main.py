@@ -3,7 +3,6 @@ import subprocess
 import sys
 import time
 import tkinter.simpledialog
-import webbrowser
 from tkinter import filedialog
 from Common import *
 from functools import partial
@@ -399,14 +398,7 @@ def leftButtonMove(event):
 
         px += (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
         temp_px = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
-        # x = abs(event.x - X.get())
-        # y = abs(event.y - Y.get())
-        # if x != 0 and y != 0:
-        #     px += (math.sqrt(x * x + y * y)) / 10
-        #     temp_px = (math.sqrt(x * x + y * y)) / 10
-        # else:
-        #     px += (abs(x + y)) / 10
-        #     temp_px = (abs(x + y)) / 10
+
         remove_px[lastDraw] = temp_px
         canvas.itemconfig('实时路线', text="%.2fm" % px)
         X.set(event.x)
@@ -506,34 +498,6 @@ def leftButtonUp(event):
         stack.append(('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
     if len(canvas.find_withtag('choice_start')) == 1:
         canvas.delete('choice')
-
-
-# def create_arc(x1, y1, x2, y2):
-#     x = x1 - x2
-#     y = y1 - y2
-#     if x != 0 and y != 0:
-#         r = (math.sqrt(x * x + y * y)) / 2
-#     else:
-#         r = (abs(x + y)) / 2
-#
-#     num_points = 300
-#     x0 = (x1 + x2) / 2
-#     y0 = (y1 + y2) / 2
-#
-#     # 生成圆上的点的极角
-#     theta = np.linspace(0, 2 * np.pi, num_points)
-#
-#     # 计算每个极角对应的 x, y 坐标
-#     x = x0 + r * np.cos(theta)
-#     y = y0 + r * np.sin(theta)
-#
-#     x = list(map(int, x))
-#     y = list(map(int, y))
-#
-#     index = 0
-#     while len(x) >= index:
-#         canvas.create_line(x[index], y[index], x[index + 1], y[index + 1], tags='line')
-#         index += 10
 
 
 # 拖动
@@ -1025,8 +989,6 @@ but_3 = ttk.Checkbutton(frame_command, text='旋转', command=rotate, width=widt
 but_3.grid(row=1, column=1, padx=0, pady=0)
 but_3.state(['!selected'])
 
-# but_4 = ttk.Button(frame_command_left, text='画弧', command=arc, width=width, height=1)
-# but_4.pack()
 # but_2 = ttk.Button(frame_command_left, text='橡皮', command=remove, width=width, height=1)
 # but_2.pack()
 
@@ -1041,9 +1003,6 @@ ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='网格辅助线', comman
 aux_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
 aux_info.grid(row=2, column=1, padx=0, pady=0)
 aux_info.state(['selected'])
-
-# 创建一个变量来跟踪 Checkbutton 的状态
-check_var = ttk.BooleanVar()
 
 arc_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='弧线', command=arc, width=width,
                            variable=check_var, )

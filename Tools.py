@@ -464,6 +464,59 @@ def remove_from_not_com():
         #     i.destroy()
 
 
+def calculate_bezier_length(id, pre_id, num_points=100):
+    """
+    计算贝塞尔曲线长度
+    :param p0:
+    :param p1:
+    :param p2:
+    :param num_points:
+    :return:
+    """
+    global px
+
+    def bezier(t, p0, p1, p2):
+        return ((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0],
+                (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1])
+
+    x1, y1, ctrl_x, ctrl_y, x2, y2 = canvas.coords(id)
+    p0 = (x1, y1)
+    p1 = (ctrl_x, ctrl_y)
+    p2 = (x2, y2)
+    try:
+        pre_x1, pre_y1, pre_ctrl_x, pre_ctrl_y, pre_x2, pre_y2 = canvas.coords(pre_id)
+        pre_p0 = (pre_x1, pre_y1)
+        pre_p1 = (pre_ctrl_x, pre_ctrl_y)
+        pre_p2 = (pre_x2, pre_y2)
+
+        pre_length = 0
+        pre_point = pre_p0
+
+        for i in range(1, num_points + 1):
+            t = i / num_points
+            current_point = bezier(t, pre_p0, pre_p1, pre_p2)
+            segment_length = math.sqrt((current_point[0] - pre_point[0]) ** 2 + (current_point[1] - pre_point[1]) ** 2)
+            pre_length += segment_length
+            pre_point = current_point
+    except:
+        print("计算前一段曲线长度失败")
+        pre_length = 0
+
+    length = 0
+    prev_point = p0
+
+    for i in range(1, num_points + 1):
+        t = i / num_points
+        current_point = bezier(t, p0, p1, p2)
+        segment_length = math.sqrt((current_point[0] - prev_point[0]) ** 2 + (current_point[1] - prev_point[1]) ** 2)
+        length += segment_length
+        prev_point = current_point
+
+    px += length / 10 - pre_length / 10
+    canvas.itemconfig('实时路线', text="%.2fm" % px)
+    return length
+
+
 # 行进方向
 direction_image = "img/direction2.png"
 # 组合障碍

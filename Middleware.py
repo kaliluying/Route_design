@@ -24,6 +24,9 @@ arc_start_obj = None
 # 弧线终止对象
 arc_end_obj = None
 
+# 弧线列表
+arc_list = []
+
 
 def set_arc_start_obj(obj):
     """

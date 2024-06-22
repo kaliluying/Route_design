@@ -164,6 +164,9 @@ index_img = 0
 
 par_index = 1
 
+# 创建一个变量来跟踪 Checkbutton 的状态
+check_var = ttk.BooleanVar()
+
 
 # 拓展方法
 def adjust_image_size(image_path):

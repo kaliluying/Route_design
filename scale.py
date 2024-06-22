@@ -5,7 +5,8 @@ from functools import partial
 import data_url
 
 from Common import *
-from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
+from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry, \
+    calculate_bezier_length
 
 
 class T:
@@ -264,6 +265,9 @@ class CreateImg(T):
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
 
+        if check_var.get():
+            self.draw_rectangles()
+
         # no_what.set(0)
         # set_color()
 
@@ -343,16 +347,27 @@ class CreateImg(T):
                 angle += 360
 
             self.to_rotate(self.id, angle, state=False)
-            # self.draw_rectangles()
+            self.draw_rectangles()
+            for arc, rect1, rect2 in arc_list:
+                rect1_center = self._get_center(rect1)
+                rect2_center = self._get_center(rect2)
+
+                new_arc = self.create_arc(rect1_center, rect2_center)
+                arc_list.append((new_arc, rect1, rect2))
+                arc_list.remove((arc, rect1, rect2))
+                calculate_bezier_length(new_arc, arc)
+                self.app.delete(arc)
+
         if what.get() == 0:
-            for arc, rect1, rect2 in self.arcs:
-                if self.tag + 'point' in (rect1, rect2):
-                    rect1_center = self._get_center(rect1)
-                    rect2_center = self._get_center(rect2)
-                    self.app.delete(arc)
-                    new_arc = self.create_arc(rect1_center, rect2_center)
-                    self.arcs.append((new_arc, rect1, rect2))
-                    self.arcs.remove((arc, rect1, rect2))
+            for arc, rect1, rect2 in arc_list:
+                rect1_center = self._get_center(rect1)
+                rect2_center = self._get_center(rect2)
+
+                new_arc = self.create_arc(rect1_center, rect2_center)
+                arc_list.append((new_arc, rect1, rect2))
+                arc_list.remove((arc, rect1, rect2))
+                calculate_bezier_length(new_arc, arc)
+                self.app.delete(arc)
 
     def _get_center(self, rect):
         x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
@@ -396,16 +411,20 @@ class CreateImg(T):
         right_center_x = self.current_x + small_offset * cos_angle
         right_center_y = self.current_y + small_offset * sin_angle
 
-        self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red")
-        self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green")
+        self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red",
+                                                  tag=self.tag + 'left_rect')
+        self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
+                                                   tag=self.tag + 'right_rect')
         # canvas.tag_lower(self.left_rect, self.id)
         # canvas.tag_lower(self.right_rect, self.id)
-        self.app.tag_bind(self.left_rect, '<Button-1>', partial(self.on_rect_click, self.left_rect))
-        self.app.tag_bind(self.right_rect, '<Button-1>', partial(self.on_rect_click, self.right_rect))
+        self.app.tag_bind(self.left_rect, '<Button-1>',
+                          partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
+        self.app.tag_bind(self.right_rect, '<Button-1>',
+                          partial(self.on_rect_click, self.right_rect, self.tag + 'right_rect'))
 
-    def on_rect_click(self, tag, event):
+    def on_rect_click(self, id, tag, event):
         global arc_click
-        x1, y1, x2, y2, x3, y3, x4, y4 = self.app.coords(tag)
+        x1, y1, x2, y2, x3, y3, x4, y4 = self.app.coords(id)
         points = [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
         x_coords = [p[0] for p in points]
         y_coords = [p[1] for p in points]
@@ -416,14 +435,14 @@ class CreateImg(T):
             start = get_arc_start()
             arc_click = 0
             arc = self.create_arc(start, (cx, cy))
-            rect1, rect2 = get_arc_start_obj(), self.tag + 'point'
+            calculate_bezier_length(arc, None)
+            rect1, rect2 = get_arc_start_obj(), tag
 
-            self.arcs.append((arc, rect1, rect2))
-
+            arc_list.append((arc, rect1, rect2))
 
         else:
             set_arc_start((cx, cy))
-            set_arc_start_obj(self.tag + 'point')
+            set_arc_start_obj(tag)
             arc_click = 1
 
     def create_arc(self, start, end):
@@ -440,27 +459,9 @@ class CreateImg(T):
         else:
             ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
 
-        return self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2)
+        return self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, tags=('不框选',))
 
-    # def on_rect_drag(self, event):
-    #     rect = self.app.find_withtag(ttk.CURRENT)[0]
-    #     x, y = event.x, event.y
-    #     dx, dy = x - self.drag_data['x'], y - self.drag_data['y']
-    #
-    #     # 移动矩形
-    #     self.app.move(rect, dx, dy)
-    #     self.drag_data = {'x': x, 'y': y}
-    #
-    #     # 更新矩形中心点
-    #     if rect == self.rect1:
-    #         self.rect1_center = self._get_center(self.rect1)
-    #     else:
-    #         self.rect2_center = self._get_center(self.rect2)
-    #
-    #     # 更新弧线
-    #     self._update_arc(self.rect1_center, self.rect2_center)
-
-    def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color):
+    def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color, tag):
         """
         绘制旋转矩形
         :param center_x:
@@ -483,7 +484,7 @@ class CreateImg(T):
             p2[0] + center_x, p2[1] + center_y,
             p3[0] + center_x, p3[1] + center_y,
             p4[0] + center_x, p4[1] + center_y,
-            fill='', outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc')
+            fill=color, outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc', tag)
         )
 
     def rotate_point(self, x, y, cos_angle, sin_angle):
@@ -496,56 +497,6 @@ class CreateImg(T):
         :return:
         """
         return x * cos_angle - y * sin_angle, x * sin_angle + y * cos_angle
-
-    # def create_rectangle_at_angle(self, angle):
-    #     """
-    #     根据给定的角度创建一个旋转后的矩形，并在画布上绘制该矩形
-    #     :param angle: 矩形的旋转角度
-    #     :return:
-    #     """
-    #
-    #     radians = math.radians(angle)
-    #     cos_val = math.cos(radians)
-    #     sin_val = math.sin(radians)
-    #
-    #     half_width = self.width / 2
-    #     half_height = self.height / 2
-    #
-    #     points = [
-    #         (-half_width, -half_height),
-    #         (half_width, -half_height),
-    #         (half_width, half_height),
-    #         (-half_width, half_height),
-    #     ]
-    #
-    #     rotated_points = [
-    #         (
-    #             self.current_x + x * cos_val - y * sin_val,
-    #             self.current_y + x * sin_val + y * cos_val
-    #         )
-    #         for x, y in points
-    #     ]
-    #
-    #     for name in ('w', 'e',):
-    #         self.app.create_rectangle(0, 0, 0, 0, tag=(name, 'point'), outline='blue')
-    #         self.app.tag_bind(name, "<ButtonRelease-1>", self.mouseup)
-    #
-    #     # print(rotated_points, 'rotated_points')
-    #
-    #     self.app.coords('w', rotated_points[0][0],
-    #                     ((rotated_points[2][1] - rotated_points[0][1]) / 2 + rotated_points[0][1]),
-    #                     rotated_points[0][0] + 7,
-    #                     (rotated_points[2][1] - rotated_points[0][1]) / 2 + 7 + rotated_points[0][1])
-    #     self.app.coords('e', rotated_points[1][0],
-    #                     (rotated_points[3][1] - rotated_points[1][1]) / 2 + rotated_points[1][1],
-    #                     rotated_points[1][0] - 7,
-    #                     (rotated_points[3][1] - rotated_points[1][1]) / 2 + 7 + rotated_points[1][1])
-    #     if self.rectangle:
-    #         flat_points = [coord for point in rotated_points for coord in point]
-    #         # print(flat_points, 'flat_points')
-    #         self.app.coords(self.rectangle, flat_points)
-    #         return
-    #     self.rectangle = self.app.create_polygon(rotated_points, fill='', outline="black", tags=self.tag)
 
     def guide(self):
         """
