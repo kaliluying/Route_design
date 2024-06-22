@@ -33,10 +33,6 @@ W = win.winfo_screenwidth()
 H = win.winfo_screenheight()
 win.geometry(f"{W}x{H}")
 
-# win.state("zoomed")
-# win.iconphoto(False, ttk.PhotoImage(file='img/ic.png'))
-
-
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
     filename='logging.log',

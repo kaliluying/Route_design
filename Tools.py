@@ -443,23 +443,28 @@ def live_edit(w, h):
         return a
 
 
-# 删除旋转、备注编辑容器
 def remove_from_edit():
+    """
+    删除旋转、备注编辑容器
+    :return:
+    """
     for i in frame_edit.winfo_children():
         for j in i.winfo_children():
             for d in j.winfo_children():
                 d.destroy()
 
 
-# 删除除功能容器的容器
 def remove_from_not_com():
+    """
+    删除除功能容器的容器
+    :return:
+    """
     for i in frame_function.winfo_children():
         if i.winfo_name() == '工作模块':
             for j in i.winfo_children():
-                if j.winfo_name() == '功能容器':
-                    pass
-                else:
+                if j.winfo_name() != '功能容器':
                     j.destroy()
+
         # else:
         #     i.destroy()
 
@@ -467,9 +472,6 @@ def remove_from_not_com():
 def calculate_bezier_length(id, pre_id, num_points=100):
     """
     计算贝塞尔曲线长度
-    :param p0:
-    :param p1:
-    :param p2:
     :param num_points:
     :return:
     """

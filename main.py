@@ -11,8 +11,11 @@ from Tools import *
 from scale import CreateImg, CreateTxt, CreateParameter, T
 
 
-# 障碍号确认
 def insert():
+    """
+    障碍号确认
+    :return: 
+    """
     global index_txt
     var = var_id.get()
     index_txt += 1
@@ -21,8 +24,11 @@ def insert():
     drag()
 
 
-# 障碍备注
 def parameter():
+    """
+    障碍备注
+    :return: 
+    """
     global index_txt
     var = var_parameter.get()
     index_txt += 1
@@ -31,8 +37,11 @@ def parameter():
     drag()
 
 
-# 隐藏障碍参数
 def hidden():
+    """
+    隐藏障碍
+    :return: 
+    """
     global par_index
     if par_index:
         canvas.itemconfig('parameter', state='hidden')
@@ -44,8 +53,11 @@ def hidden():
         par_index = 1
 
 
-# 单横木
 def monorail():
+    """
+    单横木
+    :return: 
+    """
     global index_img
     image_path = expand(get_one_path())
     image_path = start_direction(image_path)
@@ -54,8 +66,11 @@ def monorail():
     drag()
 
 
-# 双横木
 def oxer():
+    """
+    双横木
+    :return: 
+    """
     global index_img
     image_path = merge(10)
     image_path = start_direction(image_path)
@@ -64,8 +79,11 @@ def oxer():
     drag()
 
 
-# 三横木
 def tirail():
+    """
+    三横木
+    :return: 
+    """
     global index_img
     image_path = merge(10, oxer='tirail')
     index_img += 1
@@ -85,8 +103,11 @@ def four():
     drag()
 
 
-# AB组合障碍
 def combination_ab():
+    """
+    AB组合障碍
+    :return: 
+    """
     global index_img
     image_path = merge_ab(state=1, m1=30)
     index_img += 1
@@ -94,8 +115,11 @@ def combination_ab():
     drag()
 
 
-# ABC组合障碍
 def combination_abc():
+    """
+    ABC组合障碍
+    :return: 
+    """
     global index_img
     image_path = merge_ab(state=1, m1=30, m2=30)
     index_img += 1
@@ -103,8 +127,11 @@ def combination_abc():
     drag()
 
 
-# 利物浦
 def live():
+    """
+    利物浦
+    :return: 
+    """
     global index_img
     index_img += 1
     # image_path = expand(get_live_path())
@@ -113,16 +140,22 @@ def live():
     drag()
 
 
-# 强制通过点
 def force():
+    """
+    强制通过点
+    :return: 
+    """
     global index_img
     index_img += 1
     CreateImg(canvas, index_img).create(force_image)
     drag()
 
 
-# 指北针
 def compass():
+    """
+    指北针
+    :return: 
+    """
     global index_img
     index_img += 1
     image_path = expand(compass_image)
@@ -130,8 +163,11 @@ def compass():
     drag()
 
 
-# 水障
 def water_barrier():
+    """
+    水障
+    :return: 
+    """
     global index_img
     index_img += 1
     image_path = expand(water_barrier_iamge)
@@ -140,8 +176,11 @@ def water_barrier():
     drag()
 
 
-# 砖墙
 def brick_wall():
+    """
+    砖墙
+    :return: 
+    """
     global index_img
     index_img += 1
     image_path = expand(brick_wall_image)
@@ -149,8 +188,11 @@ def brick_wall():
     drag()
 
 
-# 起/终点线
 def line():
+    """
+    起/终点线
+    :return: 
+    """
     global index_img
     index_img += 1
     image_path = expand(line_image)
@@ -159,8 +201,11 @@ def line():
     drag()
 
 
-# 进出口
 def gate():
+    """
+    进出口
+    :return: 
+    """
     global index_img
     index_img += 1
     image_path = expand(gate_image)
@@ -168,8 +213,11 @@ def gate():
     drag()
 
 
-# 树
 def tree():
+    """
+    树
+    :return: 
+    """
     global index_img
     index_img += 1
     image_path = expand(tree_image)
@@ -177,8 +225,11 @@ def tree():
     drag()
 
 
-# 圆
 def circular():
+    """
+    圆
+    :return: 
+    """
     global index_img
     index_img += 1
     cir = int(var_cir.get()) * 10
@@ -190,8 +241,11 @@ def circular():
     drag()
 
 
-# 自定义障碍
 def custom():
+    """
+    自定义障碍
+    :return: 
+    """
     global index_img
 
     img_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
@@ -204,8 +258,11 @@ def custom():
     drag()
 
 
-# 设置背景图
 def fg():
+    """
+    设置背景图
+    :return: 
+    """
     global fg_img, fg_path
     fg_path = filedialog.askopenfilename(title='选择图片', filetypes=[("image", "*.jpg"), ("image", "*.png")])
     img = Image.open(fg_path)
@@ -214,13 +271,19 @@ def fg():
     canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
 
 
-# 删除背景图
 def del_fg():
+    """
+    删除背景图
+    :return: 
+    """
     canvas.delete('bg')
 
 
-# 赛事信息确认
 def dle():
+    """
+    赛事信息确认
+    :return: 
+    """
     global temp_txt, entry_list, label_list, filtered_dict
     try:
         data_dict = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
@@ -261,6 +324,11 @@ def dle():
 
 
 def edit(current_dist=None):
+    """
+    赛事信息修改
+    :param current_dist: 
+    :return: 
+    """
     global entry_list, label_list
     data_dict = {'比赛名称': '', '级别赛制': '', '比赛日期': '', '路线查看时间': '', '开赛时间': '', '判罚表': '',
                  '障碍高度': '', '行进速度': '', '路线长度': '', '允许时间': '', '限制时间': '', '障碍数量': '',
@@ -312,8 +380,11 @@ def allow(info_var, pro_value):
         return False
 
 
-# 生成路线图
 def found():
+    """
+    生成路线图
+    :return: 
+    """
     global WIDTH, HEIGHT, h1, h2, watermark, fg_img, fg_path
     w = var_l_w.get()
     h = var_l_h.get()
@@ -361,8 +432,12 @@ def found():
     #         var_l_w_inp.delete(0, 'end')
 
 
-# 鼠标左键按下
 def leftButtonDown(event):
+    """
+    鼠标左键按下
+    :param event: 
+    :return: 
+    """
     global choice_tup, current_line
     if choice_tup and not (min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
                            and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3])):
@@ -376,15 +451,12 @@ def leftButtonDown(event):
     current_line = [(event.x, event.y)]
 
 
-def create_line(x1, y1, x2, y2):
-    id = canvas.create_line(x1, y1, x2, y2, tags=("line", '不框选'), smooth=True)
-    # a = canvas.create_arc(x1, y1, x2, y2, start=135, extent=180, style='arc', tags='line')
-    # canvas.create_rectangle(x1, y1, x2, y2, tags='line')
-    return id
-
-
-# 鼠标左键滚动事件
 def leftButtonMove(event):
+    """
+    鼠标左键滚动事件
+    :param event: 
+    :return: 
+    """
     global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare, current_line
     shu(event)
     # 画线
@@ -432,8 +504,12 @@ def leftButtonMove(event):
             # current_frame_stare = True
 
 
-# 松开左键
 def leftButtonUp(event):
+    """
+    松开左键
+    :param event: 
+    :return: 
+    """
     global lastDraw, click_num, px, choice_tup, choice_start, remove_px, lines, current_line
     end.append(lastDraw)
     current_frame_stare = get_frame_stare()
@@ -456,7 +532,8 @@ def leftButtonUp(event):
             end_x.set(event.x)
             end_y.set(event.y)
             # click_num = 1
-            id = create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get())
+            id = canvas.create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get(), tags=("line", '不框选'),
+                                    smooth=True)
 
             # x = abs(end_x.get() - start_x.get())
             # y = abs(end_y.get() - start_y.get())
@@ -500,7 +577,6 @@ def leftButtonUp(event):
         canvas.delete('choice')
 
 
-# 拖动
 def drag():
     """
     拖动
@@ -548,9 +624,6 @@ def arc():
     画弧
     :return:
     """
-    # what.set(4)
-    # set_color()
-    # # no_what.set(4)
     if check_var.get():
         for i in T.all_instances:
             try:
@@ -587,8 +660,11 @@ def set_color():
         drag()
 
 
-# 清屏
 def clear():
+    """
+    清屏
+    :return: 
+    """
     global px, click_num, stack, lines
     canvas.delete("line")
     canvas.delete("rubber")
@@ -604,8 +680,11 @@ def clear():
         stack.pop(idx)
 
 
-# 撤销
 def back():
+    """
+    撤销
+    :return: 
+    """
     global end, remove_px, px
     temp = 0
     temp_dict = {}
@@ -627,21 +706,30 @@ def back():
     canvas.itemconfig('实时路线', text="%.2fm" % px)
 
 
-# 通用字号
 def currency_font():
+    """
+    通用字号
+    :return: 
+    """
     global font_size, remove_size, size
     size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=size)
     font_size = remove_size = size
 
 
-# 铅笔字号
 def currency_pen():
+    """
+    铅笔字号
+    :return: 
+    """
     global font_size
     font_size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=font_size)
 
 
-# 橡皮擦字号
 def currency_remove():
+    """
+    橡皮擦字号
+    :return: 
+    """
     global remove_size
     remove_size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=remove_size)
 
@@ -657,6 +745,10 @@ def save_0():
 
 
 def download():
+    """
+    保存图片
+    :return: 
+    """
     current_time = time.strftime("%Y%m%d-%H%M%S")
     txt = temp_txt if temp_txt else '路线设计_' + current_time
     if not os.path.exists('./ms_download'):
@@ -677,8 +769,11 @@ def download():
         messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
 
 
-# 打开文件保存路径
 def open_file():
+    """
+    打开文件保存路径
+    :return: 
+    """
     if not os.path.exists('./ms_download'):
         os.mkdir('./ms_download')
     if sys_name == 'Windows':
@@ -687,15 +782,22 @@ def open_file():
         subprocess.call(["open", os.getcwd() + r'/ms_download'])
 
 
-# 置底
 def set_state():
+    """
+    置底
+    :return: 
+    """
     cur, line = get_cur()
     canvas.lower(cur)
     canvas.lower("watermark")
 
 
-# 删除
 def pop(id=None):
+    """
+    删除
+    :param id: 
+    :return: 
+    """
     if id:
         cur, line = get_cur()
         try:
@@ -727,8 +829,11 @@ def pop(id=None):
     remove_from_not_com()
 
 
-# 网格辅助线
 def grid():
+    """
+    网格辅助线
+    :return: 
+    """
     global create_grid, grid_start
     if grid_start:
         canvas.itemconfig('grid', stat='hidden')
@@ -753,6 +858,10 @@ def grid():
 
 
 def info():
+    """
+    辅助信息
+    :return: 
+    """
     global aux_stare
     if aux_stare:
         canvas.itemconfig('辅助信息', stat='hidden')
@@ -762,15 +871,21 @@ def info():
         aux_stare = True
 
 
-# 清除水印
 def remove_f():
+    """
+    清除水印
+    :return: 
+    """
     global state_f
     canvas.delete(watermark)
     state_f = 0
 
 
-# 关于软件
 def about():
+    """
+    关于软件
+    :return: 
+    """
     app = ttk.Toplevel(win)
     app.title("关于软件")
     app.geometry("300x200")
@@ -783,8 +898,11 @@ def about():
     ttk.Label(app_frame, text="软件开发：许志亮 葛茂林").pack()
 
 
-# 帮助文档
 def open_web():
+    """
+    帮助文档
+    :return: 
+    """
     webbrowser.open("https://gitee.com/gmlwb/ms/blob/master/README.md")
 
 
@@ -823,6 +941,10 @@ def save():
 
 
 def load():
+    """
+    加载路线图数据
+    :return: 
+    """
     global lines
     file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
     # reload_window()
@@ -880,8 +1002,12 @@ def delete(event):
         pop()
 
 
-# 撤销
 def undo(event):
+    """
+    撤销
+    :param event: 
+    :return: 
+    """
     global px, route_click, lines
     if stack and event.widget == win:
         item = stack.pop()
