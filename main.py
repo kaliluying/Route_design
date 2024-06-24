@@ -882,7 +882,7 @@ def about():
     ttk.Label(app_frame, image=icon_obj).pack(pady=15)
     ttk.Label(app_frame, text="路线设计", font=("宋体", 15, "bold")).pack()
     ttk.Label(app_frame, text="版本 1.0").pack()
-    ttk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
+    ttk.Label(app_frame, text="Copyright © 2024 山东体育学院.\nAll rights reserved.").pack()
     ttk.Label(app_frame, text="软件开发：许志亮 葛茂林").pack()
 
 
