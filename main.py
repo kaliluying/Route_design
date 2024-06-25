@@ -491,6 +491,8 @@ def leftButtonMove(event):
             canvas.move('choice_start', event.x - X.get(), event.y - Y.get())
             X.set(event.x)
             Y.set(event.y)
+            # for i in canvas.find_withtag('choice_start')[:-1]:
+            #     canvas.image_data[i].current_x, canvas.image_data[i].current_y = event.x - X.get(), event.y - Y.get()
             try:
                 choice_tup.clear()
                 choice_tup.extend(list(bbox))

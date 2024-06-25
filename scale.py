@@ -264,7 +264,7 @@ class CreateImg(T):
         self.mousedown(self.tag, [200, 100])
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
-        self.app.tag_bind(self.tag + 'arc', "<BackSpace>", partial(self.dele, self.tag))
+        # self.app.tag_bind(self.tag + 'arc', "<BackSpace>", partial(self.dele, self.tag))
 
         if check_var.get():
             self.draw_rectangles()
@@ -274,33 +274,6 @@ class CreateImg(T):
 
     def dele(self, tag):
         canvas.delete(self.tag + 'arc')
-
-    def on_update(self):
-        """
-        初始化后会被调用，在这里绘制矩形
-        :return: None
-        """
-        self.app.create_rectangle(-1, -1, -2, -2, tag='side', dash=3, outline='grey')
-
-        for name in ('nw', 'w', 'sw', 'n', 's', 'ne', 'e', 'se'):
-            self.app.create_rectangle(-1, -1, -2, -2, tag=name, outline='blue')
-
-    def show(self, is_fill=False):
-        """
-        显示
-        :param is_fill: 是否填充
-        :return: None
-        """
-        width = self.width
-        height = self.height
-        self.app.coords('nw', 0, 0, 7, 7)
-        self.app.coords('sw', 0, height - 8, 7, height - 1)
-        self.app.coords('w', 0, (height - 7) / 2, 7, (height - 7) / 2 + 7)
-        self.app.coords('n', (width - 7) / 2, 0, (width - 7) / 2 + 7, 7)
-        self.app.coords('s', (width - 7) / 2, height - 8, (width - 7) / 2 + 7, height - 1)
-        self.app.coords('ne', width - 8, 0, width - 1, 7)
-        self.app.coords('se', width - 8, height - 8, width - 1, height - 1)
-        self.app.coords('e', width - 8, (height - 7) / 2, width - 1, (height - 7) / 2 + 7)
 
     def mousedown(self, tag, event):
         """
@@ -391,19 +364,19 @@ class CreateImg(T):
         half_w = self.width / 2
         half_h = self.height / 2
 
-        p1 = self.rotate_point(-half_w, -half_h, cos_angle, sin_angle)
-        p2 = self.rotate_point(half_w, -half_h, cos_angle, sin_angle)
-        p3 = self.rotate_point(half_w, half_h, cos_angle, sin_angle)
-        p4 = self.rotate_point(-half_w, half_h, cos_angle, sin_angle)
+        # p1 = self.rotate_point(-half_w, -half_h, cos_angle, sin_angle)
+        # p2 = self.rotate_point(half_w, -half_h, cos_angle, sin_angle)
+        # p3 = self.rotate_point(half_w, half_h, cos_angle, sin_angle)
+        # p4 = self.rotate_point(-half_w, half_h, cos_angle, sin_angle)
 
-        self.main_rect = self.app.create_polygon(
-            p1[0] + self.current_x, p1[1] + self.current_y,
-            p2[0] + self.current_x, p2[1] + self.current_y,
-            p3[0] + self.current_x, p3[1] + self.current_y,
-            p4[0] + self.current_x, p4[1] + self.current_y,
-            fill="", outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc')
-        )
-        canvas.tag_lower(self.main_rect, self.id)
+        # self.main_rect = self.app.create_polygon(
+        #     p1[0] + self.current_x, p1[1] + self.current_y,
+        #     p2[0] + self.current_x, p2[1] + self.current_y,
+        #     p3[0] + self.current_x, p3[1] + self.current_y,
+        #     p4[0] + self.current_x, p4[1] + self.current_y,
+        #     fill="", outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc')
+        # )
+        # canvas.tag_lower(self.main_rect, self.id)
 
         # 计算小矩形坐标
         small_half = self.small_rect_size / 2
@@ -414,6 +387,8 @@ class CreateImg(T):
 
         right_center_x = self.current_x + small_offset * cos_angle
         right_center_y = self.current_y + small_offset * sin_angle
+
+        print(self.current_x, self.current_y, 'draw_rectangles')
 
         self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red",
                                                   tag=self.tag + 'left_rect')
@@ -462,6 +437,8 @@ class CreateImg(T):
             ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
         else:
             ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+
+        print(self.current_x, self.current_y, 'create_arc')
 
         arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=1)
 
@@ -541,6 +518,7 @@ class CreateImg(T):
         y1 = self.current_y + 150 * math.sin(math.radians(-self.angle))
         x2 = self.current_x - 150 * math.cos(math.radians(-self.angle))
         y2 = self.current_y - 150 * math.sin(math.radians(-self.angle))
+        print(self.current_x, self.current_y, 'guide')
 
         self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
 
