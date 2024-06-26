@@ -1,11 +1,15 @@
 # 当前标签
 current_tag = None
+
 # 线段标签
 line_tag = None
+
 # 当前多选框状态
 current_frame_stare = True
+
 # 利物浦状态
 live_state = 0
+
 # 全局障碍长度
 bar_len = 4
 

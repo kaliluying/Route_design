@@ -246,6 +246,11 @@ class CreateImg(T):
         self.create(kwargs.get('img_path'), img_obj=image)
         self.to_rotate(self.tag, self.angle)
 
+    def get_current_info(self):
+        bbox = self.app.bbox(self.tag)
+        self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
+        self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
+
     def create(self, img_path, img_obj=None):
         self.tag = "img-" + self.index
         self.img_path = img_path
@@ -296,13 +301,14 @@ class CreateImg(T):
 
     def drag(self, tag, event):
         """
-        拖动旋转
+        拖动
         :param tag:
         :param event:
         :return:
         """
         T.drag(self, tag, event)
 
+        # 旋转图片
         if what.get() == 3:
             # 定义点的坐标
             origin = (self.current_x, self.current_y)
@@ -335,6 +341,7 @@ class CreateImg(T):
                 calculate_bezier_length(new_arc, arc)
                 self.app.delete(arc)
 
+        # 移动图片
         if what.get() == 0:
             for arc, rect1, rect2 in arc_list:
                 rect1_center = self._get_center(rect1)
@@ -362,7 +369,7 @@ class CreateImg(T):
 
         # 计算主矩形坐标
         half_w = self.width / 2
-        half_h = self.height / 2
+        # half_h = self.height / 2
 
         # p1 = self.rotate_point(-half_w, -half_h, cos_angle, sin_angle)
         # p2 = self.rotate_point(half_w, -half_h, cos_angle, sin_angle)
@@ -382,13 +389,13 @@ class CreateImg(T):
         small_half = self.small_rect_size / 2
         small_offset = half_w + small_half - 5  # 偏移量
 
+        self.get_current_info()
+
         left_center_x = self.current_x - small_offset * cos_angle
         left_center_y = self.current_y - small_offset * sin_angle
 
         right_center_x = self.current_x + small_offset * cos_angle
         right_center_y = self.current_y + small_offset * sin_angle
-
-        print(self.current_x, self.current_y, 'draw_rectangles')
 
         self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red",
                                                   tag=self.tag + 'left_rect')
@@ -438,8 +445,6 @@ class CreateImg(T):
         else:
             ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
 
-        print(self.current_x, self.current_y, 'create_arc')
-
         arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=1)
 
         self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
@@ -448,10 +453,22 @@ class CreateImg(T):
         return arc
 
     def on_arc_click(self, event, arc):
+        """
+        点击弧线
+        :param event:
+        :param arc:
+        :return:
+        """
         self.current_arc = arc
         self.drag_start = event.x, event.y
 
     def on_arc_drag(self, event, arc):
+        """
+        拖动弧线
+        :param event:
+        :param arc:
+        :return:
+        """
         if arc == self.current_arc:
             set_frame_stare(False)
             x, y = event.x, event.y
@@ -518,7 +535,6 @@ class CreateImg(T):
         y1 = self.current_y + 150 * math.sin(math.radians(-self.angle))
         x2 = self.current_x - 150 * math.cos(math.radians(-self.angle))
         y2 = self.current_y - 150 * math.sin(math.radians(-self.angle))
-        print(self.current_x, self.current_y, 'guide')
 
         self.line_tag = self.app.create_line(x1, y1, x2, y2, dash=(5, 3), tags=self.tag)
 
@@ -686,9 +702,7 @@ class CreateImg(T):
             self.state_line = 1
 
             # 辅助线
-            bbox = self.app.bbox(self.tag)
-            self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
-            self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
+            self.get_current_info()
             self.guide()
             set_line(self.line_tag)
 
@@ -720,8 +734,9 @@ class CreateImg(T):
         :return:
         """
         self.img = self.rotate_bound(angle)
+        print(self.img)
         self.temp_path = ImageTk.PhotoImage(self.img)
-        self.app.itemconfig(id, image=self.temp_path)
+        canvas.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))
         set_cur(self.id)
         self.angle = angle

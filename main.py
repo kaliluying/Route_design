@@ -489,6 +489,14 @@ def leftButtonMove(event):
                 and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3]):
             bbox = canvas.bbox('choice')
             canvas.move('choice_start', event.x - X.get(), event.y - Y.get())
+            # print(canvas.find_withtag('choice_start'))
+            # for i in canvas.find_withtag('choice_start'):
+            #     try:
+            #         x, y = canvas.coords(i)
+            #         canvas.image_data[i].current_x, canvas.image_data[
+            #             i].current_y = x, y
+            #     except KeyError:
+            #         pass
             X.set(event.x)
             Y.set(event.y)
             # for i in canvas.find_withtag('choice_start')[:-1]:
@@ -806,7 +814,13 @@ def pop(id=None):
         canvas.itemconfig('choice_start', state='hidden')
         canvas.dtag('choice_start', 'choice_start')
         for i in items:
-            canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
+            try:
+                canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
+            except KeyError:
+                pass
+            for arc_ in arc_list:
+                if i in arc_:
+                    arc_list.remove(arc_)
         choice_tup.clear()
         stack.append(('删除', items))
     else:
@@ -921,6 +935,7 @@ def save():
         save_dict['filtered_dict'] = filtered_dict
         save_dict['lines'] = lines
         save_dict['var_len'] = var_len.get()
+        save_dict['arc_list'] = arc_list
 
         if sys_name == 'Windows':
             path += '.json'
@@ -935,7 +950,7 @@ def load():
     加载路线图数据
     :return: 
     """
-    global lines
+    global lines, arc_list
     file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
     # reload_window()
     if file_path:
@@ -946,6 +961,9 @@ def load():
             # 删除画布障碍
             for i in T.all_instances:
                 canvas.delete(i.tag)
+
+            # 加载弧线
+            arc_list = state['arc_list']
 
             # 加载障碍
             for key, value in state.items():
@@ -1188,7 +1206,11 @@ canvas.create_text(35, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选
 
 # 水印
 font = 0.16 if sys_name == 'Darwin' else 0.1
-watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+# watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+#                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
+#                                tags=("watermark", '不框选'), state='disabled')
+
+watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="DEMO",
                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                tags=("watermark", '不框选'), state='disabled')
 
