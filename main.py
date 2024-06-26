@@ -625,6 +625,7 @@ def arc():
     if check_var.get():
         for i in T.all_instances:
             try:
+                print(i)
                 i.draw_rectangles()
             except AttributeError:
                 pass
@@ -936,6 +937,7 @@ def save():
         save_dict['lines'] = lines
         save_dict['var_len'] = var_len.get()
         save_dict['arc_list'] = arc_list
+        save_dict['index_img'] = index_img
 
         if sys_name == 'Windows':
             path += '.json'
@@ -950,7 +952,7 @@ def load():
     加载路线图数据
     :return: 
     """
-    global lines, arc_list
+    global lines, arc_list, index_img
     file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
     # reload_window()
     if file_path:
@@ -993,6 +995,7 @@ def load():
 
             # 全局障碍
             set_len(state['var_len'])
+            index_img = state['index_img']
 
             messagebox.showinfo("加载成功", "程序状态已从文件加载")
         except Exception as e:

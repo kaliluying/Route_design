@@ -734,7 +734,7 @@ class CreateImg(T):
         :return:
         """
         self.img = self.rotate_bound(angle)
-        print(self.img)
+        print(self.img_path)
         self.temp_path = ImageTk.PhotoImage(self.img)
         canvas.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))
