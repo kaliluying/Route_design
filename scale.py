@@ -310,6 +310,7 @@ class CreateImg(T):
         T.drag(self, tag, event)
 
         # 旋转图片
+        # arc_list = get_arc_list()
         if what.get() == 3:
             # 定义点的坐标
             origin = (self.current_x, self.current_y)
@@ -355,10 +356,13 @@ class CreateImg(T):
                 self.app.delete(arc)
 
     def load_arc(self):
-        arc_list = get_rect_center()
-        for rect1, rect2 in arc_list:
-            new_arc = self.create_arc(rect1, rect1)
-            print(new_arc)
+        center_list = get_rect_center()
+        for arc, rect1, rect2 in arc_list:
+            self.app.delete(arc)
+        arc_list.clear()
+        for arc, rect1, rect2, rect1_center, rect2_center in center_list:
+            new_arc = self.create_arc(rect1_center, rect2_center)
+            arc_list.append((new_arc, rect1, rect2))
             calculate_bezier_length(new_arc, None)
 
     def _get_center(self, rect):
@@ -742,7 +746,6 @@ class CreateImg(T):
         :return:
         """
         self.img = self.rotate_bound(angle)
-        print(self.img_path)
         self.temp_path = ImageTk.PhotoImage(self.img)
         canvas.itemconfig(id, image=self.temp_path)
         self.var.set(str(int(angle)))

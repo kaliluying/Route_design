@@ -950,7 +950,7 @@ def save():
         for arc, rect1, rect2 in arc_list:
             rect1_center = get_center(rect1)
             rect2_center = get_center(rect2)
-            temp_arc.append([arc, rect1, rect2, rect1_center, rect2_center])
+            temp_arc.append((arc, rect1, rect2, rect1_center, rect2_center))
         save_dict['arc_list'] = temp_arc
         save_dict['index_img'] = index_img
 
@@ -980,7 +980,7 @@ def load():
                 canvas.delete(i.tag)
 
             # 加载弧线
-            set_arc_list(state['arc_list'])
+            # set_arc_list([sublist[:3] for sublist in state['arc_list']])
             set_rect_center(state['arc_list'])
 
             # 加载障碍

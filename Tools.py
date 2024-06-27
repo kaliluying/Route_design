@@ -516,7 +516,6 @@ def calculate_bezier_length(id, pre_id, num_points=100):
 
     px += length / 10 - pre_length / 10
     canvas.itemconfig('实时路线', text="%.2fm" % px)
-    return length
 
 
 # 行进方向

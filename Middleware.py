@@ -44,7 +44,7 @@ def set_rect_center(center):
     global rect_center
     rect_center.clear()
     for i in center:
-        rect_center.append(i[-2:])
+        rect_center.append(i)
 
 
 def get_rect_center():
@@ -62,9 +62,7 @@ def set_arc_list(arc_list_):
     :return:
     """
     global arc_list
-    arc_list.clear()
-    for i in arc_list_:
-        arc_list.append(i[:-2])
+    arc_list = arc_list_
 
 
 def get_arc_list():
