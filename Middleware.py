@@ -31,6 +31,49 @@ arc_end_obj = None
 # 弧线列表
 arc_list = []
 
+# 矩形中心
+rect_center = []
+
+
+def set_rect_center(center):
+    """
+    设置矩形中心
+    :param center:
+    :return:
+    """
+    global rect_center
+    rect_center.clear()
+    for i in center:
+        rect_center.append(i[-2:])
+
+
+def get_rect_center():
+    """
+    获取矩形中心
+    :return:
+    """
+    return rect_center
+
+
+def set_arc_list(arc_list_):
+    """
+    设置弧线列表
+    :param arc_list_:
+    :return:
+    """
+    global arc_list
+    arc_list.clear()
+    for i in arc_list_:
+        arc_list.append(i[:-2])
+
+
+def get_arc_list():
+    """
+    获取弧线列表
+    :return:
+    """
+    return arc_list
+
 
 def set_arc_start_obj(obj):
     """

@@ -625,7 +625,6 @@ def arc():
     if check_var.get():
         for i in T.all_instances:
             try:
-                print(i)
                 i.draw_rectangles()
             except AttributeError:
                 pass
@@ -819,6 +818,7 @@ def pop(id=None):
                 canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
             except KeyError:
                 pass
+
             for arc_ in arc_list:
                 if i in arc_:
                     arc_list.remove(arc_)
@@ -911,6 +911,16 @@ def open_web():
     webbrowser.open("https://gitee.com/gmlwb/ms/blob/master/README.md")
 
 
+def get_center(rect):
+    """
+    获取矩形中心点
+    :param rect:
+    :return:
+    """
+    x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = canvas.coords(rect)
+    return (x1 + x2) / 2, (y1 + y2) / 2
+
+
 def save():
     """
     保存成路线图数据
@@ -936,7 +946,12 @@ def save():
         save_dict['filtered_dict'] = filtered_dict
         save_dict['lines'] = lines
         save_dict['var_len'] = var_len.get()
-        save_dict['arc_list'] = arc_list
+        temp_arc = []
+        for arc, rect1, rect2 in arc_list:
+            rect1_center = get_center(rect1)
+            rect2_center = get_center(rect2)
+            temp_arc.append([arc, rect1, rect2, rect1_center, rect2_center])
+        save_dict['arc_list'] = temp_arc
         save_dict['index_img'] = index_img
 
         if sys_name == 'Windows':
@@ -965,7 +980,8 @@ def load():
                 canvas.delete(i.tag)
 
             # 加载弧线
-            arc_list = state['arc_list']
+            set_arc_list(state['arc_list'])
+            set_rect_center(state['arc_list'])
 
             # 加载障碍
             for key, value in state.items():

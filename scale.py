@@ -244,6 +244,7 @@ class CreateImg(T):
         image_data = base64.b64decode(img_url.split(",")[1])
         image = Image.open(io.BytesIO(image_data))
         self.create(kwargs.get('img_path'), img_obj=image)
+        self.load_arc()
         self.to_rotate(self.tag, self.angle)
 
     def get_current_info(self):
@@ -352,6 +353,13 @@ class CreateImg(T):
                 arc_list.remove((arc, rect1, rect2))
                 calculate_bezier_length(new_arc, arc)
                 self.app.delete(arc)
+
+    def load_arc(self):
+        arc_list = get_rect_center()
+        for rect1, rect2 in arc_list:
+            new_arc = self.create_arc(rect1, rect1)
+            print(new_arc)
+            calculate_bezier_length(new_arc, None)
 
     def _get_center(self, rect):
         x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
