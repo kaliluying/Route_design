@@ -978,9 +978,9 @@ def load():
             # 删除画布障碍
             for i in T.all_instances:
                 canvas.delete(i.tag)
+            canvas.delete('arc')
 
             # 加载弧线
-            # set_arc_list([sublist[:3] for sublist in state['arc_list']])
             set_rect_center(state['arc_list'])
 
             # 加载障碍

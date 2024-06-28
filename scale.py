@@ -366,8 +366,11 @@ class CreateImg(T):
             calculate_bezier_length(new_arc, None)
 
     def _get_center(self, rect):
-        x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
-        return (x1 + x2) / 2, (y1 + y2) / 2
+        try:
+            x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
+            return (x1 + x2) / 2, (y1 + y2) / 2
+        except ValueError as e:
+            print("_get_center error:" + str(e))
 
     def draw_rectangles(self):
         """
@@ -457,7 +460,7 @@ class CreateImg(T):
         else:
             ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
 
-        arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=1)
+        arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=1, tags='arc')
 
         self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
         self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
