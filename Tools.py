@@ -469,10 +469,13 @@ def remove_from_not_com():
         #     i.destroy()
 
 
-def calculate_bezier_length(id, pre_id, num_points=100):
+def calculate_bezier_length(id, pre_id=None, num_points=100, start=True):
     """
     计算贝塞尔曲线长度
-    :param num_points:
+    :param id: 当前点的id
+    :param pre_id: 上一点的id
+    :param num_points: 计算曲线长度的点数
+    :param start: 加还是减
     :return:
     """
     global px
@@ -514,7 +517,10 @@ def calculate_bezier_length(id, pre_id, num_points=100):
         length += segment_length
         prev_point = current_point
 
-    px += length / 10 - pre_length / 10
+    if start:
+        px += length / 10 - pre_length / 10
+    else:
+        px -= length / 10 - pre_length / 10
     canvas.itemconfig('实时路线', text="%.2fm" % px)
 
 

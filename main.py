@@ -811,10 +811,14 @@ def pop(id=None):
         return
     items = canvas.find_withtag("choice_start")[:-1]
     if items:
+        canvas.itemconfig('choice', state='hidden')
         canvas.itemconfig('choice_start', state='hidden')
         canvas.dtag('choice_start', 'choice_start')
         for i in items:
             try:
+                for arc_ in arc_list:
+                    if i in arc_:
+                        calculate_bezier_length(i, start=False)
                 canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
             except KeyError:
                 pass

@@ -363,7 +363,7 @@ class CreateImg(T):
         for arc, rect1, rect2, rect1_center, rect2_center in center_list:
             new_arc = self.create_arc(rect1_center, rect2_center)
             arc_list.append((new_arc, rect1, rect2))
-            calculate_bezier_length(new_arc, None)
+            calculate_bezier_length(new_arc)
 
     def _get_center(self, rect):
         try:
@@ -436,7 +436,7 @@ class CreateImg(T):
             start = get_arc_start()
             arc_click = 0
             arc = self.create_arc(start, (cx, cy))
-            calculate_bezier_length(arc, None)
+            calculate_bezier_length(arc)
             rect1, rect2 = get_arc_start_obj(), tag
 
             arc_list.append((arc, rect1, rect2))
