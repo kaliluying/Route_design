@@ -155,6 +155,7 @@ class ConnectNodesApp:
                 self.canvas.coords(arc, x1, y1, ctrl_x1, ctrl_y1, x2, y2)
 
                 for i, (a, rect1, rect2, _) in enumerate(self.arcs):
+                    print(i, (a, rect1, rect2, _))
                     if a == arc:
                         self.arcs[i] = (arc, rect1, rect2, (ctrl_x1, ctrl_y1))
                         rect1_center = self._get_center(rect1)

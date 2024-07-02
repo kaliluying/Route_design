@@ -615,7 +615,7 @@ class CreateImg(T):
                 else:
                     temp[key] = 0
             a, a_b, b = temp.values()
-            a, a_b, b = round(a) + 5 if a else 0, round(a_b), round(b) + 5 if b else 0,
+            a, a_b, b = round(a), round(a_b), round(b)
             self.img_path = obs_ab(a, b, a_b)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
@@ -630,11 +630,11 @@ class CreateImg(T):
                 else:
                     temp[key] = 0
             a, a_b, b, b_c, c = temp.values()
-            a, a_b, b, b_c, c = (round(a) + 5 if a else 0,
+            a, a_b, b, b_c, c = (round(a),
                                  round(a_b),
-                                 round(b) + 5 if b else 0,
+                                 round(b),
                                  round(b_c),
-                                 round(c) + 5 if c else 0)
+                                 round(c))
             self.img_path = oxer_obs_abc(a, b, c, a_b, b_c)
             self.img = Image.open(self.img_path)
             self.temp_path = ImageTk.PhotoImage(self.img)
