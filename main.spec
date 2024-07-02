@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['main.py','Common.py', 'focus.py', 'scale.py', 'Tools.py'],
+    ['main.py','Common.py', 'focus.py', 'scale.py', 'Tools.py', 'Middleware.py'],
     pathex=[r'C:\Users\gaozh\Desktop\Route_design'],
 #    pathex=['/Users/gml/code/python_demo/Route_design'],
     binaries=[],

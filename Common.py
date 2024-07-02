@@ -164,6 +164,10 @@ par_index = 1
 check_var = ttk.BooleanVar()
 
 
+def get_px():
+    return px
+
+
 # 拓展方法
 def adjust_image_size(image_path):
     image = Image.open(image_path)

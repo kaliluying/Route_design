@@ -524,6 +524,44 @@ def calculate_bezier_length(id, pre_id=None, num_points=100, start=True):
     canvas.itemconfig('实时路线', text="%.2fm" % px)
 
 
+def compute_arc_length(arc):
+    """
+    计算弧线长度
+    :param arc:
+    :return:
+    """
+
+    def bezier(t, p0, p1, p2):
+        return ((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0],
+                (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1])
+
+    num_points = 100
+    coords = canvas.coords(arc)
+    x1, y1, ctrl_x, ctrl_y, x2, y2 = coords
+    p0 = (x1, y1)
+    p1 = (ctrl_x, ctrl_y)
+    p2 = (x2, y2)
+
+    length = 0
+    prev_point = p0
+
+    for i in range(1, num_points + 1):
+        t = i / num_points
+        current_point = bezier(t, p0, p1, p2)
+        segment_length = math.sqrt(
+            (current_point[0] - prev_point[0]) ** 2 + (current_point[1] - prev_point[1]) ** 2)
+        length += segment_length
+        prev_point = current_point
+
+    return length
+
+
+def update_px(cur, pre):
+    global px
+    px += (cur - pre) / 10
+    canvas.itemconfig('实时路线', text="%.2fm" % px)
+
+
 # 行进方向
 direction_image = "img/direction2.png"
 # 组合障碍

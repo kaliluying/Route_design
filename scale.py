@@ -6,7 +6,7 @@ import data_url
 
 from Common import *
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry, \
-    calculate_bezier_length
+    calculate_bezier_length, compute_arc_length, update_px
 
 
 class T:
@@ -484,6 +484,7 @@ class CreateImg(T):
         :param arc:
         :return:
         """
+        global px
         if arc == self.current_arc:
             set_frame_stare(False)
             x, y = event.x, event.y
@@ -498,8 +499,10 @@ class CreateImg(T):
             else:
                 ctrl_x1 -= dx
                 ctrl_y1 -= dy
-
+            pre_length = compute_arc_length(arc)
             self.app.coords(arc, x1, y1, ctrl_x1, ctrl_y1, x2, y2)
+            current_length = compute_arc_length(arc)
+            update_px(current_length, pre_length)
             self.drag_start = x, y
 
     def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color, tag):
