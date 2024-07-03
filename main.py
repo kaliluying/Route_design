@@ -184,6 +184,7 @@ def brick_wall():
     global index_img
     index_img += 1
     image_path = expand(brick_wall_image)
+    image_path = start_direction(image_path)
     CreateImg(canvas, index_img).create(image_path)
     drag()
 
@@ -756,9 +757,9 @@ def download():
     if path:
         width = canvas.winfo_width()
         height = canvas.winfo_height()
-        x0 = canvas.winfo_rootx()  # 帧在屏幕上的左上角 x 坐标
+        x0 = canvas.winfo_rootx() + 10  # 帧在屏幕上的左上角 x 坐标
         y0 = canvas.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
-        x1 = x0 + width  # 帧在屏幕上的右下角 x 坐标
+        x1 = x0 + width - 5  # 帧在屏幕上的右下角 x 坐标
         y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
         if sys_name == 'Windows':
             path += '.jpg'

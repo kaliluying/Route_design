@@ -402,7 +402,7 @@ class CreateImg(T):
 
         # 计算小矩形坐标
         small_half = self.small_rect_size / 2
-        small_offset = half_w + small_half - 5  # 偏移量
+        small_offset = half_w + small_half - 10  # 偏移量
 
         self.get_current_info()
 
@@ -460,7 +460,7 @@ class CreateImg(T):
         else:
             ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
 
-        arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=1, tags='arc')
+        arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, dash=(5, 3), tags='arc')
 
         self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
         self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
