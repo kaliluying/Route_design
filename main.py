@@ -952,10 +952,10 @@ def save():
         save_dict['lines'] = lines
         save_dict['var_len'] = var_len.get()
         temp_arc = []
-        for arc, rect1, rect2 in arc_list:
+        for arc, rect1, rect2, control_point in arc_list:
             rect1_center = get_center(rect1)
             rect2_center = get_center(rect2)
-            temp_arc.append((arc, rect1, rect2, rect1_center, rect2_center))
+            temp_arc.append((arc, rect1, rect2, rect1_center, rect2_center, control_point))
         save_dict['arc_list'] = temp_arc
         save_dict['index_img'] = index_img
 

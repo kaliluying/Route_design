@@ -333,37 +333,42 @@ class CreateImg(T):
 
             self.to_rotate(self.id, angle, state=False)
             self.draw_rectangles()
-            for arc, rect1, rect2 in arc_list:
+            for arc, rect1, rect2, control_point in arc_list:
                 rect1_center = self._get_center(rect1)
                 rect2_center = self._get_center(rect2)
 
-                new_arc = self.create_arc(rect1_center, rect2_center)
-                arc_list.append((new_arc, rect1, rect2))
-                arc_list.remove((arc, rect1, rect2))
-                calculate_bezier_length(new_arc, arc)
-                self.app.delete(arc)
+                self._update_arc(arc, rect1_center, rect2_center, control_point)
+
+                # new_arc = self.create_arc(rect1_center, rect2_center)
+                # arc_list.append((new_arc, rect1, rect2))
+                # arc_list.remove((arc, rect1, rect2))
+                # calculate_bezier_length(new_arc, arc)
+                # self.app.delete(arc)
 
         # 移动图片
         if what.get() == 0:
-            for arc, rect1, rect2 in arc_list:
+            for arc, rect1, rect2, control_point in arc_list:
                 rect1_center = self._get_center(rect1)
                 rect2_center = self._get_center(rect2)
 
-                new_arc = self.create_arc(rect1_center, rect2_center)
-                arc_list.append((new_arc, rect1, rect2))
-                arc_list.remove((arc, rect1, rect2))
-                calculate_bezier_length(new_arc, arc)
-                self.app.delete(arc)
+                self._update_arc(arc, rect1_center, rect2_center, control_point)
+
+                # new_arc = self.create_arc(rect1_center, rect2_center)
+                # arc_list.append((new_arc, rect1, rect2))
+                # arc_list.remove((arc, rect1, rect2))
+                # calculate_bezier_length(new_arc, arc)
+                # self.app.delete(arc)
 
     def load_arc(self):
         center_list = get_rect_center()
-        for arc, rect1, rect2 in arc_list:
+        for arc, rect1, rect2, control_point in arc_list:
             self.app.delete(arc)
         arc_list.clear()
-        for arc, rect1, rect2, rect1_center, rect2_center in center_list:
-            new_arc = self.create_arc(rect1_center, rect2_center)
-            arc_list.append((new_arc, rect1, rect2))
-            calculate_bezier_length(new_arc)
+        for arc, rect1, rect2, rect1_center, rect2_center, control_point in center_list:
+            arc = self.create_arc(rect1_center, rect2_center, control_point)
+            # new_arc = self.create_arc(rect1_center, rect2_center)
+            arc_list.append((arc, rect1, rect2, control_point))
+            # calculate_bezier_length(new_arc)
 
     def _get_center(self, rect):
         try:
@@ -374,7 +379,7 @@ class CreateImg(T):
 
     def draw_rectangles(self):
         """
-        绘制主矩形和小矩形
+        绘制小矩形
         :return:
         """
         self.app.delete(self.tag + 'point')
@@ -382,23 +387,7 @@ class CreateImg(T):
         cos_angle = math.cos(angle_rad)
         sin_angle = math.sin(angle_rad)
 
-        # 计算主矩形坐标
         half_w = self.width / 2
-        # half_h = self.height / 2
-
-        # p1 = self.rotate_point(-half_w, -half_h, cos_angle, sin_angle)
-        # p2 = self.rotate_point(half_w, -half_h, cos_angle, sin_angle)
-        # p3 = self.rotate_point(half_w, half_h, cos_angle, sin_angle)
-        # p4 = self.rotate_point(-half_w, half_h, cos_angle, sin_angle)
-
-        # self.main_rect = self.app.create_polygon(
-        #     p1[0] + self.current_x, p1[1] + self.current_y,
-        #     p2[0] + self.current_x, p2[1] + self.current_y,
-        #     p3[0] + self.current_x, p3[1] + self.current_y,
-        #     p4[0] + self.current_x, p4[1] + self.current_y,
-        #     fill="", outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc')
-        # )
-        # canvas.tag_lower(self.main_rect, self.id)
 
         # 计算小矩形坐标
         small_half = self.small_rect_size / 2
@@ -446,7 +435,7 @@ class CreateImg(T):
             set_arc_start_obj(tag)
             arc_click = 1
 
-    def create_arc(self, start, end):
+    def create_arc(self, start, end, control_point=None):
         x1, y1 = start
         x2, y2 = end
 
@@ -455,19 +444,15 @@ class CreateImg(T):
 
         # 计算控制点，使弧线在任意角度都能正确连接
         dx, dy = x2 - x1, y2 - y1
+        if control_point is None:
+            if y1 < y2:
+                ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+            else:
+                ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+        else:
+            ctrl_x, ctrl_y = control_point
 
-        # if y1 < y2:
-        #     ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
-        # else:
-        #     ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
-
-        # distance = math.sqrt(dx ** 2 + dy ** 2)
-
-        # offset_x = -dy / distance * 50
-        # offset_y = dx / distance * 50
-        # ctrl_x, ctrl_y = cx + offset_x, cy + offset_y
-
-        ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+        # ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
 
         arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, dash=(5, 3), tags='arc')
 
@@ -487,17 +472,15 @@ class CreateImg(T):
 
         dx, dy = x2 - x1, y2 - y1
 
-        distance = math.sqrt(dx ** 2 + dy ** 2)
-        print(distance)
-
         if control_point is None:
-            offset_x = -dy / distance * 50
-            offset_y = dx / distance * 50
-            ctrl_x1, ctrl_y1 = cx + offset_x, cy + offset_y
+            if y1 < y2:
+                ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+            else:
+                ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
         else:
-            ctrl_x1, ctrl_y1 = control_point
+            ctrl_x, ctrl_y = control_point
 
-        return x1, y1, ctrl_x1, ctrl_y1, x2, y2
+        return x1, y1, ctrl_x, ctrl_y, x2, y2
 
     def on_arc_click(self, event, arc):
         """
@@ -535,6 +518,14 @@ class CreateImg(T):
             self.app.coords(arc, x1, y1, ctrl_x1, ctrl_y1, x2, y2)
             current_length = compute_arc_length(arc)
             update_px(current_length, pre_length)
+            # print(arc_list)
+            for i, (a, rect1, rect2, _) in enumerate(arc_list):
+                if a == arc:
+                    arc_list[i] = (arc, rect1, rect2, (ctrl_x1, ctrl_y1))
+                    rect1_center = self._get_center(rect1)
+                    rect2_center = self._get_center(rect2)
+                    self._update_arc(arc, rect1_center, rect2_center, (ctrl_x1, ctrl_y1))
+                    break
             self.drag_start = x, y
 
     def create_rotated_rect(self, center_x, center_y, half_size, angle_rad, color, tag):
