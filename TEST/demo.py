@@ -66,8 +66,11 @@ class ConnectNodesApp:
         x2, y2 = end
 
         cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+
         dx, dy = x2 - x1, y2 - y1
+
         distance = math.sqrt(dx ** 2 + dy ** 2)
+        print(distance)
 
         if control_point is None:
             offset_x = -dy / distance * 50

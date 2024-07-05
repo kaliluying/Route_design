@@ -439,7 +439,7 @@ class CreateImg(T):
             calculate_bezier_length(arc)
             rect1, rect2 = get_arc_start_obj(), tag
 
-            arc_list.append((arc, rect1, rect2))
+            arc_list.append((arc, rect1, rect2, None))
 
         else:
             set_arc_start((cx, cy))
@@ -455,10 +455,19 @@ class CreateImg(T):
 
         # 计算控制点，使弧线在任意角度都能正确连接
         dx, dy = x2 - x1, y2 - y1
-        if y1 < y2:
-            ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
-        else:
-            ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+
+        # if y1 < y2:
+        #     ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+        # else:
+        #     ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+
+        # distance = math.sqrt(dx ** 2 + dy ** 2)
+
+        # offset_x = -dy / distance * 50
+        # offset_y = dx / distance * 50
+        # ctrl_x, ctrl_y = cx + offset_x, cy + offset_y
+
+        ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
 
         arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, dash=(5, 3), tags='arc')
 
@@ -466,6 +475,29 @@ class CreateImg(T):
         self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
 
         return arc
+
+    def _update_arc(self, arc, start, end, control_point):
+        self.app.coords(arc, *self._calculate_arc_coords(start, end, control_point))
+
+    def _calculate_arc_coords(self, start, end, control_point=None):
+        x1, y1 = start
+        x2, y2 = end
+
+        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+
+        dx, dy = x2 - x1, y2 - y1
+
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        print(distance)
+
+        if control_point is None:
+            offset_x = -dy / distance * 50
+            offset_y = dx / distance * 50
+            ctrl_x1, ctrl_y1 = cx + offset_x, cy + offset_y
+        else:
+            ctrl_x1, ctrl_y1 = control_point
+
+        return x1, y1, ctrl_x1, ctrl_y1, x2, y2
 
     def on_arc_click(self, event, arc):
         """
