@@ -687,7 +687,7 @@ class CreateImg(T):
     @staticmethod
     def create_frame():
         # 旋转、备注编辑主容器
-        frame_edit = ttk.Frame(frame_job, name='旋转、备注', bootstyle="info")
+        frame_edit = ttk.Frame(frame_job, name='旋转、备注')
         frame_edit.pack()
 
         # 旋转容器
