@@ -469,11 +469,12 @@ def leftButtonMove(event):
 
         x1, y1, x2, y2 = canvas.coords(lastDraw)
 
-        px += (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
+        lenth = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
+        update_px(lenth)
         temp_px = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
 
         remove_px[lastDraw] = temp_px
-        canvas.itemconfig('实时路线', text="%.2fm" % px)
+        # canvas.itemconfig('实时路线', text="%.2fm" % px)
         X.set(event.x)
         Y.set(event.y)
         click_num = 1
@@ -551,10 +552,11 @@ def leftButtonUp(event):
             # temp_px = (abs(x + y)) / 10
             x1, y1, x2, y2 = canvas.coords(id)
             distance = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
-            px += distance
+            # px += distance
+            update_px(distance)
             route_click.append((start_x.get(), start_y.get()))
             stack.append(('长度测量', ([id], distance)))
-            canvas.itemconfig('实时路线', text="%.2fm" % px)
+            # canvas.itemconfig('实时路线', text="%.2fm" % px)
             # remove_px[lastDraw] = px
             start_x.set(end_x.get())
             start_y.set(end_y.get())
@@ -668,8 +670,9 @@ def clear():
     canvas.delete("line")
     canvas.delete("rubber")
     lines.clear()
-    px = 0
-    canvas.itemconfig('实时路线', text="%.2fm" % px)
+    # px = 0
+    update_px(0, clear=True)
+    # canvas.itemconfig('实时路线', text="%.2fm" % px)
     click_num = 1
     to_be_deleted = []
     for i in range(len(stack)):
@@ -700,9 +703,10 @@ def back():
         if i in remove_px:
             del remove_px[i]
     end.pop()
-    px -= temp
-
-    canvas.itemconfig('实时路线', text="%.2fm" % px)
+    update_px(temp, start=False)
+    # px -= temp
+    #
+    # canvas.itemconfig('实时路线', text="%.2fm" % px)
 
 
 def currency_font():
@@ -1064,8 +1068,9 @@ def undo(event):
                 temp_line.append(canvas.coords(i))
                 pop(i)
             lines.pop()
-            px -= temp_px
-            canvas.itemconfig('实时路线', text="%.2fm" % px)
+            update_px(temp_px, start=False)
+            # px -= temp_px
+            # canvas.itemconfig('实时路线', text="%.2fm" % px)
             x, y = route_click.pop()
             start_x.set(x)
             start_y.set(y)

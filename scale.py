@@ -6,7 +6,7 @@ import data_url
 
 from Common import *
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry, \
-    calculate_bezier_length, compute_arc_length, update_px
+    calculate_bezier_length, compute_arc_length, update_arc_px
 
 
 class T:
@@ -270,16 +270,9 @@ class CreateImg(T):
         self.mousedown(self.tag, [200, 100])
         set_frame_stare(True)
         self.app.tag_bind(self.tag, "<ButtonRelease-1>", self.mouseup)
-        # self.app.tag_bind(self.tag + 'arc', "<BackSpace>", partial(self.dele, self.tag))
 
         if check_var.get():
             self.draw_rectangles()
-
-        # no_what.set(0)
-        # set_color()
-
-    def dele(self, tag):
-        canvas.delete(self.tag + 'arc')
 
     def mousedown(self, tag, event):
         """
@@ -462,7 +455,10 @@ class CreateImg(T):
         return arc
 
     def _update_arc(self, arc, start, end, control_point):
+        pre_length = compute_arc_length(arc)
         self.app.coords(arc, *self._calculate_arc_coords(start, end, control_point))
+        current_length = compute_arc_length(arc)
+        update_arc_px(current_length, pre_length)
 
     def _calculate_arc_coords(self, start, end, control_point=None):
         x1, y1 = start
@@ -500,7 +496,7 @@ class CreateImg(T):
         :return:
         """
         global px
-        if arc == self.current_arc:
+        if arc == self.current_arc and check_var.get():
             set_frame_stare(False)
             x, y = event.x, event.y
             dx, dy = x - self.drag_start[0], y - self.drag_start[1]
@@ -517,7 +513,7 @@ class CreateImg(T):
             pre_length = compute_arc_length(arc)
             self.app.coords(arc, x1, y1, ctrl_x1, ctrl_y1, x2, y2)
             current_length = compute_arc_length(arc)
-            update_px(current_length, pre_length)
+            update_arc_px(current_length, pre_length)
             # print(arc_list)
             for i, (a, rect1, rect2, _) in enumerate(arc_list):
                 if a == arc:
@@ -631,9 +627,10 @@ class CreateImg(T):
         elif self.obstacle == "combination_ab":
             temp = {}
             for key, val in self.com_info.items():
+                print(key, val)
                 if key.count('_') == 2 and val != '0':
                     temp[key] = float(val) * 10
-                elif key.count('_') == 1 and val != '0':
+                elif key.count('_') == 1 and val != '0' and self.state[key].__str__() == "normal":
                     temp[key] = float(val) / 10
                 else:
                     temp[key] = 0
@@ -648,7 +645,7 @@ class CreateImg(T):
             for key, val in self.com_info.items():
                 if key.count('_') == 2 and val != '0':
                     temp[key] = float(val) * 10
-                elif key.count('_') == 1 and val != '0':
+                elif key.count('_') == 1 and val != '0' and self.state[key].__str__() == "normal":
                     temp[key] = float(val) / 10
                 else:
                     temp[key] = 0

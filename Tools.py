@@ -87,7 +87,10 @@ class Entry(ttk.Entry):
         """
         self['state'] = 'normal'
         self.delete(0, ttk.END)
-        self.insert(0, self.disabled_text)  # 重新设置禁用前的文本内容
+        if self.disabled_text:
+            self.insert(0, self.disabled_text)  # 重新设置禁用前的文本内容
+        else:
+            self.insert(0, "50")  # 恢复初始状态
 
 
 def is_number(s):
@@ -556,9 +559,22 @@ def compute_arc_length(arc):
     return length
 
 
-def update_px(cur, pre):
+def update_arc_px(cur, pre):
     global px
     px += (cur - pre) / 10
+    canvas.itemconfig('实时路线', text="%.2fm" % px)
+
+
+def update_px(length, start=True, clear=False):
+    global px
+    if clear:
+        canvas.itemconfig('实时路线', text="%.2fm" % 0)
+        return
+    if start:
+        px += length
+    else:
+        px -= length
+
     canvas.itemconfig('实时路线', text="%.2fm" % px)
 
 
