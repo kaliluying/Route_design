@@ -105,8 +105,6 @@ click_num = 1
 
 # 网格状态
 grid_start = 0
-# 网格是否创建
-create_grid = False
 
 # 比赛名
 temp_txt = None

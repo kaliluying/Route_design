@@ -410,6 +410,7 @@ def found():
     canvas.coords('障碍y', 35, HEIGHT + 70)
     canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 60)
     canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 70)
+    canvas.coords('比赛名称', (WIDTH + 40) / 2, 20)
     canvas.delete('bg')
     try:
         img = Image.open(fg_path)
@@ -848,26 +849,25 @@ def grid():
     网格辅助线
     :return: 
     """
-    global create_grid, grid_start
-    if grid_start:
-        canvas.itemconfig('grid', stat='hidden')
-        grid_start = 0
-    elif create_grid and not grid_start:
-        canvas.itemconfig('grid', stat='normal')
-        grid_start = 1
+    global grid_start
 
-    if not create_grid:
-        range_x = (WIDTH + 30) // 100
+    if grid_start:
+        canvas.delete('grid')
+        grid_start = 0
+    elif not grid_start:
+        range_x = (WIDTH + 15) // 100
         range_y = (HEIGHT + 70) // 100
-        index_x = 15
+        index_x = 30
         index_y = 50
+        step = 100
+        # 垂直线
         for i in range(range_x):
             canvas.create_line(index_x, 50, index_x, HEIGHT + 50, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
-            index_x += 100
+            index_x += step
+        # 水平线
         for i in range(range_y):
-            canvas.create_line(15, index_y, WIDTH + 15, index_y, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
-            index_y += 100
-        create_grid = True
+            canvas.create_line(30, index_y, WIDTH + 15, index_y, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
+            index_y += step
         grid_start = 1
 
 
