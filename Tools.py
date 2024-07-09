@@ -1,3 +1,5 @@
+import sys
+
 from Common import *
 
 
@@ -507,7 +509,7 @@ def calculate_bezier_length(id, pre_id=None, num_points=100, start=True):
             pre_length += segment_length
             pre_point = current_point
     except:
-        print("计算前一段曲线长度失败")
+        print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, ", "计算前一段曲线长度失败")
         pre_length = 0
 
     length = 0

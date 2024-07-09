@@ -1,5 +1,6 @@
 import base64
 import io
+import sys
 from functools import partial
 
 import data_url
@@ -66,7 +67,7 @@ class T:
                 choice_tup.clear()
                 self.app.dtag('choice_start', 'choice_start')
         except Exception as e:
-            print(e)
+            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
             logging.warning(e)
         # if what.get() == 0:
         try:
@@ -358,7 +359,7 @@ class CreateImg(T):
             self.app.delete(arc)
         arc_list.clear()
         for arc, rect1, rect2, rect1_center, rect2_center, control_point in center_list:
-            arc = self.create_arc(rect1_center, rect2_center, control_point)
+            arc, control_point = self.create_arc(rect1_center, rect2_center, control_point)
             # new_arc = self.create_arc(rect1_center, rect2_center)
             arc_list.append((arc, rect1, rect2, control_point))
             # calculate_bezier_length(new_arc)
@@ -368,7 +369,7 @@ class CreateImg(T):
             x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
             return (x1 + x2) / 2, (y1 + y2) / 2
         except ValueError as e:
-            print("_get_center error:" + str(e))
+            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", "_get_center error:" + str(e))
 
     def draw_rectangles(self):
         """
@@ -417,11 +418,11 @@ class CreateImg(T):
         if arc_click:
             start = get_arc_start()
             arc_click = 0
-            arc = self.create_arc(start, (cx, cy))
-            calculate_bezier_length(arc)
+            arc, control_points = self.create_arc(start, (cx, cy))
+            # calculate_bezier_length(arc)
             rect1, rect2 = get_arc_start_obj(), tag
 
-            arc_list.append((arc, rect1, rect2, None))
+            arc_list.append((arc, rect1, rect2, control_points))
 
         else:
             set_arc_start((cx, cy))
@@ -432,51 +433,62 @@ class CreateImg(T):
         x1, y1 = start
         x2, y2 = end
 
-        # 计算两个点之间的中点
-        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+        # # 计算两个点之间的中点
+        # cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+        #
+        #
+        # # 计算控制点，使弧线在任意角度都能正确连接
+        # dx, dy = x2 - x1, y2 - y1
+        #
+        # print(cx, cy, dx, dy)
 
-        # 计算控制点，使弧线在任意角度都能正确连接
-        dx, dy = x2 - x1, y2 - y1
+        # 定义三次贝塞尔曲线的控制点
         if control_point is None:
-            if y1 < y2:
-                ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
-            else:
-                ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+            ctrl1_x = x1 + (x2 - x1) / 3
+            ctrl1_y = y1
+            ctrl2_x = x1 + 2 * (x2 - x1) / 3
+            ctrl2_y = y2
         else:
-            ctrl_x, ctrl_y = control_point
+            ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y = control_point
+        # if control_point is None:
+        #     if y1 < y2:
+        #         ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
+        #     else:
+        #         ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+        # else:
+        #     print(sys._getframe().f_lineno)
+        #     ctrl_x, ctrl_y = control_point
 
         # ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
 
-        arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, dash=(5, 3), tags='arc')
+        # arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, dash=(5, 3), tags='arc')
+        arc = self.app.create_line(x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2, smooth=True, width=2,
+                                   dash=(5, 3), tags='arc')
 
         self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
         self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
 
-        return arc
+        return arc, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y)
 
     def _update_arc(self, arc, start, end, control_point):
-        pre_length = compute_arc_length(arc)
+        # pre_length = compute_arc_length(arc)
         self.app.coords(arc, *self._calculate_arc_coords(start, end, control_point))
-        current_length = compute_arc_length(arc)
-        update_arc_px(current_length, pre_length)
+        # current_length = compute_arc_length(arc)
+        # update_arc_px(current_length, pre_length)
 
     def _calculate_arc_coords(self, start, end, control_point=None):
         x1, y1 = start
         x2, y2 = end
 
-        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
-
-        dx, dy = x2 - x1, y2 - y1
-
         if control_point is None:
-            if y1 < y2:
-                ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
-            else:
-                ctrl_x, ctrl_y = cx - dy / 2, cy + dx / 2
+            ctrl1_x = x1 + (x2 - x1) / 3
+            ctrl1_y = y1
+            ctrl2_x = x1 + 2 * (x2 - x1) / 3
+            ctrl2_y = y2
         else:
-            ctrl_x, ctrl_y = control_point
+            ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y = control_point
 
-        return x1, y1, ctrl_x, ctrl_y, x2, y2
+        return x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2
 
     def on_arc_click(self, event, arc):
         """
@@ -502,25 +514,25 @@ class CreateImg(T):
             dx, dy = x - self.drag_start[0], y - self.drag_start[1]
 
             coords = self.app.coords(arc)
-            x1, y1, ctrl_x1, ctrl_y1, x2, y2 = coords
 
-            if (x1, y1, x2, y2) == (coords[0], coords[1], coords[4], coords[5]):
-                ctrl_x1 += dx
-                ctrl_y1 += dy
-            else:
-                ctrl_x1 -= dx
-                ctrl_y1 -= dy
-            pre_length = compute_arc_length(arc)
-            self.app.coords(arc, x1, y1, ctrl_x1, ctrl_y1, x2, y2)
-            current_length = compute_arc_length(arc)
-            update_arc_px(current_length, pre_length)
+            x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2 = coords
+
+            ctrl1_x += dx / 3
+            ctrl1_y += dy / 3
+            ctrl2_x += dx / 3
+            ctrl2_y += dy / 3
+
+            # pre_length = compute_arc_length(arc)
+            self.app.coords(arc, x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2)
+            # current_length = compute_arc_length(arc)
+            # update_arc_px(current_length, pre_length)
             # print(arc_list)
             for i, (a, rect1, rect2, _) in enumerate(arc_list):
                 if a == arc:
-                    arc_list[i] = (arc, rect1, rect2, (ctrl_x1, ctrl_y1))
+                    arc_list[i] = (arc, rect1, rect2, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
                     rect1_center = self._get_center(rect1)
                     rect2_center = self._get_center(rect2)
-                    self._update_arc(arc, rect1_center, rect2_center, (ctrl_x1, ctrl_y1))
+                    self._update_arc(arc, rect1_center, rect2_center, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
                     break
             self.drag_start = x, y
 
@@ -627,7 +639,6 @@ class CreateImg(T):
         elif self.obstacle == "combination_ab":
             temp = {}
             for key, val in self.com_info.items():
-                print(key, val)
                 if key.count('_') == 2 and val != '0':
                     temp[key] = float(val) * 10
                 elif key.count('_') == 1 and val != '0' and self.state[key].__str__() == "normal":

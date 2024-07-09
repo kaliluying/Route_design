@@ -1,3 +1,4 @@
+import sys
 from functools import partial
 
 from Common import *
@@ -257,7 +258,7 @@ class Focus:
                 elif x2.get() == '0':
                     pass
             except Exception as e:
-                print(e)
+                print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
                 logging.warning(e)
 
             obj.img_path = oxer_obs_ab(stare_a=x1.get(), state_b=x2.get())
@@ -280,7 +281,7 @@ class Focus:
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
             except Exception as e:
-                print('a障碍', e)
+                print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", 'a障碍', e)
                 logging.warning('a障碍', e)
 
     def oxer_b(self, x1, x2, x3, ent_b, obj, obstacle, var_b):
@@ -328,7 +329,7 @@ class Focus:
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
                     return
             except Exception as e:
-                print('b障碍', e)
+                print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", 'b障碍', e)
                 logging.warning('b障碍', e)
 
     def oxer_c(self, x1, x2, x3, ent_c, obj, var_c):
@@ -386,5 +387,5 @@ class Focus:
             else:
                 self.combination_abc(obj, x1, x2, x3)
         except Exception as e:
-            print('abc障碍', e)
+            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}",'abc障碍', e)
             logging.warning('abc障碍', e)

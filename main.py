@@ -319,7 +319,7 @@ def dle():
         confirm_button.grid(row=len(filtered_dict), column=1, sticky="n", padx=5, pady=5)
 
     except Exception as e:
-        print("Error: " + str(e))
+        print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
         messagebox.showerror("Error", "出错了")
         logging.warning("赛事信息确认", e)
 
@@ -376,7 +376,7 @@ def allow(info_var, pro_value):
         pro_value.set('%.2fs' % t)
         return True
     except Exception as e:
-        print('赛事信息出错：', e)
+        print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '赛事信息出错：', e)
         logging.warning('赛事信息出错：', e)
         return False
 
@@ -418,7 +418,7 @@ def found():
         fg_img = ImageTk.PhotoImage(img)
         canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
     except AttributeError as e:
-        print('背景图错误：', e)
+        print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '背景图错误：', e)
 
     if state_f:
         font = 0.16 if sys_name == 'Darwin' else 0.1
@@ -508,7 +508,7 @@ def leftButtonMove(event):
                 choice_tup.clear()
                 choice_tup.extend(list(bbox))
             except TypeError as e:
-                print('多选框移动出错', e)
+                print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '多选框移动出错', e)
                 logging.warning('多选框移动出错', e)
     else:
         if get_frame_stare():
@@ -1024,7 +1024,7 @@ def load():
 
             messagebox.showinfo("加载成功", "程序状态已从文件加载")
         except Exception as e:
-            print(e)
+            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
             messagebox.showerror("加载失败", f"无法加载文件: {e}")
 
 
