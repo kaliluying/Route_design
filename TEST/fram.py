@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 def draw_bezier_quadratic(canvas, p0, p1, p2, steps=100):
     for i in range(steps):
         t = i / steps
@@ -7,12 +8,14 @@ def draw_bezier_quadratic(canvas, p0, p1, p2, steps=100):
         y = (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]
         canvas.create_oval(x, y, x + 1, y + 1, fill='black')
 
+
 def draw_bezier_cubic(canvas, p0, p1, p2, p3, steps=100):
     for i in range(steps):
         t = i / steps
         x = (1 - t) ** 3 * p0[0] + 3 * (1 - t) ** 2 * t * p1[0] + 3 * (1 - t) * t ** 2 * p2[0] + t ** 3 * p3[0]
         y = (1 - t) ** 3 * p0[1] + 3 * (1 - t) ** 2 * t * p1[1] + 3 * (1 - t) * t ** 2 * p2[1] + t ** 3 * p3[1]
         canvas.create_oval(x, y, x + 1, y + 1, fill='black')
+
 
 root = tk.Tk()
 root.title("贝塞尔曲线")

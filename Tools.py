@@ -359,6 +359,7 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
     :param b_c:
     :return:
     """
+    print(a, b, c, a_b, b_c)
     a_img = merge(a if a else 0, state=0)
     img_obj = Image.open(a_img)
     b_img = merge(b if b else 0, state=0)
@@ -367,8 +368,10 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
     image3 = Image.open(c_img)
     result = Image.new(img_obj.mode, (a + b + c + a_b + b_c + 55, 40))
     result.paste(img_obj, box=(0, 0))
-    result.paste(img_obj2, box=(a + a_b, 0))
-    result.paste(image3, box=(a + b + a_b + b_c, 0))
+    # result.paste(img_obj2, box=(a + a_b, 0))
+    # result.paste(image3, box=(a + b + a_b + b_c, 0))
+    result.paste(img_obj2, box=(a + a_b - (10 if a else 5), 0))
+    result.paste(image3, box=(a + b + a_b + b_c - (10 if a else 5) - (10 if b else 5), 0))
     result.save("img/obs_abc.png")
     com_image = "img/obs_abc.png"
     result.save(com_image)
@@ -388,8 +391,8 @@ def obs_ab(a=0, b=0, a_b=30):
     img_obj2 = Image.open(b_img)
     result = Image.new(img_obj.mode, (a + b + a_b + 50, 40))
     result.paste(img_obj, box=(0, 0))
-    result.paste(img_obj2, box=(a + a_b, 0))
-    # result.paste(img_obj2, box=(a + a_b + (10 if a else 5), 0))
+    # result.paste(img_obj2, box=(a + a_b, 0))
+    result.paste(img_obj2, box=(a + a_b - (int(a / 2) if a else 5), 0))
     # result.save("img/obs_ab.png")
     com_image = "img/obs_ab.png"
     result.save(com_image)

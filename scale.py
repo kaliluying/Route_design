@@ -369,7 +369,7 @@ class CreateImg(T):
             x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
             return (x1 + x2) / 2, (y1 + y2) / 2
         except ValueError as e:
-            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", "_get_center error:" + str(e))
+            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
 
     def draw_rectangles(self):
         """
@@ -529,7 +529,6 @@ class CreateImg(T):
             self.app.coords(arc, x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2)
             current_length = compute_arc_length(arc)
             update_arc_px(current_length, pre_length)
-            print(arc_list)
             for i, (a, rect1, rect2, _) in enumerate(arc_list):
                 if a == arc:
                     arc_list[i] = (arc, rect1, rect2, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
