@@ -824,7 +824,8 @@ def pop(id=None):
             try:
                 for arc_ in arc_list:
                     if i in arc_:
-                        calculate_bezier_length(i, start=False)
+                        length = compute_arc_length(i)
+                        update_px(length/10, start=False)
                 canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
             except KeyError:
                 pass

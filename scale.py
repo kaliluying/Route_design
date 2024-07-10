@@ -6,8 +6,8 @@ from functools import partial
 import data_url
 
 from Common import *
-from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry, \
-    calculate_bezier_length, compute_arc_length, update_arc_px
+from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry, update_arc_px, \
+    update_px, compute_arc_length
 
 
 class T:
@@ -468,13 +468,16 @@ class CreateImg(T):
         self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
         self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
 
+        length = compute_arc_length(arc)
+        update_px(length / 10)
+
         return arc, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y)
 
     def _update_arc(self, arc, start, end, control_point):
-        # pre_length = compute_arc_length(arc)
+        pre_length = compute_arc_length(arc)
         self.app.coords(arc, *self._calculate_arc_coords(start, end, control_point))
-        # current_length = compute_arc_length(arc)
-        # update_arc_px(current_length, pre_length)
+        current_length = compute_arc_length(arc)
+        update_arc_px(current_length, pre_length)
 
     def _calculate_arc_coords(self, start, end, control_point=None):
         x1, y1 = start
@@ -522,11 +525,11 @@ class CreateImg(T):
             ctrl2_x += dx / 3
             ctrl2_y += dy / 3
 
-            # pre_length = compute_arc_length(arc)
+            pre_length = compute_arc_length(arc)
             self.app.coords(arc, x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2)
-            # current_length = compute_arc_length(arc)
-            # update_arc_px(current_length, pre_length)
-            # print(arc_list)
+            current_length = compute_arc_length(arc)
+            update_arc_px(current_length, pre_length)
+            print(arc_list)
             for i, (a, rect1, rect2, _) in enumerate(arc_list):
                 if a == arc:
                     arc_list[i] = (arc, rect1, rect2, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
