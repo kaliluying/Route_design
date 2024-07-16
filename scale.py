@@ -326,16 +326,17 @@ class CreateImg(T):
                 angle += 360
 
             self.to_rotate(self.id, angle, state=False)
-            self.draw_rectangles()
-            for arc, rect1, rect2, control_point in arc_list:
-                rect1_center = self._get_center(rect1)
-                rect2_center = self._get_center(rect2)
+            if check_var.get():
+                self.draw_rectangles()
+                for arc, rect1, rect2, control_point in arc_list:
+                    rect1_center = self._get_center(rect1)
+                    rect2_center = self._get_center(rect2)
 
-                self._update_arc(arc, rect1_center, rect2_center, control_point)
+                    self._update_arc(arc, rect1_center, rect2_center, control_point)
 
-                # new_arc = self.create_arc(rect1_center, rect2_center)
-                # arc_list.append((new_arc, rect1, rect2))
-                # arc_list.remove((arc, rect1, rect2))
+                    # new_arc = self.create_arc(rect1_center, rect2_center)
+                    # arc_list.append((new_arc, rect1, rect2))
+                    # arc_list.remove((arc, rect1, rect2))
                 # calculate_bezier_length(new_arc, arc)
                 # self.app.delete(arc)
 
@@ -786,7 +787,7 @@ class CreateImg(T):
         """
         self.img = self.rotate_bound(angle)
         self.temp_path = ImageTk.PhotoImage(self.img)
-        canvas.itemconfig(id, image=self.temp_path)
+        canvas.itemconfig(self.id, image=self.temp_path)
         self.var.set(str(int(angle)))
         set_cur(self.id)
         self.angle = angle
