@@ -627,11 +627,14 @@ def arc():
     :return:
     """
     if check_var.get():
+        # for i in T.all_instances:
+
         for i in T.all_instances:
-            try:
-                i.draw_rectangles()
-            except AttributeError:
-                pass
+            if i.ui_state:
+                try:
+                    i.draw_rectangles()
+                except AttributeError:
+                    pass
     else:
         canvas.delete("rect_arc")
 
