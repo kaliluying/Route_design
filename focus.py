@@ -115,12 +115,14 @@ class Focus:
             obj.img = Image.open(obj.img_path)  # 打开图片
             obj.temp_path = ImageTk.PhotoImage(obj.img)  # 将图片转换为可以在GUI中使用的格式
             obj.app.itemconfig(obj.tag, image=obj.temp_path)  # 更新界面元素显示图片
+            obj.to_rotate(obj.tag, obj.angle)
         elif check == '0':
             # 如果检查状态为'0'，则使用第一种现场图片
             obj.img_path = live_one_tool()  # 获取第一现场图片路径
             obj.img = Image.open(obj.img_path)  # 打开图片
             obj.temp_path = ImageTk.PhotoImage(obj.img)  # 将图片转换为可以在GUI中使用的格式
             obj.app.itemconfig(obj.tag, image=obj.temp_path)  # 更新界面元素显示图片
+            obj.to_rotate(obj.tag, obj.angle)
 
     def water(self, info):
         """
@@ -266,6 +268,7 @@ class Focus:
             obj.img = Image.open(obj.img_path)
             obj.temp_path = ImageTk.PhotoImage(obj.img)
             obj.app.itemconfig(obj.tag, image=obj.temp_path)
+            obj.to_rotate(obj.tag, obj.angle)
         elif x1.get() == '0':
             try:
                 if x2.get() == '1':
@@ -273,12 +276,14 @@ class Focus:
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
+                    obj.to_rotate(obj.tag, obj.angle)
                     return
                 elif x2.get() == '0':
                     obj.img_path = merge_ab(state=1, m1=30)
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
+                    obj.to_rotate(obj.tag, obj.angle)
                     return
             except Exception as e:
                 print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", 'a障碍', e)
@@ -314,6 +319,7 @@ class Focus:
             obj.img = Image.open(obj.img_path)
             obj.temp_path = ImageTk.PhotoImage(obj.img)
             obj.app.itemconfig(obj.tag, image=obj.temp_path)
+            obj.to_rotate(obj.tag, obj.angle)
         elif x2.get() == '0':
             try:
                 if x1.get() == '1':
@@ -321,12 +327,14 @@ class Focus:
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
+                    obj.to_rotate(obj.tag, obj.angle)
                     return
                 elif x1.get() == '0':
                     obj.img_path = merge_ab(state=1, m1=30)
                     obj.img = Image.open(obj.img_path)
                     obj.temp_path = ImageTk.PhotoImage(obj.img)
                     obj.app.itemconfig(obj.tag, image=obj.temp_path)
+                    obj.to_rotate(obj.tag, obj.angle)
                     return
             except Exception as e:
                 print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", 'b障碍', e)
@@ -358,6 +366,7 @@ class Focus:
         obj.img = Image.open(obj.img_path)
         obj.temp_path = ImageTk.PhotoImage(obj.img)
         obj.app.itemconfig(obj.tag, image=obj.temp_path)
+        obj.to_rotate(obj.tag, obj.angle)
 
     @staticmethod
     def combination_abc(obj, x1, x2, x3):
@@ -365,6 +374,7 @@ class Focus:
         obj.img = Image.open(obj.img_path)
         obj.temp_path = ImageTk.PhotoImage(obj.img)
         obj.app.itemconfig(obj.tag, image=obj.temp_path)
+        obj.to_rotate(obj.tag, obj.angle)
 
     def judge_abc(self, x1, x2, x3, obj):
         """
@@ -383,6 +393,7 @@ class Focus:
                 obj.img = Image.open(obj.img_path)
                 obj.temp_path = ImageTk.PhotoImage(obj.img)
                 obj.app.itemconfig(obj.tag, image=obj.temp_path)
+                obj.to_rotate(obj.tag, obj.angle)
                 return
             else:
                 self.combination_abc(obj, x1, x2, x3)
