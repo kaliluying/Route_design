@@ -485,9 +485,14 @@ class CreateImg(T):
         x2, y2 = end
 
         if control_point is None:
-            ctrl1_x = x1 + (x2 - x1) / 3
+            # ctrl1_x = x1 + (x2 - x1) / 3
+            # ctrl1_y = y1
+            # ctrl2_x = x1 + 2 * (x2 - x1) / 3
+            # ctrl2_y = y2
+
+            ctrl1_x = x1 + 100
             ctrl1_y = y1
-            ctrl2_x = x1 + 2 * (x2 - x1) / 3
+            ctrl2_x = x2 - 100
             ctrl2_y = y2
         else:
             ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y = control_point
@@ -525,6 +530,13 @@ class CreateImg(T):
             ctrl1_y += dy / 3
             ctrl2_x += dx / 3
             ctrl2_y += dy / 3
+
+
+
+            # ctrl1_x = (2 * x1 + x2) / 3
+            # ctrl1_y = (2 * y1 + y2) / 3
+            # ctrl2_x = (x1 + 2 * x2) / 3
+            # ctrl2_y = (y1 + 2 * y2) / 3
 
             pre_length = compute_arc_length(arc)
             self.app.coords(arc, x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2)

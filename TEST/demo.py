@@ -23,10 +23,10 @@ class ConnectNodesApp:
         self.length_label.pack()
 
     def create_rectangles(self):
-        rect1 = self.canvas.create_rectangle(100, 100, 200, 150, outline='black', fill='white')
-        rect2 = self.canvas.create_rectangle(300, 100, 400, 150, outline='black', fill='white')
-        rect3 = self.canvas.create_rectangle(100, 300, 200, 350, outline='black', fill='white')
-        rect4 = self.canvas.create_rectangle(300, 300, 400, 350, outline='black', fill='white')
+        rect1 = self.canvas.create_rectangle(100, 100, 250, 150, outline='black', fill='white')  # 长方形
+        rect2 = self.canvas.create_rectangle(300, 100, 450, 150, outline='black', fill='white')
+        rect3 = self.canvas.create_rectangle(100, 300, 250, 350, outline='black', fill='white')
+        rect4 = self.canvas.create_rectangle(300, 300, 450, 350, outline='black', fill='white')
 
         self.rectangles.extend([rect1, rect2, rect3, rect4])
 
@@ -43,9 +43,11 @@ class ConnectNodesApp:
         x2, y2 = end
 
         # Define control points for the cubic Bezier curve
-        ctrl1_x = x1 + (x2 - x1) / 3
+        # P1 is 100 pixels to the right of the start point
+        # P2 is 100 pixels to the left of the end point
+        ctrl1_x = x1 + 100
         ctrl1_y = y1
-        ctrl2_x = x1 + 2 * (x2 - x1) / 3
+        ctrl2_x = x2 - 100
         ctrl2_y = y2
 
         arc = self.canvas.create_line(x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2, smooth=True, width=2,
@@ -57,7 +59,7 @@ class ConnectNodesApp:
         length = self._calculate_bezier_length((x1, y1), (ctrl1_x, ctrl1_y), (ctrl2_x, ctrl2_y), (x2, y2))
         self.length_label.config(text=f"Arc Length: {length:.2f}")
 
-        return arc, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y)
+        return arc, [ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y]
 
     def _update_arc(self, arc, start, end, control_points):
         self.canvas.coords(arc, *self._calculate_arc_coords(start, end, control_points))
@@ -140,26 +142,21 @@ class ConnectNodesApp:
             coords = self.canvas.coords(arc)
             if coords:
                 x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2 = coords
-
-                ctrl1_x += dx / 3
-                ctrl1_y += dy / 3
-                ctrl2_x += dx / 3
-                ctrl2_y += dy / 3
+                ctrl1_x += dx
+                ctrl1_y += dy
+                ctrl2_x += dx
+                ctrl2_y += dy
 
                 self.canvas.coords(arc, x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2)
 
-                for i, (a, rect1, rect2, _) in enumerate(self.arcs):
-                    if a == arc:
-                        self.arcs[i] = (arc, rect1, rect2, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
-                        rect1_center = self._get_center(rect1)
-                        rect2_center = self._get_center(rect2)
-                        self._update_arc(arc, rect1_center, rect2_center, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
-                        length = self._calculate_bezier_length(rect1_center, (ctrl1_x, ctrl1_y), (ctrl2_x, ctrl2_y),
-                                                               rect2_center)
+                for arc_data in self.arcs:
+                    if arc_data[0] == arc:
+                        arc_data[3] = [ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y]
+                        length = self._calculate_bezier_length((x1, y1), (ctrl1_x, ctrl1_y), (ctrl2_x, ctrl2_y),
+                                                               (x2, y2))
                         self.length_label.config(text=f"Arc Length: {length:.2f}")
-                        break
 
-            self.drag_start = x, y
+                self.drag_start = event.x, event.y
 
 
 if __name__ == "__main__":
