@@ -437,7 +437,6 @@ class CreateImg(T):
         # # 计算两个点之间的中点
         # cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
         #
-        #
         # # 计算控制点，使弧线在任意角度都能正确连接
         # dx, dy = x2 - x1, y2 - y1
         #
@@ -464,7 +463,7 @@ class CreateImg(T):
 
         # arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, dash=(5, 3), tags='arc')
         arc = self.app.create_line(x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2, smooth=True, width=2,
-                                   dash=(5, 3), tags='arc')
+                                   dash=(10, 10), tags='arc')
 
         self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
         self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
