@@ -386,7 +386,7 @@ class CreateImg(T):
 
         # 计算小矩形坐标
         small_half = self.small_rect_size / 2
-        small_offset = half_w + small_half - 10  # 偏移量
+        small_offset = half_w + small_half - 130  # 偏移量
 
         self.get_current_info()
 
