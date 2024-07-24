@@ -517,13 +517,13 @@ def update_arc_px(cur, pre):
 def update_px(length, start=True, clear=False):
     global px
     if clear:
+        px = 0
         canvas.itemconfig('实时路线', text="%.2fm" % 0)
         return
     if start:
         px += length
     else:
         px -= length
-
     canvas.itemconfig('实时路线', text="%.2fm" % px)
 
 

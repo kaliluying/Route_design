@@ -47,7 +47,7 @@ class Focus:
         self.create_frame()
         self.remove()
         if obstacle == "oxer":
-            ttk.Label(self.frame, text='A-->B(m):').grid(row=0, column=0, sticky='e', padx=5, pady=5)
+            ttk.Label(self.frame, text='伸展长度(cm):').grid(row=0, column=0, sticky='e', padx=5, pady=5)
             var_a_b = ttk.StringVar(value=info[0] if info else '')
             a_b = Entry(self.frame, textvariable=var_a_b, width=5)
             a_b.grid(row=0, column=1, sticky='w', padx=5, pady=5)

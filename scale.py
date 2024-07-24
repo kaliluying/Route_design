@@ -79,7 +79,7 @@ class T:
             self.startx = event[0]
             self.starty = event[1]
         self.tag = tag
-        set_cur(self.id)
+        set_cur(self.tag)
         self.app.lift(self.tag)
 
     def drag(self, tag, event):
@@ -530,8 +530,6 @@ class CreateImg(T):
             ctrl2_x += dx / 3
             ctrl2_y += dy / 3
 
-
-
             # ctrl1_x = (2 * x1 + x2) / 3
             # ctrl1_y = (2 * y1 + y2) / 3
             # ctrl2_x = (x1 + 2 * x2) / 3
@@ -647,8 +645,11 @@ class CreateImg(T):
                 messagebox.showerror("错误", "请输入数字")
                 i.delete(0, 'end')
                 return
-        if self.obstacle == "oxer" or self.obstacle == "tirail" or self.obstacle == "four":
+        if self.obstacle == "tirail" or self.obstacle == "four":
             val = float(self.info[0]) * 10
+            self.img_update(val, oxer=self.obstacle)
+        elif self.obstacle == "oxer":
+            val = float(self.info[0]) / 10
             self.img_update(val, oxer=self.obstacle)
         elif self.obstacle == "combination_ab":
             temp = {}
