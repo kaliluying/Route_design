@@ -577,6 +577,7 @@ def leftButtonUp(event):
         stack.append(('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
     if len(canvas.find_withtag('choice_start')) == 1:
         canvas.delete('choice')
+        choice_tup.clear()
 
 
 def drag():
@@ -828,7 +829,7 @@ def pop(id=None):
                 for arc_ in arc_list:
                     if i in arc_:
                         length = compute_arc_length(i)
-                        update_px(length/10, start=False)
+                        update_px(length / 10, start=False)
                 canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
             except KeyError:
                 pass
@@ -1084,6 +1085,28 @@ def undo(event):
             obj.rotate(obj.id, rotate_[-1])
 
 
+def tit_click(event):
+    """
+    标题栏点击
+    :param event:
+    :return:
+    """
+    global tit_x, tit_y
+    tit_x, tit_y = event.x, event.y
+
+
+def tit_move(event):
+    """
+    标题栏移动
+    :param event:
+    :return:
+    """
+    global tit_x, tit_y
+    set_frame_stare(False)
+    canvas.move('比赛名称', event.x - tit_x, event.y - tit_y)
+    tit_x, tit_y = event.x, event.y
+
+
 frame_map = ttk.Frame(win, name="路线图")
 frame_map.place(x=10, y=10)
 
@@ -1254,6 +1277,10 @@ canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 
 # 标题
 canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称', font=("微软雅黑", 18), tags=('比赛名称', '不框选'))
+tit_x = 0
+tit_y = 0
+canvas.tag_bind('比赛名称', '<Button-1>', tit_click)
+canvas.tag_bind('比赛名称', '<B1-Motion>', tit_move)
 
 # 赛事信息主容器
 frame_info = ttk.Frame(win)
@@ -1336,5 +1363,14 @@ win.bind('<BackSpace>', delete)
 t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
 t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
 t.start()
+
+# def processWheel(event):
+#     if event.delta > 0:
+#         # 滚轮往上滚动，放大
+#     else:
+#             # 滚轮往下滚动，缩小
+
+# 绑定滚轮事件
+# canvas.bind("<MouseWheel>", processWheel)
 
 win.mainloop()
