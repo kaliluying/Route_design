@@ -351,7 +351,7 @@ def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
 
 def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
     """
-
+    ABC组合障碍更新
     :param a:
     :param b:
     :param c:
@@ -380,6 +380,7 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
 
 def obs_ab(a=0, b=0, a_b=30):
     """
+    AB组合障碍更新
     :param a:
     :param b:
     :param a_b:
@@ -391,8 +392,10 @@ def obs_ab(a=0, b=0, a_b=30):
     img_obj2 = Image.open(b_img)
     result = Image.new(img_obj.mode, (a + b + a_b + 50, 40))
     result.paste(img_obj, box=(0, 0))
-    result.paste(img_obj2, box=(a + a_b, 0))
-    # result.paste(img_obj2, box=(a + a_b - (int(a / 2) if a else 5), 0))
+    # result.paste(img_obj2, box=(a + a_b, 0))
+    spacing = 15 if a and not b else 5
+
+    result.paste(img_obj2, box=(a + a_b - (0 if not a and not b else spacing), 0))
     com_image = "img/obs_ab.png"
     result.save(com_image)
     return com_image
