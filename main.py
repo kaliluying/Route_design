@@ -392,8 +392,8 @@ def found():
     # if w.isdigit() and h.isdigit():
     WIDTH = int(float(w) * 10)
     HEIGHT = int(float(h) * 10)
-    canvas.config(width=WIDTH + 30, height=HEIGHT + 80)
-    canvas.coords('实际画布', 30, 50, WIDTH + 15, HEIGHT + 50)
+    canvas.config(width=WIDTH + 30, height=HEIGHT + 180)
+    canvas.coords('实际画布', 30, 150, WIDTH + 15, HEIGHT + 150)
     # canvas.place(x=175, y=130)
     # but1.place(x=WIDTH + 260, y=700)
     # but2.place(x=WIDTH + 360, y=700)
@@ -403,14 +403,14 @@ def found():
     hei = HEIGHT / 10
     canvas.itemconfig('长', text=f"长：{wid}m")
     canvas.itemconfig('宽', text=f"宽：{hei}m")
-    canvas.coords('长', WIDTH - 40, 60)
-    canvas.coords('宽', WIDTH - 40, 80)
-    canvas.coords('实时路线', WIDTH - 40, 30)
-    canvas.coords('障碍x', 35, HEIGHT + 60)
-    canvas.coords('障碍y', 35, HEIGHT + 70)
-    canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 60)
-    canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 70)
-    canvas.coords('比赛名称', (WIDTH + 40) / 2, 20)
+    canvas.coords('长', WIDTH - 40, 160)
+    canvas.coords('宽', WIDTH - 40, 180)
+    canvas.coords('实时路线', WIDTH - 40, 130)
+    canvas.coords('障碍x', 35, HEIGHT + 160)
+    canvas.coords('障碍y', 35, HEIGHT + 170)
+    canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 160)
+    canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 170)
+    # canvas.coords('比赛名称', (WIDTH + 40) / 2, 120)
     canvas.delete('bg')
     try:
         img = Image.open(fg_path)
@@ -422,7 +422,7 @@ def found():
 
     if state_f:
         font = 0.16 if sys_name == 'Darwin' else 0.1
-        watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+        watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 220) / 2, text="山东体育学院",
                                        font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                        tags=("watermark", '不框选'))
         canvas.lower("watermark")
@@ -1107,6 +1107,28 @@ def tit_move(event):
     tit_x, tit_y = event.x, event.y
 
 
+def level_click(event):
+    """
+    等级按钮点击
+    :param event:
+    :return:
+    """
+    global level_x, level_y
+    level_x, level_y = event.x, event.y
+
+
+def level_move(event):
+    """
+    等级按钮移动
+    :param event:
+    :return:
+    """
+    global level_x, level_y
+    set_frame_stare(False)
+    canvas.move('级别赛制', event.x - level_x, event.y - level_y)
+    level_x, level_y = event.x, event.y
+
+
 frame_map = ttk.Frame(win, name="路线图")
 frame_map.place(x=10, y=10)
 
@@ -1224,22 +1246,22 @@ but_1.grid(row=0, column=0, padx=1, pady=1)
 ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1,
                                                                                                     padx=0, pady=0)
 
-canvas.create_rectangle(30, 50, WIDTH + 15, HEIGHT + 50, state='disabled', tags=('不框选', '实际画布'))
+canvas.create_rectangle(30, 150, WIDTH + 15, HEIGHT + 150, state='disabled', tags=('不框选', '实际画布'))
 
 # 右上角显示路线长宽
 w = WIDTH / 10
 h = HEIGHT / 10
-h1 = canvas.create_text(WIDTH - 40, 60, text=f"长：{w}m", tags=('辅助信息', '不框选', '长'))
-h2 = canvas.create_text(WIDTH - 40, 80, text=f"宽：{h}m", tags=('辅助信息', '不框选', '宽'))
+h1 = canvas.create_text(WIDTH - 40, 160, text=f"长：{w}m", tags=('辅助信息', '不框选', '长'))
+h2 = canvas.create_text(WIDTH - 40, 180, text=f"宽：{h}m", tags=('辅助信息', '不框选', '宽'))
 
 # 左上角显示 5m的距离
-canvas.create_text(60, 60, text="5m", tags=('辅助信息', '不框选'))
-canvas.create_line(35, 65, 35, 70, tags=('辅助信息', '不框选'))
-canvas.create_line(85, 65, 85, 70, tags=('辅助信息', '不框选'))
-canvas.create_line(35, 70, 85, 70, tags=('辅助信息', '不框选'))
+canvas.create_text(60, 160, text="5m", tags=('辅助信息', '不框选'))
+canvas.create_line(35, 165, 35, 170, tags=('辅助信息', '不框选'))
+canvas.create_line(85, 165, 85, 170, tags=('辅助信息', '不框选'))
+canvas.create_line(35, 170, 85, 170, tags=('辅助信息', '不框选'))
 
 # 右上显示，路线长度
-canvas.create_text(WIDTH - 40, 30, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
+canvas.create_text(WIDTH - 40, 130, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
 
 
 # 鼠标实时坐标
@@ -1251,22 +1273,22 @@ def shu(event):
 
 
 # 右下角显示鼠标实时坐标
-canvas.create_text(WIDTH - 10, HEIGHT + 60, text='x:', tags=('辅助信息', '不框选', '鼠标x'))
-canvas.create_text(WIDTH - 10, HEIGHT + 70, text='y:', tags=('辅助信息', '不框选', '鼠标y'))
+canvas.create_text(WIDTH - 10, HEIGHT + 160, text='x:', tags=('辅助信息', '不框选', '鼠标x'))
+canvas.create_text(WIDTH - 10, HEIGHT + 170, text='y:', tags=('辅助信息', '不框选', '鼠标y'))
 
 canvas.bind('<Motion>', shu)
 
 # 左下显示当前障碍坐标
-canvas.create_text(35, HEIGHT + 60, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
-canvas.create_text(35, HEIGHT + 70, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
+canvas.create_text(35, HEIGHT + 160, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
+canvas.create_text(35, HEIGHT + 170, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
 
 # 水印
 font = 0.16 if sys_name == 'Darwin' else 0.1
-# watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="山东体育学院",
+# watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 220) / 2, text="山东体育学院",
 #                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
 #                                tags=("watermark", '不框选'), state='disabled')
 
-watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 20) / 2, text="DEMO",
+watermark = canvas.create_text((WIDTH + 35) / 2, (HEIGHT + 220) / 2, text="DEMO",
                                font=("行楷", int(WIDTH * font), "bold", "italic"), fill="#e4e4dc",
                                tags=("watermark", '不框选'), state='disabled')
 
@@ -1281,6 +1303,14 @@ tit_x = 0
 tit_y = 0
 canvas.tag_bind('比赛名称', '<Button-1>', tit_click)
 canvas.tag_bind('比赛名称', '<B1-Motion>', tit_move)
+
+# 赛事级别
+canvas.create_text((WIDTH + 40) / 2, 40, text='级别赛制', font=("微软雅黑", 14), tags=('级别赛制', '不框选'))
+
+level_x = 0
+level_y = 0
+canvas.tag_bind('级别赛制', '<Button-1>', level_click)
+canvas.tag_bind('级别赛制', '<B1-Motion>', level_move)
 
 # 赛事信息主容器
 frame_info = ttk.Frame(win)
