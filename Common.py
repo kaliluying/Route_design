@@ -85,7 +85,6 @@ what = ttk.IntVar(value=0)
 CONFIRM_STYLE = 'success-outline'
 BUTTON_STYLE = 'outline'
 
-
 canvas = ttk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 180, highlightthickness=0)
 canvas.place(x=175, y=100)
 canvas.image_data = {}
