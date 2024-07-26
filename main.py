@@ -249,13 +249,13 @@ def custom():
     """
     global index_img
 
-    img_path = filedialog.askopenfilename(title='选择Excel文件', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+    img_path = filedialog.askopenfilename(title='选择图片', filetypes=[("image", "*.jpg"), ("image", "*.png")])
 
     # image_path = expand(adjust_image_size(img_path))
     # image_path = start_direction(image_path)
     # image_path = start_direction(img_path)
     index_img += 1
-    CreateImg(canvas, index_img).create(img_path)
+    CreateImg(canvas, index_img, obstacle='diy').create(img_path)
     drag()
 
 
@@ -1394,13 +1394,29 @@ t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
 t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
 t.start()
 
-# def processWheel(event):
-#     if event.delta > 0:
-#         # 滚轮往上滚动，放大
-#     else:
-#             # 滚轮往下滚动，缩小
+
+def processWheel(event):
+
+    id, width, height, img_path, img_obj = get_diy_obstacle()[-1]
+    inner = get_scale_ratio()
+    scale = inner[id]
+    if event.delta > 0:
+        scale *= 1.1
+    else:
+        scale /= 1.1
+
+    new_width = int(width * scale)
+    new_height = int(height * scale)
+    resized_image = img_obj.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    image_tk = ImageTk.PhotoImage(resized_image)
+
+    inner[id] = scale
+    set_scale_ratio(inner)
+
+    get_obstacle().zoom(id, image_tk)
+
 
 # 绑定滚轮事件
-# canvas.bind("<MouseWheel>", processWheel)
+canvas.bind("<MouseWheel>", processWheel)
 
 win.mainloop()

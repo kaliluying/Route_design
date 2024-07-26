@@ -1,5 +1,7 @@
 import base64
+import datetime
 import io
+import shutil
 import sys
 from functools import partial
 
@@ -274,6 +276,19 @@ class CreateImg(T):
 
         if check_var.get():
             self.draw_rectangles()
+
+        if self.obstacle == 'diy':
+            set_scale_ratio({self.id: 1.0})
+            set_diy_obstacle((self.id, self.width, self.height, self.img_path, self.img_obj))
+
+    def zoom(self, id, img_obj):
+        """
+        放大缩小图片
+        :param event:
+        :return:
+        """
+        self.temp_path = img_obj
+        canvas.itemconfig(id, image=self.temp_path)
 
     def mousedown(self, tag, event):
         """

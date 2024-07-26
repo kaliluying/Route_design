@@ -34,6 +34,48 @@ arc_list = []
 # 矩形中心
 rect_center = []
 
+# 当前自定义障碍
+current_diy_obstacle = []
+
+# 缩放比例
+scale_ratio = {}
+
+
+def set_scale_ratio(ratio):
+    """
+    设置缩放比例
+    :param ratio:
+    :return:
+    """
+    global scale_ratio
+    scale_ratio.update(ratio)
+
+
+def get_scale_ratio():
+    """
+    获取缩放比例
+    :return:
+    """
+    return scale_ratio
+
+
+def set_diy_obstacle(obstacle):
+    """
+    设置自定义障碍
+    :param obstacle:
+    :return:
+    """
+    global current_diy_obstacle
+    current_diy_obstacle.append(obstacle)
+
+
+def get_diy_obstacle():
+    """
+    获取自定义障碍
+    :return:
+    """
+    return current_diy_obstacle
+
 
 def set_rect_center(center):
     """
