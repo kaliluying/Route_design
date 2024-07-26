@@ -1,7 +1,6 @@
 import base64
 import datetime
 import io
-import shutil
 import sys
 from functools import partial
 
