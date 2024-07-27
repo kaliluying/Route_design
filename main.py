@@ -1396,24 +1396,7 @@ t.start()
 
 
 def processWheel(event):
-
-    id, width, height, img_path, img_obj = get_diy_obstacle()[-1]
-    inner = get_scale_ratio()
-    scale = inner[id]
-    if event.delta > 0:
-        scale *= 1.1
-    else:
-        scale /= 1.1
-
-    new_width = int(width * scale)
-    new_height = int(height * scale)
-    resized_image = img_obj.resize((new_width, new_height), Image.Resampling.LANCZOS)
-    image_tk = ImageTk.PhotoImage(resized_image)
-
-    inner[id] = scale
-    set_scale_ratio(inner)
-
-    get_obstacle().zoom(id, image_tk)
+    get_obstacle().zoom(event)
 
 
 # 绑定滚轮事件
