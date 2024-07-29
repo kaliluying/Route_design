@@ -307,6 +307,10 @@ def dle():
                 temp_txt = data_dict.get(title, "")
                 canvas.itemconfig('比赛名称', text=temp_txt)
                 continue
+            elif title == '级别赛制':
+                temp_txt = data_dict.get(title, "")
+                canvas.itemconfig('级别赛制', text=temp_txt)
+                continue
             title_label = ttk.Label(frame_info, text=title + ":")
             title_label.grid(row=i, column=0, sticky="e", padx=5, pady=5)
 
@@ -951,22 +955,35 @@ def save():
                                         initialdir=os.getcwd() + '/backup', initialfile=txt)
     if path:
         save_dict = {}
+
+        # 保存障碍信息
         for i in T.all_instances:
             if i.ui_state:
                 save_dict.update(i.save())
 
+        # 保存路线图长度
         save_dict['var_l_w'] = var_l_w.get()
+        # 保存路线图宽度
         save_dict['var_l_h'] = var_l_h.get()
+        # 保存赛事信息
         save_dict['filtered_dict'] = filtered_dict
+        # 保存路线
         save_dict['lines'] = lines
+        # 保存全局障碍长度
         save_dict['var_len'] = var_len.get()
+        # 保存弧线信息
         temp_arc = []
         for arc, rect1, rect2, control_point in arc_list:
             rect1_center = get_center(rect1)
             rect2_center = get_center(rect2)
             temp_arc.append((arc, rect1, rect2, rect1_center, rect2_center, control_point))
         save_dict['arc_list'] = temp_arc
+        # 保存图片索引
         save_dict['index_img'] = index_img
+        # 保存比赛名称位置
+        save_dict['title'] = canvas.coords('比赛名称')
+        # 保存级别赛制
+        save_dict['level'] = canvas.coords('级别赛制')
 
         if sys_name == 'Windows':
             path += '.json'
@@ -993,6 +1010,10 @@ def load():
             for i in T.all_instances:
                 canvas.delete(i.tag)
             canvas.delete('arc')
+
+            # 加载标题坐标
+            canvas.coords('比赛名称', state['title'])
+            canvas.coords('级别赛制', state['level'])
 
             # 加载弧线
             set_rect_center(state['arc_list'])

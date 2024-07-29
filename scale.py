@@ -260,9 +260,12 @@ class CreateImg(T):
     def create(self, img_path, img_obj=None):
         self.tag = "img-" + self.index
         self.img_path = img_path
-        self.img_obj = img_obj if img_obj else Image.open(self.img_path)
-        self.width, self.height = self.img_obj.size
-        self.img_file = ImageTk.PhotoImage(self.img_obj)
+        # self.img_obj = img_obj if img_obj else Image.open(self.img_path)
+        # self.width, self.height = self.img_obj.size
+        # self.img_file = ImageTk.PhotoImage(self.img_obj)
+        self.img = img_obj if img_obj else Image.open(self.img_path)
+        self.width, self.height = self.img.size
+        self.img_file = ImageTk.PhotoImage(self.img)
         # self.create_rectangle_at_angle(self.angle)
         img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file, tag=self.tag)
         self.id = img_id
@@ -297,12 +300,12 @@ class CreateImg(T):
             pass
         new_width = int(self.width * self.scale_ratio)
         new_height = int(self.height * self.scale_ratio)
-        resized_image = self.img_obj.resize((new_width, new_height), Image.Resampling.LANCZOS)
-        image_tk = ImageTk.PhotoImage(resized_image)
-
-        self.img_obj = resized_image
-
-        self.temp_path = image_tk
+        img_obj = Image.open(self.img_path)
+        resized_image = img_obj.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        print(self.angle, 'zoom')
+        img2 = resized_image.convert('RGBA')
+        self.img = img2.rotate(-self.angle, expand=True, resample=Image.BICUBIC)
+        self.temp_path = ImageTk.PhotoImage(self.img)
         canvas.itemconfig(self.id, image=self.temp_path)
 
     def mousedown(self, tag, event):
@@ -847,10 +850,8 @@ class CreateImg(T):
         :param angle: 旋转角度 正为逆时针旋转，反之
         :return: 返回图对象
         """
-        img = self.img_obj
-        # print(img)
-        # print(self.img_obj)
-
+        print(angle)
+        img = self.img
         img2 = img.convert('RGBA')
         img2 = img2.rotate(angle, expand=True, resample=Image.BICUBIC)
         # 更强的平滑滤镜
