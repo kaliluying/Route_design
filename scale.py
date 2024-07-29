@@ -196,10 +196,10 @@ class CreateImg(T):
         self.selected_rects = []
         self.small_rect_size = 10
         self.var = None  # 旋转输入框
-        self.img = None  # 图片
+        self.img = None  # 原始图片
         self.frame_input = None  # 输入框列表
         self.img_path = None  # 图片路径
-        self.img_obj = None  # 图片对象
+        self.img_obj = None  # 操作图片对象
         self.temp_path = None  # 临时路径
         self.img_file = None
         self.obstacle = obstacle  # 障碍类别
@@ -263,9 +263,10 @@ class CreateImg(T):
         # self.img_obj = img_obj if img_obj else Image.open(self.img_path)
         # self.width, self.height = self.img_obj.size
         # self.img_file = ImageTk.PhotoImage(self.img_obj)
-        self.img = img_obj if img_obj else Image.open(self.img_path)
+        self.img = Image.open(self.img_path)
+        self.img_obj = img_obj if img_obj else Image.open(self.img_path)
         self.width, self.height = self.img.size
-        self.img_file = ImageTk.PhotoImage(self.img)
+        self.img_file = ImageTk.PhotoImage(self.img_obj)
         # self.create_rectangle_at_angle(self.angle)
         img_id = self.app.create_image(self.current_x, self.current_y, image=self.img_file, tag=self.tag)
         self.id = img_id
@@ -302,10 +303,9 @@ class CreateImg(T):
         new_height = int(self.height * self.scale_ratio)
         img_obj = Image.open(self.img_path)
         resized_image = img_obj.resize((new_width, new_height), Image.Resampling.LANCZOS)
-        print(self.angle, 'zoom')
         img2 = resized_image.convert('RGBA')
-        self.img = img2.rotate(-self.angle, expand=True, resample=Image.BICUBIC)
-        self.temp_path = ImageTk.PhotoImage(self.img)
+        self.img_obj = img2.rotate(self.angle, expand=True, resample=Image.BICUBIC)
+        self.temp_path = ImageTk.PhotoImage(self.img_obj)
         canvas.itemconfig(self.id, image=self.temp_path)
 
     def mousedown(self, tag, event):
@@ -696,8 +696,8 @@ class CreateImg(T):
             a, a_b, b = temp.values()
             a, a_b, b = round(a), round(a_b), round(b)
             self.img_path = obs_ab(a, b, a_b)
-            self.img = Image.open(self.img_path)
-            self.temp_path = ImageTk.PhotoImage(self.img)
+            self.img_obj = Image.open(self.img_path)
+            self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == "combination_abc":
             temp = {}
@@ -715,29 +715,29 @@ class CreateImg(T):
                                  round(b_c),
                                  round(c))
             self.img_path = oxer_obs_abc(a, b, c, a_b, b_c)
-            self.img = Image.open(self.img_path)
-            self.temp_path = ImageTk.PhotoImage(self.img)
+            self.img_obj = Image.open(self.img_path)
+            self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == 'water':
             w = int(float(self.info[0]) * 10)
             h = int(float(self.info[1]) * 10)
             self.img_path = water_wh(w, h)
-            self.img = Image.open(self.img_path)
-            self.temp_path = ImageTk.PhotoImage(self.img)
+            self.img_obj = Image.open(self.img_path)
+            self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == 'live':
             w = int(float(self.com_info['water_w_ent']) * 10)
             h = int(float(self.com_info['water_h_ent']) * 10)
             self.img_path = live_edit(w, h)
-            self.img = Image.open(self.img_path)
-            self.temp_path = ImageTk.PhotoImage(self.img)
+            self.img_obj = Image.open(self.img_path)
+            self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         self.to_rotate(self.tag, self.angle)
 
     def img_update(self, m, oxer=None):
         self.img_path = merge(int(m), oxer=oxer)
-        self.img = Image.open(self.img_path)
-        self.temp_path = ImageTk.PhotoImage(self.img)
+        self.img_obj = Image.open(self.img_path)
+        self.temp_path = ImageTk.PhotoImage(self.img_obj)
         self.app.itemconfig(self.tag, image=self.temp_path)
 
     @staticmethod
@@ -830,8 +830,8 @@ class CreateImg(T):
         :param id:
         :return:
         """
-        self.img = self.rotate_bound(angle)
-        self.temp_path = ImageTk.PhotoImage(self.img)
+        self.img_obj = self.rotate_bound(angle)
+        self.temp_path = ImageTk.PhotoImage(self.img_obj)
         canvas.itemconfig(self.id, image=self.temp_path)
         self.var.set(str(int(angle)))
         set_cur(self.id)
@@ -850,8 +850,12 @@ class CreateImg(T):
         :param angle: 旋转角度 正为逆时针旋转，反之
         :return: 返回图对象
         """
-        print(angle)
         img = self.img
+
+        new_width = int(self.width * self.scale_ratio)
+        new_height = int(self.height * self.scale_ratio)
+        img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
         img2 = img.convert('RGBA')
         img2 = img2.rotate(angle, expand=True, resample=Image.BICUBIC)
         # 更强的平滑滤镜
