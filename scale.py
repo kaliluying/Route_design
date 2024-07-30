@@ -438,19 +438,19 @@ class CreateImg(T):
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
                                                    tag=self.tag + 'right_rect')
 
-        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-        x1 = left_center_x + 130 * math.cos(math.radians(-self.angle))
-        y1 = left_center_y + 130 * math.sin(math.radians(-self.angle))
-
-        self.line_tag = self.app.create_line(x1, y1, left_center_x, left_center_y, dash=(5, 3),
-                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect'))
-
-        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-        x2 = right_center_x - 50 * math.cos(math.radians(-self.angle))
-        y2 = right_center_y - 50 * math.sin(math.radians(-self.angle))
-
-        self.line_tag = self.app.create_line(right_center_x, right_center_y, x2, y2, dash=(5, 3),
-                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect'))
+        # # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        # x1 = left_center_x + 130 * math.cos(math.radians(-self.angle))
+        # y1 = left_center_y + 130 * math.sin(math.radians(-self.angle))
+        #
+        # self.line_tag = self.app.create_line(x1, y1, left_center_x, left_center_y, dash=(5, 3),
+        #                                      tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect'))
+        #
+        # # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        # x2 = right_center_x - 50 * math.cos(math.radians(-self.angle))
+        # y2 = right_center_y - 50 * math.sin(math.radians(-self.angle))
+        #
+        # self.line_tag = self.app.create_line(right_center_x, right_center_y, x2, y2, dash=(5, 3),
+        #                                      tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect'))
 
         self.app.tag_bind(self.left_rect, '<Button-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
@@ -483,6 +483,20 @@ class CreateImg(T):
     def create_arc(self, start, end, control_point=None):
         x1, y1 = start
         x2, y2 = end
+
+        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        left_center_x = x1 + 130 * math.cos(math.radians(-self.angle))
+        left_center_y = y1 + 130 * math.sin(math.radians(-self.angle))
+
+        self.line_tag = self.app.create_line(left_center_x, left_center_y, x1, y1, dash=(5, 3),
+                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect'))
+
+        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        right_center_x = x2 - 50 * math.cos(math.radians(-self.angle))
+        right_center_y = y2 - 50 * math.sin(math.radians(-self.angle))
+
+        self.line_tag = self.app.create_line(x2, y2, right_center_x, right_center_y, dash=(5, 3),
+                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect'))
 
         # # 计算两个点之间的中点
         # cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
