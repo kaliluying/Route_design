@@ -234,6 +234,8 @@ line_image = "img/line.png"
 gate_image = "img/gate.png"
 # 树木
 tree_image = "img/tree.png"
+# 小丑
+joker_image = "img/joker.png"
 
 # icon
 icon_path = "img/ic.png"

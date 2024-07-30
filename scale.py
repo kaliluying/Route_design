@@ -419,22 +419,39 @@ class CreateImg(T):
 
         # 计算小矩形坐标
         small_half = self.small_rect_size / 2
-        small_offset = half_w + small_half - 130  # 偏移量
+
+        # small_offset = half_w + small_half - 130  # 偏移量
+        left_small_offset = half_w + small_half + 130  # 偏移量
+
+        right_small_offset = half_w + small_half + 50  # 偏移量
 
         self.get_current_info()
 
-        left_center_x = self.current_x - small_offset * cos_angle
-        left_center_y = self.current_y - small_offset * sin_angle
+        left_center_x = self.current_x - left_small_offset * cos_angle
+        left_center_y = self.current_y - left_small_offset * sin_angle
 
-        right_center_x = self.current_x + small_offset * cos_angle
-        right_center_y = self.current_y + small_offset * sin_angle
+        right_center_x = self.current_x + right_small_offset * cos_angle
+        right_center_y = self.current_y + right_small_offset * sin_angle
 
         self.left_rect = self.create_rotated_rect(left_center_x, left_center_y, small_half, angle_rad, "red",
                                                   tag=self.tag + 'left_rect')
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
                                                    tag=self.tag + 'right_rect')
-        # canvas.tag_lower(self.left_rect, self.id)
-        # canvas.tag_lower(self.right_rect, self.id)
+
+        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        x1 = left_center_x + 130 * math.cos(math.radians(-self.angle))
+        y1 = left_center_y + 130 * math.sin(math.radians(-self.angle))
+
+        self.line_tag = self.app.create_line(x1, y1, left_center_x, left_center_y, dash=(5, 3),
+                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect'))
+
+        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        x2 = right_center_x - 50 * math.cos(math.radians(-self.angle))
+        y2 = right_center_y - 50 * math.sin(math.radians(-self.angle))
+
+        self.line_tag = self.app.create_line(right_center_x, right_center_y, x2, y2, dash=(5, 3),
+                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect'))
+
         self.app.tag_bind(self.left_rect, '<Button-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
         self.app.tag_bind(self.right_rect, '<Button-1>',
@@ -495,8 +512,8 @@ class CreateImg(T):
         # ctrl_x, ctrl_y = cx + dy / 2, cy - dx / 2
 
         # arc = self.app.create_line(x1, y1, ctrl_x, ctrl_y, x2, y2, smooth=True, width=2, dash=(5, 3), tags='arc')
-        arc = self.app.create_line(x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2, smooth=True, width=2,
-                                   dash=(10, 10), tags='arc')
+        arc = self.app.create_line(x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2, smooth=True, width=1,
+                                   dash=(5, 3), tags='arc')
 
         self.app.tag_bind(arc, '<ButtonPress-1>', lambda event, arc=arc: self.on_arc_click(event, arc))
         self.app.tag_bind(arc, '<B1-Motion>', lambda event, arc=arc: self.on_arc_drag(event, arc))
@@ -517,15 +534,15 @@ class CreateImg(T):
         x2, y2 = end
 
         if control_point is None:
-            # ctrl1_x = x1 + (x2 - x1) / 3
-            # ctrl1_y = y1
-            # ctrl2_x = x1 + 2 * (x2 - x1) / 3
-            # ctrl2_y = y2
-
-            ctrl1_x = x1 + 100
+            ctrl1_x = x1 + (x2 - x1) / 3
             ctrl1_y = y1
-            ctrl2_x = x2 - 100
+            ctrl2_x = x1 + 2 * (x2 - x1) / 3
             ctrl2_y = y2
+
+            # ctrl1_x = x1 + 100
+            # ctrl1_y = y1
+            # ctrl2_x = x2 - 100
+            # ctrl2_y = y2
         else:
             ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y = control_point
 

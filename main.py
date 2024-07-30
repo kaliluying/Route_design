@@ -226,6 +226,18 @@ def tree():
     drag()
 
 
+def joker():
+    """
+    幸运转盘
+    :return:
+    """
+    global index_img
+    index_img += 1
+    image_path = expand(joker_image)
+    CreateImg(canvas, index_img).create(image_path)
+    drag()
+
+
 def circular():
     """
     圆
@@ -1361,6 +1373,7 @@ obstacle_menu = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="障碍", menu=obstacle_menu)
 obstacle_menu.add_command(label="四横木", command=four)
 obstacle_menu.add_command(label="树", command=tree)
+obstacle_menu.add_command(label="小丑", command=joker)
 
 # 工具栏
 menuType = ttk.Menu(menu, tearoff=0)
