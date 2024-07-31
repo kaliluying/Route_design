@@ -91,6 +91,24 @@ def get_arc_start_obj():
     return arc_start_obj
 
 
+def get_arc_end_obj():
+    """
+    获取弧线的终止对象
+    :return:
+    """
+    return arc_end_obj
+
+
+def set_arc_end_obj(obj):
+    """
+    设置弧线的终止对象
+    :param obj:
+    :return:
+    """
+    global arc_end_obj
+    arc_end_obj = obj
+
+
 def set_arc_start(start):
     """
     设置弧线的起始点

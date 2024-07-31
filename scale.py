@@ -94,6 +94,7 @@ class T:
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
+            # self.app.move(tag, event.x - self.startx, event.y - self.starty)
             # self.app.move('point', event.x - self.startx, event.y - self.starty)
             # if self.line_tag:
             #     self.app.move(self.line_tag, event.x - self.startx, event.y - self.starty)
@@ -378,7 +379,6 @@ class CreateImg(T):
             for arc, rect1, rect2, control_point in arc_list:
                 rect1_center = self._get_center(rect1)
                 rect2_center = self._get_center(rect2)
-
                 self._update_arc(arc, rect1_center, rect2_center, control_point)
 
                 # new_arc = self.create_arc(rect1_center, rect2_center)
@@ -468,11 +468,11 @@ class CreateImg(T):
         cy = sum(y_coords) / 4
         if arc_click:
             start = get_arc_start()
+            set_arc_end_obj(tag)
             arc_click = 0
             arc, control_points = self.create_arc(start, (cx, cy))
             # calculate_bezier_length(arc)
             rect1, rect2 = get_arc_start_obj(), tag
-
             arc_list.append((arc, rect1, rect2, control_points))
 
         else:
@@ -484,22 +484,34 @@ class CreateImg(T):
         x1, y1 = start
         x2, y2 = end
 
-        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-        left_center_x = x1 + 130 * math.cos(math.radians(-self.angle))
-        left_center_y = y1 + 130 * math.sin(math.radians(-self.angle))
+        start_obj = get_arc_start_obj()
+        end_obj = get_arc_end_obj()
+        if 'left' in start_obj:
+            left_obj = start_obj.split('left')[0]
+            left_x, left_y = x1, y1
+        elif 'left' in end_obj:
+            left_obj = end_obj.split('left')[0]
+            left_x, left_y = x2, y2
 
-        self.line_tag = self.app.create_line(left_center_x, left_center_y, x1, y1, dash=(5, 3),
+        left_center_x = left_x + 130 * math.cos(math.radians(-self.angle))
+        left_center_y = left_y + 130 * math.sin(math.radians(-self.angle))
+        self.line_tag = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
                                              # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
-                                             tags='arc'
+                                             tags=left_obj
                                              )
+        if 'right' in start_obj:
+            right_x, right_y = x1, y1
+            right_obj = start_obj.split('right')[0]
+        elif 'right' in end_obj:
+            right_x, right_y = x2, y2
+            right_obj = end_obj.split('right')[0]
 
-        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-        right_center_x = x2 - 50 * math.cos(math.radians(-self.angle))
-        right_center_y = y2 - 50 * math.sin(math.radians(-self.angle))
+        right_center_x = right_x - 50 * math.cos(math.radians(-self.angle))
+        right_center_y = right_y - 50 * math.sin(math.radians(-self.angle))
 
-        self.line_tag = self.app.create_line(x2, y2, right_center_x, right_center_y, dash=(5, 3),
+        self.line_tag = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
                                              # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
-                                             tags='arc')
+                                             tags=right_obj)
 
         # # 计算两个点之间的中点
         # cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
