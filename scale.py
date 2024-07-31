@@ -489,14 +489,17 @@ class CreateImg(T):
         left_center_y = y1 + 130 * math.sin(math.radians(-self.angle))
 
         self.line_tag = self.app.create_line(left_center_x, left_center_y, x1, y1, dash=(5, 3),
-                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect'))
+                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
+                                             tags='arc'
+                                             )
 
         # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
         right_center_x = x2 - 50 * math.cos(math.radians(-self.angle))
         right_center_y = y2 - 50 * math.sin(math.radians(-self.angle))
 
         self.line_tag = self.app.create_line(x2, y2, right_center_x, right_center_y, dash=(5, 3),
-                                             tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect'))
+                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
+                                             tags='arc')
 
         # # 计算两个点之间的中点
         # cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
