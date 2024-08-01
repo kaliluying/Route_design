@@ -330,7 +330,7 @@ class CreateImg(T):
 
     def drag(self, tag, event):
         """
-        拖动
+        鼠标拖动
         :param tag:
         :param event:
         :return:
@@ -338,7 +338,6 @@ class CreateImg(T):
         T.drag(self, tag, event)
 
         # 旋转图片
-        # arc_list = get_arc_list()
         if what.get() == 3:
             # 定义点的坐标
             origin = (self.current_x, self.current_y)
@@ -368,24 +367,12 @@ class CreateImg(T):
 
                     self._update_arc(arc, rect1_center, rect2_center, control_point)
 
-                    # new_arc = self.create_arc(rect1_center, rect2_center)
-                    # arc_list.append((new_arc, rect1, rect2))
-                    # arc_list.remove((arc, rect1, rect2))
-                # calculate_bezier_length(new_arc, arc)
-                # self.app.delete(arc)
-
         # 移动图片
         if what.get() == 0:
             for arc, rect1, rect2, control_point in arc_list:
                 rect1_center = self._get_center(rect1)
                 rect2_center = self._get_center(rect2)
                 self._update_arc(arc, rect1_center, rect2_center, control_point)
-
-                # new_arc = self.create_arc(rect1_center, rect2_center)
-                # arc_list.append((new_arc, rect1, rect2))
-                # arc_list.remove((arc, rect1, rect2))
-                # calculate_bezier_length(new_arc, arc)
-                # self.app.delete(arc)
 
     def load_arc(self):
         center_list = get_rect_center()
@@ -513,15 +500,6 @@ class CreateImg(T):
                                              # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
                                              tags=right_obj)
 
-        # # 计算两个点之间的中点
-        # cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
-        #
-        # # 计算控制点，使弧线在任意角度都能正确连接
-        # dx, dy = x2 - x1, y2 - y1
-        #
-        # print(cx, cy, dx, dy)
-
-        # 定义三次贝塞尔曲线的控制点
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
             ctrl1_y = y1
@@ -650,7 +628,7 @@ class CreateImg(T):
             p2[0] + center_x, p2[1] + center_y,
             p3[0] + center_x, p3[1] + center_y,
             p4[0] + center_x, p4[1] + center_y,
-            fill=color, outline="black", tags=(self.tag, self.tag + 'point', 'rect_arc', tag)
+            fill=color, tags=(self.tag, self.tag + 'point', 'rect_arc', tag)
         )
 
     def rotate_point(self, x, y, cos_angle, sin_angle):
@@ -863,6 +841,7 @@ class CreateImg(T):
             angle = var
         angle = angle % 360
         self.angle = angle
+        print(id)
         self.rotate(id, angle)
 
         if state:
