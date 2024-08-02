@@ -61,6 +61,8 @@ class T:
         global choice_tup
         set_frame_stare(False)
         set_obstacle(self)
+        self.app.itemconfig('障碍x', text=f'x:{self.current_x / 10 - 1.5:.2f}')
+        self.app.itemconfig('障碍y', text=f'y:{self.current_y / 10 - 5:.2f}')
         try:
             if choice_tup and not (min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
                                    and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3])):
@@ -254,9 +256,16 @@ class CreateImg(T):
         self.to_rotate(self.tag, self.angle)
 
     def get_current_info(self):
-        bbox = self.app.bbox(self.tag)
-        self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
-        self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
+        """
+        获取当前障碍位置信息
+        :return:
+        """
+        # bbox = self.app.bbox(self.tag)
+        # print(self.app.coords(self.tag))
+        # self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
+        # self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
+        self.current_x, self.current_y = self.app.coords(self.tag)
+        # print(f"当前坐标:({self.current_x}, {self.current_y})")
 
     def create(self, img_path, img_obj=None):
         self.tag = "img-" + self.index
@@ -425,19 +434,19 @@ class CreateImg(T):
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
                                                    tag=self.tag + 'right_rect')
 
-        # # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-        # x1 = left_center_x + 130 * math.cos(math.radians(-self.angle))
-        # y1 = left_center_y + 130 * math.sin(math.radians(-self.angle))
-        #
-        # self.line_tag = self.app.create_line(x1, y1, left_center_x, left_center_y, dash=(5, 3),
-        #                                      tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect'))
-        #
-        # # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-        # x2 = right_center_x - 50 * math.cos(math.radians(-self.angle))
-        # y2 = right_center_y - 50 * math.sin(math.radians(-self.angle))
-        #
-        # self.line_tag = self.app.create_line(right_center_x, right_center_y, x2, y2, dash=(5, 3),
-        #                                      tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect'))
+        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        x1 = left_center_x + 130 * math.cos(math.radians(-self.angle))
+        y1 = left_center_y + 130 * math.sin(math.radians(-self.angle))
+
+        self.line_tag = self.app.create_line(x1, y1, left_center_x, left_center_y, dash=(5, 3),
+                                             tags=(self.tag, self.tag + 'point', self.tag + 'left_rect'))
+
+        # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
+        x2 = right_center_x - 50 * math.cos(math.radians(-self.angle))
+        y2 = right_center_y - 50 * math.sin(math.radians(-self.angle))
+
+        self.line_tag = self.app.create_line(right_center_x, right_center_y, x2, y2, dash=(5, 3),
+                                             tags=(self.tag, self.tag + 'point', self.tag + 'right_rect'))
 
         self.app.tag_bind(self.left_rect, '<Button-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
@@ -453,52 +462,54 @@ class CreateImg(T):
 
         cx = sum(x_coords) / 4
         cy = sum(y_coords) / 4
-        if arc_click:
-            start = get_arc_start()
-            set_arc_end_obj(tag)
-            arc_click = 0
-            arc, control_points = self.create_arc(start, (cx, cy))
-            # calculate_bezier_length(arc)
-            rect1, rect2 = get_arc_start_obj(), tag
-            arc_list.append((arc, rect1, rect2, control_points))
+        if what.get() == 0:
+            if arc_click:
+                start = get_arc_start()
+                set_arc_end_obj(tag)
+                arc_click = 0
+                arc, control_points = self.create_arc(start, (cx, cy))
+                # calculate_bezier_length(arc)
+                rect1, rect2 = get_arc_start_obj(), tag
+                arc_list.append((arc, rect1, rect2, control_points))
 
-        else:
-            set_arc_start((cx, cy))
-            set_arc_start_obj(tag)
-            arc_click = 1
+            else:
+                set_arc_start((cx, cy))
+                set_arc_start_obj(tag)
+                arc_click = 1
 
     def create_arc(self, start, end, control_point=None):
         x1, y1 = start
         x2, y2 = end
 
-        start_obj = get_arc_start_obj()
-        end_obj = get_arc_end_obj()
-        if 'left' in start_obj:
-            left_obj = start_obj.split('left')[0]
-            left_x, left_y = x1, y1
-        elif 'left' in end_obj:
-            left_obj = end_obj.split('left')[0]
-            left_x, left_y = x2, y2
-
-        left_center_x = left_x + 130 * math.cos(math.radians(-self.angle))
-        left_center_y = left_y + 130 * math.sin(math.radians(-self.angle))
-        self.line_tag = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
-                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
-                                             tags=left_obj
-                                             )
-        if 'right' in start_obj:
-            right_x, right_y = x1, y1
-            right_obj = start_obj.split('right')[0]
-        elif 'right' in end_obj:
-            right_x, right_y = x2, y2
-            right_obj = end_obj.split('right')[0]
-
-        right_center_x = right_x - 50 * math.cos(math.radians(-self.angle))
-        right_center_y = right_y - 50 * math.sin(math.radians(-self.angle))
-
-        self.line_tag = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
-                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
-                                             tags=right_obj)
+        # start_obj = get_arc_start_obj()
+        # end_obj = get_arc_end_obj()
+        # print(start_obj, end_obj)
+        # if 'left' in start_obj:
+        #     left_obj = start_obj.split('left')[0]
+        #     left_x, left_y = x1, y1
+        # elif 'left' in end_obj:
+        #     left_obj = end_obj.split('left')[0]
+        #     left_x, left_y = x2, y2
+        #
+        # left_center_x = left_x + 130 * math.cos(math.radians(-self.angle))
+        # left_center_y = left_y + 130 * math.sin(math.radians(-self.angle))
+        # self.line_tag = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
+        #                                      # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
+        #                                      tags=left_obj
+        #                                      )
+        # if 'right' in start_obj:
+        #     right_x, right_y = x1, y1
+        #     right_obj = start_obj.split('right')[0]
+        # elif 'right' in end_obj:
+        #     right_x, right_y = x2, y2
+        #     right_obj = end_obj.split('right')[0]
+        #
+        # right_center_x = right_x - 50 * math.cos(math.radians(-self.angle))
+        # right_center_y = right_y - 50 * math.sin(math.radians(-self.angle))
+        #
+        # self.line_tag = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
+        #                                      # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
+        #                                      tags=right_obj)
 
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
@@ -841,7 +852,6 @@ class CreateImg(T):
             angle = var
         angle = angle % 360
         self.angle = angle
-        print(id)
         self.rotate(id, angle)
 
         if state:
