@@ -371,17 +371,18 @@ class CreateImg(T):
             if check_var.get():
                 self.draw_rectangles(line_state=True)
                 for arc, rect1, rect2, control_point in arc_list:
+                    print(rect1, rect2)
                     rect1_center = self._get_center(rect1)
                     rect2_center = self._get_center(rect2)
 
-                    self._update_arc(arc, rect1_center, rect2_center, control_point)
+                    self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
 
         # 移动图片
         if what.get() == 0:
             for arc, rect1, rect2, control_point in arc_list:
                 rect1_center = self._get_center(rect1)
                 rect2_center = self._get_center(rect2)
-                self._update_arc(arc, rect1_center, rect2_center, control_point)
+                self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
 
     def load_arc(self):
         center_list = get_rect_center()
@@ -407,7 +408,7 @@ class CreateImg(T):
         :return:
         """
         self.app.delete(self.tag + 'point')
-        self.app.delete('tangent_line')
+
         angle_rad = math.radians(-self.angle)
         cos_angle = math.cos(angle_rad)
         sin_angle = math.sin(angle_rad)
@@ -484,7 +485,6 @@ class CreateImg(T):
 
         start_obj = get_arc_start_obj()
         end_obj = get_arc_end_obj()
-        print(start_obj, end_obj)
         if 'left' in start_obj:
             left_obj = start_obj.split('left')[0]
             left_x, left_y = x1, y1
@@ -543,15 +543,48 @@ class CreateImg(T):
 
         return arc, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y)
 
-    def _update_arc(self, arc, start, end, control_point):
+    def _update_arc(self, arc, start, end, control_point, rect1, rect2):
+
         pre_length = compute_arc_length(arc)
-        self.app.coords(arc, *self._calculate_arc_coords(start, end, control_point))
+        self.app.coords(arc, *self._calculate_arc_coords(start, end, rect1, rect2, control_point=control_point))
         current_length = compute_arc_length(arc)
         update_arc_px(current_length, pre_length)
 
-    def _calculate_arc_coords(self, start, end, control_point=None):
+    def _calculate_arc_coords(self, start, end, rect1, rect2, control_point=None):
         x1, y1 = start
         x2, y2 = end
+
+        self.app.delete('tangent_line')
+
+        print(rect1, rect2, 'control_point')
+        if 'left' in rect1:
+            left_obj = rect1.split('left')[0]
+            left_x, left_y = x1, y1
+        elif 'left' in rect2:
+            left_obj = rect2.split('left')[0]
+            left_x, left_y = x2, y2
+
+        left_center_x = left_x + 130 * math.cos(math.radians(-self.angle))
+        left_center_y = left_y + 130 * math.sin(math.radians(-self.angle))
+        self.line_tag = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
+                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
+                                             tags=(left_obj, 'tangent_line')
+                                             )
+
+        if 'right' in rect1:
+            right_x, right_y = x1, y1
+            right_obj = rect1.split('right')[0]
+        elif 'right' in rect2:
+            right_x, right_y = x2, y2
+            right_obj = rect2.split('right')[0]
+
+        right_center_x = right_x - 50 * math.cos(math.radians(-self.angle))
+        right_center_y = right_y - 50 * math.sin(math.radians(-self.angle))
+
+        self.line_tag = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
+                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
+                                             tags=(right_obj, 'tangent_line')
+                                             )
 
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
@@ -614,7 +647,8 @@ class CreateImg(T):
                     arc_list[i] = (arc, rect1, rect2, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
                     rect1_center = self._get_center(rect1)
                     rect2_center = self._get_center(rect2)
-                    self._update_arc(arc, rect1_center, rect2_center, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y))
+                    self._update_arc(arc, rect1_center, rect2_center, (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y), rect1,
+                                     rect2)
                     break
             self.drag_start = x, y
 
