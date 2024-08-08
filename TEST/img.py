@@ -1,38 +1,45 @@
 import tkinter as tk
 
 
-def find_tags_at_position(canvas, x, y):
-    # 查找与指定坐标重叠的图形项
-    items = canvas.find_overlapping(x, y, x, y)
-    tags = []
-    for item in items:
-        # 获取每个图形项的 tags
-        item_tags = canvas.gettags(item)
-        tags.extend(item_tags)
-    return tags
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.canvas = tk.Canvas(root, width=400, height=300)
+        self.canvas.pack()
+
+        # 在 Canvas 上添加一些图形项
+        self.canvas.create_rectangle(50, 50, 150, 150, fill="blue", tags=("rectangle", "shape"))
+        self.canvas.create_oval(200, 100, 300, 200, fill="red", tags=("oval", "shape"))
+
+        # 绑定点击事件
+        self.canvas.tag_bind("rectangle", "<Button-1>", self.on_rectangle_click)
+        self.canvas.tag_bind("oval", "<Button-1>", self.on_oval_click)
+
+        # 绑定鼠标滚动事件
+        self.mouse_wheel_bound = True
+        self.canvas.bind("<MouseWheel>", self.on_mouse_wheel)
+
+    def on_rectangle_click(self, event):
+        print("矩形被点击")
+        self.toggle_mouse_wheel_binding()
+
+    def on_oval_click(self, event):
+        print("椭圆被点击")
+        self.toggle_mouse_wheel_binding()
+
+    def on_mouse_wheel(self, event):
+        if self.mouse_wheel_bound:
+            print("鼠标滚动事件触发")
+
+    def toggle_mouse_wheel_binding(self):
+        self.mouse_wheel_bound = not self.mouse_wheel_bound
+        if self.mouse_wheel_bound:
+            self.canvas.bind("<MouseWheel>", self.on_mouse_wheel)
+        else:
+            self.canvas.unbind("<MouseWheel>")
 
 
-# 创建主窗口
+# 创建主窗口并运行应用
 root = tk.Tk()
-
-# 创建 Canvas 组件
-canvas = tk.Canvas(root, width=400, height=300)
-canvas.pack()
-
-# 在 Canvas 上添加一些图形项，并为其添加 tags
-canvas.create_rectangle(50, 50, 150, 150, fill="blue", tags=("rectangle", "shape"))
-canvas.create_oval(200, 100, 300, 200, fill="red", tags=("oval", "shape"))
-
-
-# 定义一个函数，在点击 Canvas 时查找并打印 tags
-def on_canvas_click(event):
-    x, y = event.x, event.y
-    tags = find_tags_at_position(canvas, x, y)
-    print(f"点击位置 ({x}, {y}) 的 tags: {tags}")
-
-
-# 绑定点击事件
-canvas.bind("<Button-1>", on_canvas_click)
-
-# 运行主循环
+app = App(root)
 root.mainloop()

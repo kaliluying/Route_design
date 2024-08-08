@@ -1438,7 +1438,10 @@ t.start()
 
 
 def processWheel(event):
-    get_obstacle().zoom(event)
+    try:
+        get_obstacle().zoom(event)
+    except:
+        pass
 
 
 # 绑定滚轮事件
