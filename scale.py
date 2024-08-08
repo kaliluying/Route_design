@@ -369,9 +369,8 @@ class CreateImg(T):
 
             self.to_rotate(self.id, angle, state=False)
             if check_var.get():
-                self.draw_rectangles(line_state=True)
+                self.draw_rectangles()
                 for arc, rect1, rect2, control_point in arc_list:
-                    print(rect1, rect2)
                     rect1_center = self._get_center(rect1)
                     rect2_center = self._get_center(rect2)
 
@@ -402,7 +401,7 @@ class CreateImg(T):
         except ValueError as e:
             print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
 
-    def draw_rectangles(self, line_state=False):
+    def draw_rectangles(self):
         """
         绘制小矩形
         :return:
@@ -435,20 +434,6 @@ class CreateImg(T):
                                                   tag=self.tag + 'left_rect')
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
                                                    tag=self.tag + 'right_rect')
-        if line_state:
-            # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-            x1 = left_center_x + 130 * math.cos(math.radians(-self.angle))
-            y1 = left_center_y + 130 * math.sin(math.radians(-self.angle))
-
-            self.line_tag = self.app.create_line(x1, y1, left_center_x, left_center_y, dash=(5, 3),
-                                                 tags=(self.tag, self.tag + 'point', self.tag + 'left_rect'))
-
-            # 计算两个点的坐标，这两个点分别位于当前点的角度方向上，距离当前点150个单位长度
-            x2 = right_center_x - 50 * math.cos(math.radians(-self.angle))
-            y2 = right_center_y - 50 * math.sin(math.radians(-self.angle))
-
-            self.line_tag = self.app.create_line(right_center_x, right_center_y, x2, y2, dash=(5, 3),
-                                                 tags=(self.tag, self.tag + 'point', self.tag + 'right_rect'))
 
         self.app.tag_bind(self.left_rect, '<Button-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
@@ -485,33 +470,8 @@ class CreateImg(T):
 
         start_obj = get_arc_start_obj()
         end_obj = get_arc_end_obj()
-        if 'left' in start_obj:
-            left_obj = start_obj.split('left')[0]
-            left_x, left_y = x1, y1
-        elif 'left' in end_obj:
-            left_obj = end_obj.split('left')[0]
-            left_x, left_y = x2, y2
 
-        left_center_x = left_x + 130 * math.cos(math.radians(-self.angle))
-        left_center_y = left_y + 130 * math.sin(math.radians(-self.angle))
-        self.line_tag = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
-                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
-                                             tags=(left_obj, 'tangent_line')
-                                             )
-        if 'right' in start_obj:
-            right_x, right_y = x1, y1
-            right_obj = start_obj.split('right')[0]
-        elif 'right' in end_obj:
-            right_x, right_y = x2, y2
-            right_obj = end_obj.split('right')[0]
-
-        right_center_x = right_x - 50 * math.cos(math.radians(-self.angle))
-        right_center_y = right_y - 50 * math.sin(math.radians(-self.angle))
-
-        self.line_tag = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
-                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
-                                             tags=(right_obj, 'tangent_line')
-                                             )
+        self.set_tangent_line(x1, y1, x2, y2, start_obj, end_obj)
 
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
@@ -554,37 +514,7 @@ class CreateImg(T):
         x1, y1 = start
         x2, y2 = end
 
-        self.app.delete('tangent_line')
-
-        print(rect1, rect2, 'control_point')
-        if 'left' in rect1:
-            left_obj = rect1.split('left')[0]
-            left_x, left_y = x1, y1
-        elif 'left' in rect2:
-            left_obj = rect2.split('left')[0]
-            left_x, left_y = x2, y2
-
-        left_center_x = left_x + 130 * math.cos(math.radians(-self.angle))
-        left_center_y = left_y + 130 * math.sin(math.radians(-self.angle))
-        self.line_tag = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
-                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
-                                             tags=(left_obj, 'tangent_line')
-                                             )
-
-        if 'right' in rect1:
-            right_x, right_y = x1, y1
-            right_obj = rect1.split('right')[0]
-        elif 'right' in rect2:
-            right_x, right_y = x2, y2
-            right_obj = rect2.split('right')[0]
-
-        right_center_x = right_x - 50 * math.cos(math.radians(-self.angle))
-        right_center_y = right_y - 50 * math.sin(math.radians(-self.angle))
-
-        self.line_tag = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
-                                             # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
-                                             tags=(right_obj, 'tangent_line')
-                                             )
+        self.set_tangent_line(x1, y1, x2, y2, rect1, rect2, tangent_start=True)
 
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
@@ -600,6 +530,55 @@ class CreateImg(T):
             ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y = control_point
 
         return x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2
+
+    def delete_items_with_tags(self, tag1, tag2):
+        """
+        删除同时具有两个 tag 的组件
+        :param tag1: 第一个 tag
+        :param tag2: 第二个 tag
+        """
+        # 查找同时具有 tag1 和 tag2 的组件
+        items = self.app.find_withtag(tag1)
+        for item in items:
+            tags = self.app.gettags(item)
+            if tag2 in tags:
+                self.app.delete(item)
+
+    def set_tangent_line(self, x1, y1, x2, y2, start_obj, end_obj, tangent_start=None):
+        if 'left' in start_obj:
+            left_obj = start_obj.split('left')[0]
+            left_x, left_y = x1, y1
+        elif 'left' in end_obj:
+            left_obj = end_obj.split('left')[0]
+            left_x, left_y = x2, y2
+
+        if 'right' in start_obj:
+            right_x, right_y = x1, y1
+            right_obj = start_obj.split('right')[0]
+        elif 'right' in end_obj:
+            right_x, right_y = x2, y2
+            right_obj = end_obj.split('right')[0]
+
+        right_angle = self.app.image_data[self.app.find_withtag(right_obj)[0]].angle
+        right_center_x = right_x - 50 * math.cos(math.radians(-right_angle))
+        right_center_y = right_y - 50 * math.sin(math.radians(-right_angle))
+
+        left_angle = self.app.image_data[self.app.find_withtag(left_obj)[0]].angle
+        left_center_x = left_x + 130 * math.cos(math.radians(-left_angle))
+        left_center_y = left_y + 130 * math.sin(math.radians(-left_angle))
+        if tangent_start:
+            self.app.coords('left_tangent_line' + self.index, left_center_x, left_center_y, left_x, left_y)
+            self.app.coords('right_tangent_line' + self.index, right_x, right_y, right_center_x, right_center_y)
+        else:
+            self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
+                                 # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
+                                 tags=(left_obj, 'tangent_line', 'left_tangent_line' + self.index)
+                                 )
+
+            self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
+                                 # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
+                                 tags=(right_obj, 'tangent_line', 'right_tangent_line' + self.index)
+                                 )
 
     def on_arc_click(self, event, arc):
         """
