@@ -59,6 +59,7 @@ class T:
         :return:
         """
         global choice_tup
+
         set_frame_stare(False)
         set_obstacle(self)
         self.app.itemconfig('障碍x', text=f'x:{self.current_x / 10 - 1.5:.2f}')
@@ -93,6 +94,14 @@ class T:
         :return:
         """
         # global choice_tup
+
+        # 获取点击位置的 item id
+        item_id = event.widget.find_closest(event.x, event.y)[0]
+        # 获取该 item 的 tag
+        tags = event.widget.gettags(item_id)
+        if 'rect_arc' in tags:
+            return
+
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
@@ -109,6 +118,11 @@ class T:
             self.app.itemconfig('障碍y', text=f'y:{self.current_y / 10 - 5:.2f}')
 
     def mouseup(self, event):
+        """
+        鼠标左键释放
+        :param event:
+        :return:
+        """
         # set_frame_stare(True)
         dx = event.x - move_x.get()
         dy = event.y - move_y.get()
@@ -325,6 +339,15 @@ class CreateImg(T):
         :param event:
         :return:
         """
+        # 获取点击位置的 item id
+        item_id = event.widget.find_closest(event.x, event.y)[0]
+        # 获取该 item 的 tag
+        tags = event.widget.gettags(item_id)
+        print(tags)
+        if 'rect_arc' in tags:
+            print('点击了弧线')
+            return
+        print(f"点击了{tags}")
         T.mousedown(self, tag, event)
         self.butt()
         if what.get() == '3':
@@ -435,9 +458,9 @@ class CreateImg(T):
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
                                                    tag=self.tag + 'right_rect')
 
-        self.app.tag_bind(self.left_rect, '<Button-1>',
+        self.app.tag_bind(self.left_rect, '<ButtonRelease-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
-        self.app.tag_bind(self.right_rect, '<Button-1>',
+        self.app.tag_bind(self.right_rect, '<ButtonRelease-1>',
                           partial(self.on_rect_click, self.right_rect, self.tag + 'right_rect'))
 
     def on_rect_click(self, id, tag, event):
@@ -530,19 +553,6 @@ class CreateImg(T):
             ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y = control_point
 
         return x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2
-
-    def delete_items_with_tags(self, tag1, tag2):
-        """
-        删除同时具有两个 tag 的组件
-        :param tag1: 第一个 tag
-        :param tag2: 第二个 tag
-        """
-        # 查找同时具有 tag1 和 tag2 的组件
-        items = self.app.find_withtag(tag1)
-        for item in items:
-            tags = self.app.gettags(item)
-            if tag2 in tags:
-                self.app.delete(item)
 
     def set_tangent_line(self, x1, y1, x2, y2, start_obj, end_obj, tangent_start=None):
         if 'left' in start_obj:

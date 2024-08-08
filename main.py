@@ -477,7 +477,15 @@ def leftButtonMove(event):
     """
     global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare, current_line
     shu(event)
-    # 画线
+
+    # 获取点击位置的 item id
+    item_id = event.widget.find_closest(event.x, event.y)[0]
+    # 获取该 item 的 tag
+    tags = event.widget.gettags(item_id)
+    if 'rect_arc' in tags:
+        return
+
+        # 画线
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
                                       fill='#000000', width=font_size, tags=("line", '不框选'), smooth=True)
