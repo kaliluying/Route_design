@@ -228,7 +228,7 @@ def tree():
 
 def joker():
     """
-    幸运转盘
+    小丑
     :return:
     """
     global index_img
@@ -409,7 +409,7 @@ def found():
     WIDTH = int(float(w) * 10)
     HEIGHT = int(float(h) * 10)
     canvas.config(width=WIDTH + 30, height=HEIGHT + 180)
-    canvas.coords('实际画布', 30, 150, WIDTH + 15, HEIGHT + 150)
+    canvas.coords('实际画布', 30, 120, WIDTH + 15, HEIGHT + 120)
     # canvas.place(x=175, y=130)
     # but1.place(x=WIDTH + 260, y=700)
     # but2.place(x=WIDTH + 360, y=700)
@@ -419,13 +419,13 @@ def found():
     hei = HEIGHT / 10
     canvas.itemconfig('长', text=f"长：{wid}m")
     canvas.itemconfig('宽', text=f"宽：{hei}m")
-    canvas.coords('长', WIDTH - 40, 160)
-    canvas.coords('宽', WIDTH - 40, 180)
-    canvas.coords('实时路线', WIDTH - 40, 130)
-    canvas.coords('障碍x', 35, HEIGHT + 160)
-    canvas.coords('障碍y', 35, HEIGHT + 170)
-    canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 160)
-    canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 170)
+    canvas.coords('长', WIDTH - 40, 130)
+    canvas.coords('宽', WIDTH - 40, 150)
+    canvas.coords('实时路线', WIDTH - 40, 100)
+    canvas.coords('障碍x', 35, HEIGHT + 130)
+    canvas.coords('障碍y', 35, HEIGHT + 140)
+    canvas.coords('鼠标x', WIDTH - 10, HEIGHT + 130)
+    canvas.coords('鼠标y', WIDTH - 10, HEIGHT + 140)
     # canvas.coords('比赛名称', (WIDTH + 40) / 2, 120)
     canvas.delete('bg')
     try:
@@ -767,16 +767,24 @@ def currency_remove():
 
 
 def save_1():
-    checkvar = '1'
-    download()
+    """
+    保存图片包含右侧赛事信息
+    :return:
+    """
+    checkvar = True
+    download(checkvar)
 
 
 def save_0():
-    checkvar = '0'
-    download()
+    """
+    保存图片不包含右侧赛事信息
+    :return:
+    """
+    checkvar = False
+    download(checkvar)
 
 
-def download():
+def download(checkvar):
     """
     保存图片
     :return: 
@@ -792,10 +800,25 @@ def download():
         height = canvas.winfo_height()
         x0 = canvas.winfo_rootx() + 10  # 帧在屏幕上的左上角 x 坐标
         y0 = canvas.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
-        x1 = x0 + width - 5  # 帧在屏幕上的右下角 x 坐标
-        y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
+        frame_x1 = 0
+        frame_y1 = 0
+        if checkvar:
+            frame_width = frame_info.winfo_width()
+            frame_height = frame_info.winfo_height()
+            frame_x0 = frame_info.winfo_rootx() + 10  # 帧在屏幕上的左上角 x 坐标
+            frame_y0 = frame_info.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
+            frame_x1 = frame_x0 + frame_width - 5  # 帧在屏幕上的右下角 x 坐标
+            frame_y1 = frame_y0 + frame_height  # 帧在屏幕上的右下角 y 坐标
+            x1 = x0 + width - 5  # 帧在屏幕上的右下角 x 坐标
+            y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
+        else:
+            x1 = x0 + width - 5  # 帧在屏幕上的右下角 x 坐标
+            y1 = y0 + height  # 帧在屏幕上的右下角 y 坐标
         if sys_name == 'Windows':
             path += '.jpg'
+
+        x1 = max(x1, frame_x1)
+        y1 = max(y1, frame_y1)
         ImageGrab.grab(bbox=(x0, y0, x1, y1)).convert("RGB").save(path)
 
         messagebox.showinfo("成功", f"保存成功,\n路径:{path}")
@@ -1287,22 +1310,22 @@ but_1.grid(row=0, column=0, padx=1, pady=1)
 ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1,
                                                                                                     padx=0, pady=0)
 
-canvas.create_rectangle(30, 150, WIDTH + 15, HEIGHT + 150, state='disabled', tags=('不框选', '实际画布'))
+canvas.create_rectangle(30, 120, WIDTH + 15, HEIGHT + 120, state='disabled', tags=('不框选', '实际画布'))
 
 # 右上角显示路线长宽
 w = WIDTH / 10
 h = HEIGHT / 10
-h1 = canvas.create_text(WIDTH - 40, 160, text=f"长：{w}m", tags=('辅助信息', '不框选', '长'))
-h2 = canvas.create_text(WIDTH - 40, 180, text=f"宽：{h}m", tags=('辅助信息', '不框选', '宽'))
+h1 = canvas.create_text(WIDTH - 40, 130, text=f"长：{w}m", tags=('辅助信息', '不框选', '长'))
+h2 = canvas.create_text(WIDTH - 40, 150, text=f"宽：{h}m", tags=('辅助信息', '不框选', '宽'))
 
 # 左上角显示 5m的距离
-canvas.create_text(60, 160, text="5m", tags=('辅助信息', '不框选'))
-canvas.create_line(35, 165, 35, 170, tags=('辅助信息', '不框选'))
-canvas.create_line(85, 165, 85, 170, tags=('辅助信息', '不框选'))
-canvas.create_line(35, 170, 85, 170, tags=('辅助信息', '不框选'))
+canvas.create_text(60, 130, text="5m", tags=('辅助信息', '不框选'))
+canvas.create_line(35, 135, 35, 140, tags=('辅助信息', '不框选'))
+canvas.create_line(85, 135, 85, 140, tags=('辅助信息', '不框选'))
+canvas.create_line(35, 140, 85, 140, tags=('辅助信息', '不框选'))
 
 # 右上显示，路线长度
-canvas.create_text(WIDTH - 40, 130, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
+canvas.create_text(WIDTH - 40, 100, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
 
 
 # 鼠标实时坐标
@@ -1314,14 +1337,14 @@ def shu(event):
 
 
 # 右下角显示鼠标实时坐标
-canvas.create_text(WIDTH - 10, HEIGHT + 160, text='x:', tags=('辅助信息', '不框选', '鼠标x'))
-canvas.create_text(WIDTH - 10, HEIGHT + 170, text='y:', tags=('辅助信息', '不框选', '鼠标y'))
+canvas.create_text(WIDTH - 10, HEIGHT + 130, text='x:', tags=('辅助信息', '不框选', '鼠标x'))
+canvas.create_text(WIDTH - 10, HEIGHT + 140, text='y:', tags=('辅助信息', '不框选', '鼠标y'))
 
 canvas.bind('<Motion>', shu)
 
 # 左下显示当前障碍坐标
-canvas.create_text(35, HEIGHT + 160, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
-canvas.create_text(35, HEIGHT + 170, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
+canvas.create_text(35, HEIGHT + 130, text=f"x:", tags=('辅助信息', '不框选', '障碍x'))
+canvas.create_text(35, HEIGHT + 140, text=f"y:", tags=('辅助信息', '不框选', '障碍y'))
 
 # 水印
 font = 0.16 if sys_name == 'Darwin' else 0.1
@@ -1399,15 +1422,26 @@ function_menuType.add_command(label="清屏", command=clear)
 # function_menuType.add_command(label="撤销", command=back)
 function_menuType.add_command(label="清除水印", command=remove_f)
 function_menuType.add_command(label="打开文件下载位置", command=open_file)
-function_menuType.add_command(label="下载路线图", command=save_1)
+# function_menuType.add_command(label="下载路线图", command=download)
+
+menu_sava = ttk.Menu(menu, tearoff=0)
+menu_sava.add_command(label="包含右侧赛事信息", command=save_1)
+menu_sava.add_command(label="不包含右侧赛事信息", command=save_0)
+function_menuType.add_cascade(label="下载路线图", menu=menu_sava)
+
 function_menuType.add_command(label="保存路线图", command=save)
 function_menuType.add_command(label="加载路线图", command=load)
 function_menuType.add_command(label="删除背景", command=del_fg)
 
-# menu_sava.add_command(label="保存(包含右侧赛事信息)", command=save_1)
-# menu_sava.add_command(label="保存(不包含右侧赛事信息)", command=save_0)
-
-# function_menuType.add_cascade(label="保存", menu=menu_sava)
+# def text():
+#     width = frame_info.winfo_width()
+#     height = frame_info.winfo_height()
+#     x0 = frame_info.winfo_rootx() + 10  # 帧在屏幕上的左上角 x 坐标
+#     y0 = frame_info.winfo_rooty()  # 帧在屏幕上的左上角 y 坐标
+#     print(f"frame_info: {width}x{height}+{x0}+{y0}")
+#
+#
+# function_menuType.add_command(label="测试", command=text)
 
 # 字号
 font_menuType = ttk.Menu(menu, tearoff=0)
@@ -1439,7 +1473,8 @@ t.start()
 
 def processWheel(event):
     try:
-        get_obstacle().zoom(event)
+        if get_obstacle().obstacle == 'diy':
+            get_obstacle().zoom(event)
     except:
         pass
 

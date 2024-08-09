@@ -95,12 +95,15 @@ class T:
         """
         # global choice_tup
 
-        # 获取点击位置的 item id
-        item_id = event.widget.find_closest(event.x, event.y)[0]
-        # 获取该 item 的 tag
-        tags = event.widget.gettags(item_id)
-        if 'rect_arc' in tags:
-            return
+        try:
+            # 获取点击位置的 item id
+            item_id = event.widget.find_closest(event.x, event.y)[0]
+            # 获取该 item 的 tag
+            tags = event.widget.gettags(item_id)
+            if 'rect_arc' in tags:
+                return
+        except:
+            pass
 
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
@@ -316,6 +319,7 @@ class CreateImg(T):
         :param event:
         :return:
         """
+        print(f"缩放比例:{self.scale_ratio}")
         if not load:
             if event.delta > 0:
                 self.scale_ratio *= 1.1
@@ -339,15 +343,16 @@ class CreateImg(T):
         :param event:
         :return:
         """
-        # 获取点击位置的 item id
-        item_id = event.widget.find_closest(event.x, event.y)[0]
-        # 获取该 item 的 tag
-        tags = event.widget.gettags(item_id)
-        print(tags)
-        if 'rect_arc' in tags:
-            print('点击了弧线')
-            return
-        print(f"点击了{tags}")
+        try:
+            # 获取点击位置的 item id
+            item_id = event.widget.find_closest(event.x, event.y)[0]
+            # 获取该 item 的 tag
+            tags = event.widget.gettags(item_id)
+            if 'rect_arc' in tags:
+                return
+        except:
+            pass
+
         T.mousedown(self, tag, event)
         self.butt()
         if what.get() == '3':
@@ -494,7 +499,11 @@ class CreateImg(T):
         start_obj = get_arc_start_obj()
         end_obj = get_arc_end_obj()
 
-        self.set_tangent_line(x1, y1, x2, y2, start_obj, end_obj)
+        # TODO
+        try:
+            self.set_tangent_line(x1, y1, x2, y2, start_obj, end_obj)
+        except:
+            pass
 
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
@@ -537,7 +546,11 @@ class CreateImg(T):
         x1, y1 = start
         x2, y2 = end
 
-        self.set_tangent_line(x1, y1, x2, y2, rect1, rect2, tangent_start=True)
+        # TODO
+        try:
+            self.set_tangent_line(x1, y1, x2, y2, rect1, rect2, tangent_start=True)
+        except:
+            pass
 
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
@@ -561,7 +574,6 @@ class CreateImg(T):
         elif 'left' in end_obj:
             left_obj = end_obj.split('left')[0]
             left_x, left_y = x2, y2
-
         if 'right' in start_obj:
             right_x, right_y = x1, y1
             right_obj = start_obj.split('right')[0]
@@ -757,6 +769,7 @@ class CreateImg(T):
             a, a_b, b = round(a), round(a_b), round(b)
             self.img_path = obs_ab(a, b, a_b)
             self.img_obj = Image.open(self.img_path)
+            self.img = self.img_obj
             self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == "combination_abc":
@@ -776,6 +789,7 @@ class CreateImg(T):
                                  round(c))
             self.img_path = oxer_obs_abc(a, b, c, a_b, b_c)
             self.img_obj = Image.open(self.img_path)
+            self.img = self.img_obj
             self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == 'water':
@@ -783,6 +797,7 @@ class CreateImg(T):
             h = int(float(self.info[1]) * 10)
             self.img_path = water_wh(w, h)
             self.img_obj = Image.open(self.img_path)
+            self.img = self.img_obj
             self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         elif self.obstacle == 'live':
@@ -790,13 +805,16 @@ class CreateImg(T):
             h = int(float(self.com_info['water_h_ent']) * 10)
             self.img_path = live_edit(w, h)
             self.img_obj = Image.open(self.img_path)
+            self.img = self.img_obj
             self.temp_path = ImageTk.PhotoImage(self.img_obj)
             self.app.itemconfig(self.tag, image=self.temp_path)
         self.to_rotate(self.tag, self.angle)
 
     def img_update(self, m, oxer=None):
         self.img_path = merge(int(m), oxer=oxer)
+        print(self.img_path)
         self.img_obj = Image.open(self.img_path)
+        self.img = self.img_obj
         self.temp_path = ImageTk.PhotoImage(self.img_obj)
         self.app.itemconfig(self.tag, image=self.temp_path)
 
@@ -912,9 +930,10 @@ class CreateImg(T):
         """
         img = self.img
 
-        new_width = int(self.width * self.scale_ratio)
-        new_height = int(self.height * self.scale_ratio)
-        img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        if self.obstacle == 'diy':
+            new_width = int(self.width * self.scale_ratio)
+            new_height = int(self.height * self.scale_ratio)
+            img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
         img2 = img.convert('RGBA')
         img2 = img2.rotate(angle, expand=True, resample=Image.BICUBIC)
