@@ -592,15 +592,16 @@ class CreateImg(T):
             self.app.coords('left_tangent_line' + self.index, left_center_x, left_center_y, left_x, left_y)
             self.app.coords('right_tangent_line' + self.index, right_x, right_y, right_center_x, right_center_y)
         else:
-            self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
-                                 # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
-                                 tags=(left_obj, 'tangent_line', 'left_tangent_line' + self.index)
-                                 )
+            left = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
+                                        # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
+                                        tags=(left_obj, 'tangent_line', 'left_tangent_line' + self.index)
+                                        )
 
-            self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
-                                 # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
-                                 tags=(right_obj, 'tangent_line', 'right_tangent_line' + self.index)
-                                 )
+            right = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
+                                         # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
+                                         tags=(right_obj, 'tangent_line', 'right_tangent_line' + self.index)
+                                         )
+            cut_point_list.append((left, right))
 
     def on_arc_click(self, event, arc):
         """

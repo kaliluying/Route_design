@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class App:
     def __init__(self, root):
         self.root = root
@@ -8,36 +7,25 @@ class App:
         self.canvas.pack()
 
         # 在 Canvas 上添加一些图形项
-        self.canvas.create_rectangle(50, 50, 150, 150, fill="blue", tags=("rectangle", "shape"))
-        self.canvas.create_oval(200, 100, 300, 200, fill="red", tags=("oval", "shape"))
+        self.canvas.create_rectangle(50, 50, 150, 150, fill="blue", tags=("shape", "rectangle1"))
+        self.canvas.create_rectangle(200, 50, 300, 150, fill="green", tags=("shape", "rectangle2"))
+        self.canvas.create_oval(50, 200, 150, 300, fill="red", tags=("shape", "oval1"))
+        self.canvas.create_oval(200, 200, 300, 300, fill="yellow", tags=("shape", "oval2"))
 
-        # 绑定点击事件
-        self.canvas.tag_bind("rectangle", "<Button-1>", self.on_rectangle_click)
-        self.canvas.tag_bind("oval", "<Button-1>", self.on_oval_click)
+        # 获取具有相同 tag 的多个图形项的坐标位置
+        self.get_items_with_tag("shape")
 
-        # 绑定鼠标滚动事件
-        self.mouse_wheel_bound = True
-        self.canvas.bind("<MouseWheel>", self.on_mouse_wheel)
-
-    def on_rectangle_click(self, event):
-        print("矩形被点击")
-        self.toggle_mouse_wheel_binding()
-
-    def on_oval_click(self, event):
-        print("椭圆被点击")
-        self.toggle_mouse_wheel_binding()
-
-    def on_mouse_wheel(self, event):
-        if self.mouse_wheel_bound:
-            print("鼠标滚动事件触发")
-
-    def toggle_mouse_wheel_binding(self):
-        self.mouse_wheel_bound = not self.mouse_wheel_bound
-        if self.mouse_wheel_bound:
-            self.canvas.bind("<MouseWheel>", self.on_mouse_wheel)
+    def get_items_with_tag(self, tag):
+        # 获取所有具有指定 tag 的图形项
+        items = self.canvas.find_withtag(tag)
+        if items:
+            for item in items:
+                # 获取每个图形项的边界框
+                bbox = self.canvas.bbox(item)
+                x1, y1, x2, y2 = bbox
+                print(f"图形项 {item} 的坐标位置: 左上角 ({x1}, {y1}), 右下角 ({x2}, {y2})")
         else:
-            self.canvas.unbind("<MouseWheel>")
-
+            print(f"没有找到具有 tag '{tag}' 的图形项")
 
 # 创建主窗口并运行应用
 root = tk.Tk()

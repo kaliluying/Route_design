@@ -31,14 +31,14 @@ arc_end_obj = None
 # 弧线列表
 arc_list = []
 
+# 切点列表
+cut_point_list = []
+
 # 矩形中心
 rect_center = []
 
 # 选中矩形状态
 rect_stare = False
-
-
-
 
 
 def set_rect_center(center):
