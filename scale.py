@@ -126,6 +126,8 @@ class T:
         :param event:
         :return:
         """
+        global rect_stare
+        rect_stare = False
         # set_frame_stare(True)
         dx = event.x - move_x.get()
         dy = event.y - move_y.get()
@@ -319,7 +321,6 @@ class CreateImg(T):
         :param event:
         :return:
         """
-        print(f"缩放比例:{self.scale_ratio}")
         if not load:
             if event.delta > 0:
                 self.scale_ratio *= 1.1
@@ -343,15 +344,6 @@ class CreateImg(T):
         :param event:
         :return:
         """
-        try:
-            # 获取点击位置的 item id
-            item_id = event.widget.find_closest(event.x, event.y)[0]
-            # 获取该 item 的 tag
-            tags = event.widget.gettags(item_id)
-            if 'rect_arc' in tags:
-                return
-        except:
-            pass
 
         T.mousedown(self, tag, event)
         self.butt()
@@ -372,6 +364,18 @@ class CreateImg(T):
         :param event:
         :return:
         """
+
+        global rect_stare
+        try:
+            # 获取点击位置的 item id
+            item_id = event.widget.find_closest(event.x, event.y)[0]
+            # 获取该 item 的 tag
+            tags = event.widget.gettags(item_id)
+            if 'rect_arc' in tags:
+                rect_stare = True
+        except:
+            pass
+
         T.drag(self, tag, event)
 
         # 旋转图片
@@ -417,7 +421,9 @@ class CreateImg(T):
             self.app.delete(arc)
         arc_list.clear()
         for arc, rect1, rect2, rect1_center, rect2_center, control_point in center_list:
-            arc, control_point = self.create_arc(rect1_center, rect2_center, control_point)
+            arc, control_point = self.create_arc(rect1_center, rect2_center, control_point=control_point,
+                                                 start_obj=rect1,
+                                                 end_obj=rect2)
             # new_arc = self.create_arc(rect1_center, rect2_center)
             arc_list.append((arc, rect1, rect2, control_point))
             # calculate_bezier_length(new_arc)
@@ -463,13 +469,28 @@ class CreateImg(T):
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
                                                    tag=self.tag + 'right_rect')
 
-        self.app.tag_bind(self.left_rect, '<ButtonRelease-1>',
+        self.app.tag_bind(self.left_rect, '<ButtonRelease-1>', self.set_rect_stare)
+        self.app.tag_bind(self.right_rect, '<ButtonRelease-1>', self.set_rect_stare)
+
+        # self.app.tag_bind(self.left_rect, '<ButtonRelease-1>',
+        #                   partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
+        # self.app.tag_bind(self.right_rect, '<ButtonRelease-1>',
+        #                   partial(self.on_rect_click, self.right_rect, self.tag + 'right_rect'))
+
+        self.app.tag_bind(self.left_rect, '<ButtonPress-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
-        self.app.tag_bind(self.right_rect, '<ButtonRelease-1>',
+        self.app.tag_bind(self.right_rect, '<ButtonPress-1>',
                           partial(self.on_rect_click, self.right_rect, self.tag + 'right_rect'))
+
+    def set_rect_stare(self, event):
+        global rect_stare
+        print(f"rect_stare: {rect_stare}")
+        rect_stare = False
 
     def on_rect_click(self, id, tag, event):
         global arc_click
+        if rect_stare:
+            return
         x1, y1, x2, y2, x3, y3, x4, y4 = self.app.coords(id)
         points = [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
         x_coords = [p[0] for p in points]
@@ -482,7 +503,9 @@ class CreateImg(T):
                 start = get_arc_start()
                 set_arc_end_obj(tag)
                 arc_click = 0
-                arc, control_points = self.create_arc(start, (cx, cy))
+                start_obj = get_arc_start_obj()
+                end_obj = get_arc_end_obj()
+                arc, control_points = self.create_arc(start, (cx, cy), start_obj=start_obj, end_obj=end_obj)
                 # calculate_bezier_length(arc)
                 rect1, rect2 = get_arc_start_obj(), tag
                 arc_list.append((arc, rect1, rect2, control_points))
@@ -492,17 +515,18 @@ class CreateImg(T):
                 set_arc_start_obj(tag)
                 arc_click = 1
 
-    def create_arc(self, start, end, control_point=None):
+    def create_arc(self, start, end, control_point=None, start_obj=None, end_obj=None):
         x1, y1 = start
         x2, y2 = end
 
-        start_obj = get_arc_start_obj()
-        end_obj = get_arc_end_obj()
+        # start_obj = get_arc_start_obj()
+        # end_obj = get_arc_end_obj()
 
         # TODO
         try:
             self.set_tangent_line(x1, y1, x2, y2, start_obj, end_obj)
-        except:
+        except Exception as e:
+            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
             pass
 
         if control_point is None:
@@ -589,17 +613,23 @@ class CreateImg(T):
         left_center_x = left_x + 130 * math.cos(math.radians(-left_angle))
         left_center_y = left_y + 130 * math.sin(math.radians(-left_angle))
         if tangent_start:
-            self.app.coords('left_tangent_line' + self.index, left_center_x, left_center_y, left_x, left_y)
-            self.app.coords('right_tangent_line' + self.index, right_x, right_y, right_center_x, right_center_y)
+
+            self.app.coords('left_tangent_line' + self.app.image_data[self.app.find_withtag(left_obj)[0]].index,
+                            left_center_x, left_center_y, left_x, left_y)
+            self.app.coords('right_tangent_line' + self.app.image_data[self.app.find_withtag(right_obj)[0]].index,
+                            right_x, right_y, right_center_x, right_center_y)
         else:
+            print(f"tangent_start: {tangent_start}")
             left = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
                                         # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
-                                        tags=(left_obj, 'tangent_line', 'left_tangent_line' + self.index)
+                                        tags=(left_obj, 'tangent_line', 'left_tangent_line' + self.app.image_data[
+                                            self.app.find_withtag(left_obj)[0]].index)
                                         )
 
             right = self.app.create_line(right_x, right_y, right_center_x, right_center_y, dash=(5, 3),
                                          # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'right_rect')
-                                         tags=(right_obj, 'tangent_line', 'right_tangent_line' + self.index)
+                                         tags=(right_obj, 'tangent_line', 'right_tangent_line' + self.app.image_data[
+                                             self.app.find_withtag(right_obj)[0]].index)
                                          )
             cut_point_list.append((left, right))
 

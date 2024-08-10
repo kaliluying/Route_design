@@ -475,8 +475,11 @@ def leftButtonMove(event):
     :param event: 
     :return: 
     """
-    global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare, current_line
+    global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare, current_line, rect_stare
     shu(event)
+
+    if rect_stare:
+        return
 
     # 获取点击位置的 item id
     item_id = event.widget.find_closest(event.x, event.y)[0]
@@ -547,7 +550,8 @@ def leftButtonUp(event):
     :param event: 
     :return: 
     """
-    global lastDraw, click_num, px, choice_tup, choice_start, remove_px, lines, current_line
+    global lastDraw, click_num, px, choice_tup, choice_start, remove_px, lines, current_line, rect_stare
+    rect_stare = False
     end.append(lastDraw)
     current_frame_stare = get_frame_stare()
     # 画线
