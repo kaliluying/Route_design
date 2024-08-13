@@ -85,8 +85,11 @@ what = ttk.IntVar(value=0)
 CONFIRM_STYLE = 'success-outline'
 BUTTON_STYLE = 'outline'
 
-canvas = ttk.Canvas(win, width=WIDTH + 30, height=HEIGHT + 180, highlightthickness=0)
-canvas.place(x=175, y=100)
+canvas = ttk.Canvas(win, width=WIDTH + 50, height=HEIGHT + 180, highlightthickness=0)
+CANVAS_X = 250
+CANVAS_Y = 100
+canvas.place(x=CANVAS_X, y=CANVAS_Y)
+# canvas.place(x=175, y=100)
 canvas.image_data = {}
 
 fg_img = None
@@ -229,7 +232,8 @@ water_barrier_iamge = "img/water_barrier.png"
 # 砖墙
 brick_wall_image = "img/brick_wall.png"
 # 起/终点线
-line_image = "img/line.png"
+# line_image = "img/line.png"
+line_image = r"img/start_end.png"
 # 进出口
 gate_image = "img/gate.png"
 # 树木

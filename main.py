@@ -281,7 +281,7 @@ def fg():
     img = Image.open(fg_path)
     img = img.resize((WIDTH, HEIGHT))
     fg_img = ImageTk.PhotoImage(img)
-    canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
+    canvas.create_image(30, 120, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
 
 
 def del_fg():
@@ -408,12 +408,12 @@ def found():
     # if w.isdigit() and h.isdigit():
     WIDTH = int(float(w) * 10)
     HEIGHT = int(float(h) * 10)
-    canvas.config(width=WIDTH + 30, height=HEIGHT + 180)
-    canvas.coords('实际画布', 30, 120, WIDTH + 15, HEIGHT + 120)
+    canvas.config(width=WIDTH + 50, height=HEIGHT + 180)
+    canvas.coords('实际画布', 30, 120, WIDTH + 30, HEIGHT + 120)
     # canvas.place(x=175, y=130)
     # but1.place(x=WIDTH + 260, y=700)
     # but2.place(x=WIDTH + 360, y=700)
-    frame_info.place(x=WIDTH + 200, y=150)
+    frame_info.place(x=CANVAS_X + WIDTH + 50, y=150)
     canvas.delete(watermark)
     wid = WIDTH / 10
     hei = HEIGHT / 10
@@ -1314,7 +1314,7 @@ but_1.grid(row=0, column=0, padx=1, pady=1)
 ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1,
                                                                                                     padx=0, pady=0)
 
-canvas.create_rectangle(30, 120, WIDTH + 15, HEIGHT + 120, state='disabled', tags=('不框选', '实际画布'))
+canvas.create_rectangle(30, 120, WIDTH + 30, HEIGHT + 120, state='disabled', tags=('不框选', '实际画布'))
 
 # 右上角显示路线长宽
 w = WIDTH / 10
@@ -1334,8 +1334,8 @@ canvas.create_text(WIDTH - 40, 100, text=f"{px / 10}m", tags=('实时路线', '�
 
 # 鼠标实时坐标
 def shu(event):
-    x = event.x / 10 - 1.5
-    y = event.y / 10 - 5
+    x = event.x / 10 - 3
+    y = event.y / 10 - 12
     canvas.itemconfig('鼠标x', text=f'x:{x:.2f}')
     canvas.itemconfig('鼠标y', text=f'y:{y:.2f}')
 
@@ -1393,7 +1393,8 @@ frame_inp = ttk.Frame(frame_info)
 # 建议信息容器
 frame_por = ttk.Frame(frame_info)
 
-frame_info.place(x=WIDTH + 200, y=150)
+frame_info.place(x=CANVAS_X + WIDTH + 50, y=150)
+# frame_info.place(x=WIDTH + 250, y=150)
 
 # 生成赛事信息
 info_var = []
@@ -1476,6 +1477,11 @@ t.start()
 
 
 def processWheel(event):
+    """
+    处理diy障碍的鼠标滚轮事件
+    :param event:
+    :return:
+    """
     try:
         if get_obstacle().obstacle == 'diy':
             get_obstacle().zoom(event)

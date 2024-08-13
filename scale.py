@@ -117,8 +117,8 @@ class T:
 
             self.startx = event.x
             self.starty = event.y
-            self.app.itemconfig('障碍x', text=f'x:{self.current_x / 10 - 1.5:.2f}')
-            self.app.itemconfig('障碍y', text=f'y:{self.current_y / 10 - 5:.2f}')
+            self.app.itemconfig('障碍x', text=f'x:{self.current_x / 10 - 3:.2f}')
+            self.app.itemconfig('障碍y', text=f'y:{self.current_y / 10 - 12:.2f}')
 
     def mouseup(self, event):
         """
@@ -927,6 +927,7 @@ class CreateImg(T):
         angle = angle % 360
         self.angle = angle
         self.rotate(id, angle)
+        self.draw_rectangles()
 
         if state:
             rotate_.append(angle)
