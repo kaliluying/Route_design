@@ -59,7 +59,6 @@ class T:
         :return:
         """
         global choice_tup
-
         set_frame_stare(False)
         set_obstacle(self)
         self.app.itemconfig('障碍x', text=f'x:{self.current_x / 10 - 1.5:.2f}')
@@ -93,17 +92,18 @@ class T:
         :param event:
         :return:
         """
-        # global choice_tup
-
-        try:
-            # 获取点击位置的 item id
-            item_id = event.widget.find_closest(event.x, event.y)[0]
-            # 获取该 item 的 tag
-            tags = event.widget.gettags(item_id)
-            if 'rect_arc' in tags:
-                return
-        except:
-            pass
+        # global rect_stare
+        #
+        # try:
+        #     # 获取点击位置的 item id
+        #     item_id = event.widget.find_closest(event.x, event.y)[0]
+        #     # 获取该 item 的 tag
+        #     tags = event.widget.gettags(item_id)
+        #     if 'rect_arc' in tags:
+        #         rect_stare = True
+        #         return
+        # except:
+        #     pass
 
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
@@ -364,8 +364,7 @@ class CreateImg(T):
         :param event:
         :return:
         """
-
-        global rect_stare
+        global rect_stare, arc_click
         try:
             # 获取点击位置的 item id
             item_id = event.widget.find_closest(event.x, event.y)[0]
@@ -373,6 +372,8 @@ class CreateImg(T):
             tags = event.widget.gettags(item_id)
             if 'rect_arc' in tags:
                 rect_stare = True
+                arc_click = 0
+                return
         except:
             pass
 
@@ -469,26 +470,52 @@ class CreateImg(T):
         self.right_rect = self.create_rotated_rect(right_center_x, right_center_y, small_half, angle_rad, "green",
                                                    tag=self.tag + 'right_rect')
 
-        self.app.tag_bind(self.left_rect, '<ButtonRelease-1>', self.set_rect_stare)
+        self.app.tag_bind(self.left_rect, '<ButtonRelease-1>', self.set_rect_stare
+                          )
         self.app.tag_bind(self.right_rect, '<ButtonRelease-1>', self.set_rect_stare)
 
-        # self.app.tag_bind(self.left_rect, '<ButtonRelease-1>',
-        #                   partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
-        # self.app.tag_bind(self.right_rect, '<ButtonRelease-1>',
-        #                   partial(self.on_rect_click, self.right_rect, self.tag + 'right_rect'))
+        self.app.tag_bind(self.left_rect, '<B1-Motion>', partial(self.rect_move, self.left_rect))
+        self.app.tag_bind(self.right_rect, '<B1-Motion>', partial(self.rect_move, self.right_rect))
 
         self.app.tag_bind(self.left_rect, '<ButtonPress-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
         self.app.tag_bind(self.right_rect, '<ButtonPress-1>',
                           partial(self.on_rect_click, self.right_rect, self.tag + 'right_rect'))
 
+    def rect_move(self, tags, event):
+        """
+        矩形移动
+        :param event:
+        :return:
+        """
+        # 获取矩形的当前坐标
+        coords = canvas.coords(tags)
+        x1, y1, z1, z2, z3, z4, x2, y2 = coords
+        rect_center_x = (x1 + x2) / 2
+        rect_center_y = (y1 + y2) / 2
+
+        # 计算鼠标位置与矩形中心的差值
+        dx_mouse = event.x - rect_center_x
+        dy_mouse = event.y - rect_center_y
+
+        # 获取固定角度的单位方向向量
+        radians = math.radians(-self.angle)
+        unit_dx = math.cos(radians)
+        unit_dy = math.sin(radians)
+
+        # 计算在固定角度上的投影距离
+        projection_length = dx_mouse * unit_dx + dy_mouse * unit_dy
+
+        # 按照投影距离移动矩形
+        canvas.move(tags, unit_dx * projection_length, unit_dy * projection_length)
+
     def set_rect_stare(self, event):
         global rect_stare
-        print(f"rect_stare: {rect_stare}")
         rect_stare = False
 
     def on_rect_click(self, id, tag, event):
         global arc_click
+        print('scale.py, Img.on_rect_click')
         if rect_stare:
             return
         x1, y1, x2, y2, x3, y3, x4, y4 = self.app.coords(id)
@@ -619,7 +646,6 @@ class CreateImg(T):
             self.app.coords('right_tangent_line' + self.app.image_data[self.app.find_withtag(right_obj)[0]].index,
                             right_x, right_y, right_center_x, right_center_y)
         else:
-            print(f"tangent_start: {tangent_start}")
             left = self.app.create_line(left_center_x, left_center_y, left_x, left_y, dash=(5, 3),
                                         # tags=(self.tag, self.tag + 'point', 'rect_arc', self.tag + 'left_rect')
                                         tags=(left_obj, 'tangent_line', 'left_tangent_line' + self.app.image_data[
@@ -928,6 +954,12 @@ class CreateImg(T):
         self.angle = angle
         self.rotate(id, angle)
         self.draw_rectangles()
+        if check_var.get():
+            for arc, rect1, rect2, control_point in arc_list:
+                rect1_center = self._get_center(rect1)
+                rect2_center = self._get_center(rect2)
+
+                self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
 
         if state:
             rotate_.append(angle)

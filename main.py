@@ -477,7 +477,6 @@ def leftButtonMove(event):
     """
     global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare, current_line, rect_stare
     shu(event)
-
     if rect_stare:
         return
 
