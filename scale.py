@@ -236,6 +236,8 @@ class CreateImg(T):
         self.rectangle = None  # 矩形
         self.arcs = []  # 弧线
         self.scale_ratio = 1.0  # 缩放比例
+        self.rect_left = 130  # 矩形左边
+        self.rect_right = 50  # 矩形右边
 
     def save(self):
         """
@@ -430,6 +432,11 @@ class CreateImg(T):
             # calculate_bezier_length(new_arc)
 
     def _get_center(self, rect):
+        """
+        获取矩形中心坐标
+        :param rect:
+        :return:
+        """
         try:
             x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
             return (x1 + x2) / 2, (y1 + y2) / 2
@@ -453,9 +460,9 @@ class CreateImg(T):
         small_half = self.small_rect_size / 2
 
         # small_offset = half_w + small_half - 130  # 偏移量
-        left_small_offset = half_w + small_half + 130  # 偏移量
+        left_small_offset = half_w + small_half + self.rect_left  # 偏移量
 
-        right_small_offset = half_w + small_half + 50  # 偏移量
+        right_small_offset = half_w + small_half + self.rect_right  # 偏移量
 
         self.get_current_info()
 
@@ -474,20 +481,22 @@ class CreateImg(T):
                           )
         self.app.tag_bind(self.right_rect, '<ButtonRelease-1>', self.set_rect_stare)
 
-        self.app.tag_bind(self.left_rect, '<B1-Motion>', partial(self.rect_move, self.left_rect))
-        self.app.tag_bind(self.right_rect, '<B1-Motion>', partial(self.rect_move, self.right_rect))
+        self.app.tag_bind(self.left_rect, '<B1-Motion>', partial(self.rect_move, self.left_rect, 'left_rect'))
+        self.app.tag_bind(self.right_rect, '<B1-Motion>', partial(self.rect_move, self.right_rect, 'right_rect'))
 
         self.app.tag_bind(self.left_rect, '<ButtonPress-1>',
                           partial(self.on_rect_click, self.left_rect, self.tag + 'left_rect'))
         self.app.tag_bind(self.right_rect, '<ButtonPress-1>',
                           partial(self.on_rect_click, self.right_rect, self.tag + 'right_rect'))
 
-    def rect_move(self, tags, event):
+    def rect_move(self, tags, rect_type, event):
         """
         矩形移动
         :param event:
         :return:
         """
+        if not check_var.get():
+            return
         # 获取矩形的当前坐标
         coords = canvas.coords(tags)
         x1, y1, z1, z2, z3, z4, x2, y2 = coords
@@ -505,10 +514,24 @@ class CreateImg(T):
 
         # 计算在固定角度上的投影距离
         projection_length = dx_mouse * unit_dx + dy_mouse * unit_dy
-        print(unit_dx * projection_length, unit_dy * projection_length)
 
+        rect_center_x, rect_center_y = self._get_center(tags)
+
+        distance_before = math.sqrt((rect_center_x - self.current_x) ** 2 + (rect_center_y - self.current_y) ** 2)
         # 按照投影距离移动矩形
         canvas.move(tags, unit_dx * projection_length, unit_dy * projection_length)
+
+        new_small_center_x, new_small_center_y = self._get_center(tags)
+        distance_after = math.sqrt(
+            (new_small_center_x - self.current_x) ** 2 + (new_small_center_y - self.current_y) ** 2)
+
+        distance = distance_after - distance_before
+
+        if rect_type == 'left_rect':
+            self.rect_left += distance
+        elif rect_type == 'right_rect':
+            self.rect_right += distance
+        update_px(distance / 10)
 
     def set_rect_stare(self, event):
         global rect_stare
@@ -633,12 +656,12 @@ class CreateImg(T):
             right_obj = end_obj.split('right')[0]
 
         right_angle = self.app.image_data[self.app.find_withtag(right_obj)[0]].angle
-        right_center_x = right_x - 50 * math.cos(math.radians(-right_angle))
-        right_center_y = right_y - 50 * math.sin(math.radians(-right_angle))
+        right_center_x = right_x - self.rect_right * math.cos(math.radians(-right_angle))
+        right_center_y = right_y - self.rect_right * math.sin(math.radians(-right_angle))
 
         left_angle = self.app.image_data[self.app.find_withtag(left_obj)[0]].angle
-        left_center_x = left_x + 130 * math.cos(math.radians(-left_angle))
-        left_center_y = left_y + 130 * math.sin(math.radians(-left_angle))
+        left_center_x = left_x + self.rect_left * math.cos(math.radians(-left_angle))
+        left_center_y = left_y + self.rect_left * math.sin(math.radians(-left_angle))
         if tangent_start:
 
             self.app.coords('left_tangent_line' + self.app.image_data[self.app.find_withtag(left_obj)[0]].index,
