@@ -861,7 +861,6 @@ def pop(id=None):
         try:
             for i in id:
                 canvas.delete(i)
-
         except:
             canvas.delete(id)
 

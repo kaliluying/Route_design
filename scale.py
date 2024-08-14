@@ -516,7 +516,6 @@ class CreateImg(T):
         projection_length = dx_mouse * unit_dx + dy_mouse * unit_dy
 
         rect_center_x, rect_center_y = self._get_center(tags)
-
         distance_before = math.sqrt((rect_center_x - self.current_x) ** 2 + (rect_center_y - self.current_y) ** 2)
         # 按照投影距离移动矩形
         canvas.move(tags, unit_dx * projection_length, unit_dy * projection_length)
@@ -663,7 +662,6 @@ class CreateImg(T):
         left_center_x = left_x + self.rect_left * math.cos(math.radians(-left_angle))
         left_center_y = left_y + self.rect_left * math.sin(math.radians(-left_angle))
         if tangent_start:
-
             self.app.coords('left_tangent_line' + self.app.image_data[self.app.find_withtag(left_obj)[0]].index,
                             left_center_x, left_center_y, left_x, left_y)
             self.app.coords('right_tangent_line' + self.app.image_data[self.app.find_withtag(right_obj)[0]].index,
