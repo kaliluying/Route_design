@@ -401,13 +401,13 @@ class CreateImg(T):
                 angle += 360
 
             self.to_rotate(self.id, angle, state=False)
-            if check_var.get():
-                self.draw_rectangles()
-                for arc, rect1, rect2, control_point in arc_list:
-                    rect1_center = self._get_center(rect1)
-                    rect2_center = self._get_center(rect2)
-
-                    self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
+            # if check_var.get():
+            #     self.draw_rectangles()
+            #     for arc, rect1, rect2, control_point in arc_list:
+            #         rect1_center = self._get_center(rect1)
+            #         rect2_center = self._get_center(rect2)
+            #
+            #         self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
 
         # 移动图片
         if what.get() == 0:
@@ -505,6 +505,7 @@ class CreateImg(T):
 
         # 计算在固定角度上的投影距离
         projection_length = dx_mouse * unit_dx + dy_mouse * unit_dy
+        print(unit_dx * projection_length, unit_dy * projection_length)
 
         # 按照投影距离移动矩形
         canvas.move(tags, unit_dx * projection_length, unit_dy * projection_length)
@@ -515,7 +516,6 @@ class CreateImg(T):
 
     def on_rect_click(self, id, tag, event):
         global arc_click
-        print('scale.py, Img.on_rect_click')
         if rect_stare:
             return
         x1, y1, x2, y2, x3, y3, x4, y4 = self.app.coords(id)
@@ -953,8 +953,9 @@ class CreateImg(T):
         angle = angle % 360
         self.angle = angle
         self.rotate(id, angle)
-        self.draw_rectangles()
+
         if check_var.get():
+            self.draw_rectangles()
             for arc, rect1, rect2, control_point in arc_list:
                 rect1_center = self._get_center(rect1)
                 rect2_center = self._get_center(rect2)
