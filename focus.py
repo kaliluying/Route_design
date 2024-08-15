@@ -1,3 +1,4 @@
+import logging
 import sys
 from functools import partial
 
@@ -260,6 +261,7 @@ class Focus:
                 elif x2.get() == '0':
                     pass
             except Exception as e:
+                logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
                 print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
                 logging.warning(e)
 
@@ -286,6 +288,7 @@ class Focus:
                     obj.to_rotate(obj.tag, obj.angle)
                     return
             except Exception as e:
+
                 print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", 'a障碍', e)
                 logging.warning('a障碍', e)
 
@@ -398,5 +401,5 @@ class Focus:
             else:
                 self.combination_abc(obj, x1, x2, x3)
         except Exception as e:
-            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}",'abc障碍', e)
+            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", 'abc障碍', e)
             logging.warning('abc障碍', e)

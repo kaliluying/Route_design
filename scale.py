@@ -31,6 +31,13 @@ class T:
         self.txt = None  # 障碍文字标签
         self.ui_state = True
 
+    def remove(self):
+        """
+        从 all_instances 列表中删除当前实例
+        """
+        if self in self.__class__.all_instances:
+            self.__class__.all_instances.remove(self)
+
     def load(self, **kwargs):
         self.startx = kwargs.get('startx', 160)
         self.starty = kwargs.get('starty', 25)
@@ -70,6 +77,7 @@ class T:
                 choice_tup.clear()
                 self.app.dtag('choice_start', 'choice_start')
         except Exception as e:
+            logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
             print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
             logging.warning(e)
         # if what.get() == 0:
@@ -256,7 +264,7 @@ class CreateImg(T):
         )
         save_dict = {'img_path': self.img_path, 'img_obj': img_obj, 'obstacle': self.obstacle, 'name': self.name,
                      'state_line': self.state_line, 'info': self.info, 'com_info': self.com_info,
-                     'scale_ratio': self.scale_ratio}
+                     'scale_ratio': self.scale_ratio, 'rect_left': self.rect_left, 'rect_right': self.rect_right}
         return {self.__str__(): {**t_dict, **save_dict}}
 
     def load(self, **kwargs):
@@ -269,6 +277,8 @@ class CreateImg(T):
         self.obstacle = kwargs.get('obstacle')
         self.name = kwargs.get('name')
         self.scale_ratio = kwargs.get('scale_ratio')
+        self.rect_left = kwargs.get('rect_left')
+        self.rect_right = kwargs.get('rect_right')
         # self.state = kwargs.get('state')
 
         image_data = base64.b64decode(img_url.split(",")[1])
@@ -442,6 +452,7 @@ class CreateImg(T):
             x1, y1, c_x, c_y, c_x2, c_y2, x2, y2 = self.app.coords(rect)
             return (x1 + x2) / 2, (y1 + y2) / 2
         except ValueError as e:
+            logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
             print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
 
     def draw_rectangles(self):
@@ -533,33 +544,11 @@ class CreateImg(T):
         elif rect_type == 'right_rect':
             self.rect_right += distance
 
-        # 更新连线的坐标
-        self.update_connection_line(tags, rect_type)
-
-    def update_connection_line(self, tags, rect_type):
-        """
-        更新小矩形与当前障碍的连线
-        :param tags: 小矩形的标签
-        :param rect_type: 小矩形的类型（left_rect 或 right_rect）
-        :return:
-        """
-        # 获取小矩形的当前中心坐标
-        rect_center_x, rect_center_y = self._get_center(tags)
-
-        # 获取障碍物的中心坐标
-        obstacle_center_x, obstacle_center_y = self.current_x, self.current_y
-
-        # 计算连线的起点和终点
-        if rect_type == 'left_rect':
-            start_x, start_y = rect_center_x, rect_center_y
-            end_x, end_y = obstacle_center_x - self.rect_left * math.cos(
-                math.radians(-self.angle)), obstacle_center_y - self.rect_left * math.sin(math.radians(-self.angle))
-            self.app.coords('left_tangent_line' + self.index, start_x, start_y, end_x, end_y)
-        elif rect_type == 'right_rect':
-            start_x, start_y = rect_center_x, rect_center_y
-            end_x, end_y = obstacle_center_x + self.rect_right * math.cos(
-                math.radians(-self.angle)), obstacle_center_y + self.rect_right * math.sin(math.radians(-self.angle))
-            self.app.coords('right_tangent_line' + self.index, start_x, start_y, end_x, end_y)
+        for arc, rect1, rect2, control_point in arc_list:
+            update_px(distance / 10)
+            rect1_center = self._get_center(rect1)
+            rect2_center = self._get_center(rect2)
+            self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
 
     def set_rect_stare(self, event):
         global rect_stare
@@ -604,8 +593,8 @@ class CreateImg(T):
         try:
             self.set_tangent_line(x1, y1, x2, y2, start_obj, end_obj)
         except Exception as e:
+            logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
             print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
-            pass
 
         if control_point is None:
             ctrl1_x = x1 + (x2 - x1) / 3
@@ -932,7 +921,6 @@ class CreateImg(T):
 
     def img_update(self, m, oxer=None):
         self.img_path = merge(int(m), oxer=oxer)
-        print(self.img_path)
         self.img_obj = Image.open(self.img_path)
         self.img = self.img_obj
         self.temp_path = ImageTk.PhotoImage(self.img_obj)
