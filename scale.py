@@ -215,6 +215,7 @@ class CreateImg(T):
 
     def __init__(self, app, index, obstacle=None):
         super(CreateImg, self).__init__(app, index)
+        self.connection_line = None
         self.selected_rects = []
         self.small_rect_size = 10
         self.var = None  # 旋转输入框
@@ -528,9 +529,37 @@ class CreateImg(T):
 
         if rect_type == 'left_rect':
             self.rect_left += distance
+
         elif rect_type == 'right_rect':
             self.rect_right += distance
-        update_px(distance / 10)
+
+        # 更新连线的坐标
+        self.update_connection_line(tags, rect_type)
+
+    def update_connection_line(self, tags, rect_type):
+        """
+        更新小矩形与当前障碍的连线
+        :param tags: 小矩形的标签
+        :param rect_type: 小矩形的类型（left_rect 或 right_rect）
+        :return:
+        """
+        # 获取小矩形的当前中心坐标
+        rect_center_x, rect_center_y = self._get_center(tags)
+
+        # 获取障碍物的中心坐标
+        obstacle_center_x, obstacle_center_y = self.current_x, self.current_y
+
+        # 计算连线的起点和终点
+        if rect_type == 'left_rect':
+            start_x, start_y = rect_center_x, rect_center_y
+            end_x, end_y = obstacle_center_x - self.rect_left * math.cos(
+                math.radians(-self.angle)), obstacle_center_y - self.rect_left * math.sin(math.radians(-self.angle))
+            self.app.coords('left_tangent_line' + self.index, start_x, start_y, end_x, end_y)
+        elif rect_type == 'right_rect':
+            start_x, start_y = rect_center_x, rect_center_y
+            end_x, end_y = obstacle_center_x + self.rect_right * math.cos(
+                math.radians(-self.angle)), obstacle_center_y + self.rect_right * math.sin(math.radians(-self.angle))
+            self.app.coords('right_tangent_line' + self.index, start_x, start_y, end_x, end_y)
 
     def set_rect_stare(self, event):
         global rect_stare
@@ -641,6 +670,17 @@ class CreateImg(T):
         return x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2
 
     def set_tangent_line(self, x1, y1, x2, y2, start_obj, end_obj, tangent_start=None):
+        """
+        设置切线
+        :param x1: 起始点 x 坐标
+        :param y1: 起始点 y 坐标
+        :param x2: 终止点 x 坐标
+        :param y2: 终止点 y 坐标
+        :param start_obj: 起始对象
+        :param end_obj: 终止对象
+        :param tangent_start: 切点状态
+        :return:
+        """
         if 'left' in start_obj:
             left_obj = start_obj.split('left')[0]
             left_x, left_y = x1, y1
@@ -655,12 +695,14 @@ class CreateImg(T):
             right_obj = end_obj.split('right')[0]
 
         right_angle = self.app.image_data[self.app.find_withtag(right_obj)[0]].angle
-        right_center_x = right_x - self.rect_right * math.cos(math.radians(-right_angle))
-        right_center_y = right_y - self.rect_right * math.sin(math.radians(-right_angle))
+        rect_right = self.app.image_data[self.app.find_withtag(right_obj)[0]].rect_right
+        right_center_x = right_x - rect_right * math.cos(math.radians(-right_angle))
+        right_center_y = right_y - rect_right * math.sin(math.radians(-right_angle))
 
         left_angle = self.app.image_data[self.app.find_withtag(left_obj)[0]].angle
-        left_center_x = left_x + self.rect_left * math.cos(math.radians(-left_angle))
-        left_center_y = left_y + self.rect_left * math.sin(math.radians(-left_angle))
+        rect_left = self.app.image_data[self.app.find_withtag(left_obj)[0]].rect_left
+        left_center_x = left_x + rect_left * math.cos(math.radians(-left_angle))
+        left_center_y = left_y + rect_left * math.sin(math.radians(-left_angle))
         if tangent_start:
             self.app.coords('left_tangent_line' + self.app.image_data[self.app.find_withtag(left_obj)[0]].index,
                             left_center_x, left_center_y, left_x, left_y)
