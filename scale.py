@@ -58,7 +58,7 @@ class T:
         :param event:
         :return:
         """
-        global choice_tup
+        global choice_tup, rect_stare
         set_frame_stare(False)
         set_obstacle(self)
         self.app.itemconfig('障碍x', text=f'x:{self.current_x / 10 - 1.5:.2f}')
@@ -93,18 +93,6 @@ class T:
         :param event:
         :return:
         """
-        # global rect_stare
-        #
-        # try:
-        #     # 获取点击位置的 item id
-        #     item_id = event.widget.find_closest(event.x, event.y)[0]
-        #     # 获取该 item 的 tag
-        #     tags = event.widget.gettags(item_id)
-        #     if 'rect_arc' in tags:
-        #         rect_stare = True
-        #         return
-        # except:
-        #     pass
 
         if what.get() == 0 and not choice_tup:
             set_frame_stare(False)
@@ -371,6 +359,8 @@ class CreateImg(T):
         :return:
         """
         global rect_stare, arc_click
+        if rect_stare:
+            return
         try:
             # 获取点击位置的 item id
             item_id = event.widget.find_closest(event.x, event.y)[0]
@@ -379,10 +369,10 @@ class CreateImg(T):
             if 'rect_arc' in tags:
                 rect_stare = True
                 arc_click = 0
+                self.app.lift(item_id)
                 return
         except:
             pass
-
         T.drag(self, tag, event)
 
         # 旋转图片

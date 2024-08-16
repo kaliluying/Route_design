@@ -483,13 +483,6 @@ def leftButtonMove(event):
     if rect_stare:
         return
 
-    # 获取点击位置的 item id
-    item_id = event.widget.find_closest(event.x, event.y)[0]
-    # 获取该 item 的 tag
-    tags = event.widget.gettags(item_id)
-    if 'rect_arc' in tags:
-        return
-
         # 画线
     if what.get() == 1:
         lastDraw = canvas.create_line(X.get(), Y.get(), event.x, event.y,
