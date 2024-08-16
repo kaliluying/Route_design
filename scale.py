@@ -31,13 +31,6 @@ class T:
         self.txt = None  # 障碍文字标签
         self.ui_state = True
 
-    def remove(self):
-        """
-        从 all_instances 列表中删除当前实例
-        """
-        if self in self.__class__.all_instances:
-            self.__class__.all_instances.remove(self)
-
     def load(self, **kwargs):
         self.startx = kwargs.get('startx', 160)
         self.starty = kwargs.get('starty', 25)
