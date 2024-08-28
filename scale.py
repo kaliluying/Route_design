@@ -277,7 +277,9 @@ class CreateImg(T):
         # print(self.app.coords(self.tag))
         # self.current_x = bbox[0] + ((bbox[2] - bbox[0]) / 2)
         # self.current_y = bbox[1] + ((bbox[3] - bbox[1]) / 2)
+        print(f"当前坐标:({self.current_x}, {self.current_y})")
         self.current_x, self.current_y = self.app.coords(self.tag)
+        print(f"更新后坐标:({self.current_x}, {self.current_y})")
         # print(f"当前坐标:({self.current_x}, {self.current_y})")
 
     def create(self, img_path, img_obj=None):
@@ -459,7 +461,7 @@ class CreateImg(T):
 
         right_small_offset = half_w + small_half + self.rect_right  # 偏移量
 
-        self.get_current_info()
+        # self.get_current_info()
 
         left_center_x = self.current_x - left_small_offset * cos_angle
         left_center_y = self.current_y - left_small_offset * sin_angle
@@ -968,7 +970,7 @@ class CreateImg(T):
             self.state_line = 1
 
             # 辅助线
-            self.get_current_info()
+            # self.get_current_info()
             self.guide()
             set_line(self.line_tag)
 
@@ -991,10 +993,11 @@ class CreateImg(T):
         if check_var.get():
             self.draw_rectangles()
             for arc, rect1, rect2, control_point in arc_list:
-                rect1_center = self._get_center(rect1)
-                rect2_center = self._get_center(rect2)
+                if self.tag in rect2:
+                    rect1_center = self._get_center(rect1)
+                    rect2_center = self._get_center(rect2)
 
-                self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
+                    self._update_arc(arc, rect1_center, rect2_center, control_point, rect1, rect2)
 
         if state:
             rotate_.append(angle)
