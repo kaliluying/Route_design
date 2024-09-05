@@ -540,6 +540,13 @@ class CreateImg(T):
         rect_stare = False
 
     def on_rect_click(self, id, tag, event):
+        """
+        矩形点击事件
+        :param id:
+        :param tag:
+        :param event:
+        :return:
+        """
         global arc_click
         if rect_stare:
             return

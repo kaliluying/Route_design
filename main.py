@@ -847,6 +847,14 @@ def set_state():
     canvas.lower("watermark")
 
 
+def id_find_tag(id):
+    """
+    ID获取标签
+    :param id:
+    :return:
+    """
+
+
 def pop(id=None):
     """
     删除
@@ -867,6 +875,7 @@ def pop(id=None):
         return
     items = canvas.find_withtag("choice_start")[:-1]
     if items:
+        print(items)
         canvas.itemconfig('choice', state='hidden')
         canvas.itemconfig('choice_start', state='hidden')
         canvas.dtag('choice_start', 'choice_start')
@@ -882,8 +891,12 @@ def pop(id=None):
                 pass
 
             for arc_ in arc_list:
+                rect_tags = canvas.gettags(i)
                 if i in arc_:
                     arc_list.remove(arc_)
+                print(rect_tags[-1], arc_)
+                if rect_tags[-1] in arc_:
+                    print(rect_tags[-1])
         choice_tup.clear()
         stack.append(('删除', items))
     else:
