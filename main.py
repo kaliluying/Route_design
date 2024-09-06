@@ -847,14 +847,6 @@ def set_state():
     canvas.lower("watermark")
 
 
-def id_find_tag(id):
-    """
-    ID获取标签
-    :param id:
-    :return:
-    """
-
-
 def pop(id=None):
     """
     删除
