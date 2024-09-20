@@ -1,4 +1,5 @@
 import json
+import re
 import subprocess
 import sys
 import time
@@ -530,7 +531,8 @@ def leftButtonMove(event):
                 choice_tup.clear()
                 choice_tup.extend(list(bbox))
             except TypeError as e:
-                logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '多选框移动出错', e)
+                logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '多选框移动出错',
+                              e)
                 print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '多选框移动出错', e)
                 logging.warning('多选框移动出错', e)
     else:
@@ -867,11 +869,16 @@ def pop(id=None):
         return
     items = canvas.find_withtag("choice_start")[:-1]
     if items:
-        print(items)
         canvas.itemconfig('choice', state='hidden')
         canvas.itemconfig('choice_start', state='hidden')
         canvas.dtag('choice_start', 'choice_start')
         for i in items:
+            tags = canvas.gettags(i)
+            matched_items = [tag for tag in tags if re.match(r"^img-\d+$", tag)]
+            if matched_items:
+                tag = matched_items[0]
+                canvas.delete(tag + 'left_rect', tag + 'right_rect')
+
             try:
                 for arc_ in arc_list:
                     if i in arc_:
@@ -965,7 +972,7 @@ def about():
     ttk.Label(app_frame, image=icon_obj).pack(pady=15)
     ttk.Label(app_frame, text="路线设计", font=("宋体", 15, "bold")).pack()
     ttk.Label(app_frame, text=f"版本 {CURRENT_VERSION}").pack()
-    ttk.Label(app_frame, text="Copyright © 2024 山东体育学院.\nAll rights reserved.").pack()
+    ttk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
     ttk.Label(app_frame, text="软件开发：许志亮 葛茂林").pack()
 
 
@@ -1439,6 +1446,7 @@ function_menuType.add_cascade(label="下载路线图", menu=menu_sava)
 function_menuType.add_command(label="保存路线图", command=save)
 function_menuType.add_command(label="加载路线图", command=load)
 function_menuType.add_command(label="删除背景", command=del_fg)
+
 
 def text():
     global index
