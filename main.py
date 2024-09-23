@@ -1469,6 +1469,7 @@ app_help = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="帮助", menu=app_help)
 app_help.add_command(label="关于软件", command=about)
 app_help.add_command(label="帮助文档", command=open_web)
+app_help.add_command(label="检查更新", command=partial(check_for_update, win, check=True))
 
 win.config(menu=menu)
 

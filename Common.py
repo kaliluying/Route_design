@@ -51,7 +51,7 @@ def log_error(exctype, value, tb):
 win.report_callback_exception = log_error
 
 
-def check_for_update(window):
+def check_for_update(window, check=False):
     try:
         response = requests.get(VERSION_URL)
         response.raise_for_status()
@@ -64,6 +64,8 @@ def check_for_update(window):
         if result:
             webbrowser.open('https://gitee.com/gmlwb/ms/releases/')
             window.destroy()
+    elif check and latest_version == CURRENT_VERSION:
+        messagebox.showinfo(title='更新提示', message='暂无新版本')
 
 
 # 当前系统
