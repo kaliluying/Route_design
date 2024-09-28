@@ -1,3 +1,4 @@
+import glob
 import json
 import re
 import subprocess
@@ -994,20 +995,29 @@ def get_center(rect):
     return (x1 + x2) / 2, (y1 + y2) / 2
 
 
-def save():
+def save(automatic=False, delete_window=False):
     """
     保存成路线图数据
     :return:
     """
+    if automatic:
+        if not os.path.exists('./auto_backup'):
+            os.mkdir('./auto_backup')
+        current_time = time.strftime("%Y%m%d-%H%M%S")
+        if delete_window:
+            txt = temp_txt if temp_txt else '__delete_window_auto__' + current_time
+        else:
+            txt = temp_txt if temp_txt else '__auto__' + current_time
+        path = './auto_backup/' + txt
+    else:
+        if not os.path.exists('./backup'):
+            os.mkdir('./backup')
 
-    if not os.path.exists('./backup'):
-        os.mkdir('./backup')
+        current_time = time.strftime("%Y%m%d-%H%M%S")
+        txt = temp_txt if temp_txt else '路线设计_' + current_time
 
-    current_time = time.strftime("%Y%m%d-%H%M%S")
-    txt = temp_txt if temp_txt else '路线设计_' + current_time
-
-    path = filedialog.asksaveasfilename(title='保存路线图数据', filetypes=[("JSON files", "*.json")],
-                                        initialdir=os.getcwd() + '/backup', initialfile=txt)
+        path = filedialog.asksaveasfilename(title='保存路线图数据', filetypes=[("JSON files", "*.json")],
+                                            initialdir=os.getcwd() + '/backup', initialfile=txt)
     if path:
         save_dict = {}
 
@@ -1045,16 +1055,28 @@ def save():
 
         with open(path, 'w', encoding='utf-8') as file:
             json.dump(save_dict, file, ensure_ascii=False)
-        messagebox.showinfo("保存成功", f"程序状态已保存至{path}")
+        if not automatic:
+            messagebox.showinfo("保存成功", f"程序状态已保存至{path}")
 
 
-def load():
+def load(start_load=False):
     """
     加载路线图数据
     :return: 
     """
     global lines, arc_list, index_img
-    file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+    if start_load:
+        json_files = glob.glob(os.path.join('./auto_backup', '__delete_window_auto__*.json'))
+        if not json_files:
+            print("指定文件夹下没有JSON文件")
+            return None
+
+        # 找到最近创建的JSON文件
+        recent_file = max(json_files, key=os.path.getctime)
+        print(f"加载最近创建的JSON文件: {recent_file}")
+        file_path = recent_file
+    else:
+        file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
     # reload_window()
     if file_path:
         try:
@@ -1102,8 +1124,10 @@ def load():
             # 全局障碍
             set_len(state['var_len'])
             index_img = state['index_img']
-
-            messagebox.showinfo("加载成功", "程序状态已从文件加载")
+            if start_load:
+                messagebox.showinfo("加载成功", "程序状态已从最近关闭加载")
+            else:
+                messagebox.showinfo("加载成功", "程序状态已从文件加载")
         except Exception as e:
             logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
             print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
@@ -1480,10 +1504,28 @@ win.bind("<Control-KeyPress-z>", undo)
 win.bind('<Button-1>', unfocus_click)
 win.bind('<BackSpace>', delete)
 
+load(start_load=True)
+
 # 版本检测
 t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
 t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
 t.start()
+
+
+def auto_save():
+    """
+    自动保存
+    :return:
+    """
+    while True:
+        time.sleep(300)
+        save(automatic=True)
+
+
+# 自动保存
+AUTO_SAVE_THREAD = threading.Thread(target=auto_save, name='auto_save_thread')
+AUTO_SAVE_THREAD.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
+AUTO_SAVE_THREAD.start()
 
 
 def processWheel(event):
@@ -1501,5 +1543,18 @@ def processWheel(event):
 
 # 绑定滚轮事件
 canvas.bind("<MouseWheel>", processWheel)
+
+
+def delete_window():
+    """
+    窗口关闭时保存
+    :return:
+    """
+    save(automatic=True, delete_window=True)
+    win.destroy()
+
+
+# 窗口关闭时保存
+win.protocol("WM_DELETE_WINDOW", delete_window)
 
 win.mainloop()
