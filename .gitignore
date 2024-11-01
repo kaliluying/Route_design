@@ -1,12 +1,14 @@
 .idea
 
-main.spec
-
 dist
 build
-download
-ms_download
 __pycache__
-demo
+
+ms_download
+backup
+auto_backup
 temp_img
+
+
 *.log
+demo.py
