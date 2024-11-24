@@ -6,7 +6,8 @@ block_cipher = None  # 初始化加密块，默认设置为 None
 
 a = Analysis(  # 创建一个 Analysis 对象，用于分析应用程序及其依赖
     ['main.py', 'Common.py', 'focus.py', 'scale.py', 'Tools.py', 'Middleware.py'],  # 指定要分析的主要 Python 文件
-    pathex=[r'C:\Users\gaozh\Desktop\Route_design'],  # 指定额外的路径，PyInstaller 会在这里查找模块
+    pathex=[r"D:\Code\Route_design"],  # 指定额外的路径，PyInstaller 会在这里查找模块
+#    pathex=[r'C:\Users\gaozh\Desktop\Route_design'],  # 指定额外的路径，PyInstaller 会在这里查找模块
     # pathex=['/Users/gml/code/python_demo/Route_design'],  # 备用的路径（已注释掉）
     binaries=[],  # 列表用于指定需要打包的二进制文件，如 DLL 等
     datas=[('./img/*', 'img')],  # 指定要打包的额外数据文件，这里打包 'img' 文件夹下的所有文件

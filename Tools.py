@@ -1,4 +1,5 @@
 import sys
+import logging
 
 from Common import *
 
@@ -501,30 +502,36 @@ def compute_arc_length(arc):
     :param arc:
     :return:
     """
+    try:
+        def bezier(t, p0, p1, p2, p3):
+            return ((1 - t) ** 3 * p0[0] + 3 * (1 - t) ** 2 * t * p1[0] + 3 * (1 - t) * t ** 2 * p2[0] + t ** 3 * p3[0],
+                    (1 - t) ** 3 * p0[1] + 3 * (1 - t) ** 2 * t * p1[1] + 3 * (1 - t) * t ** 2 * p2[1] + t ** 3 * p3[1])
 
-    def bezier(t, p0, p1, p2, p3):
-        return ((1 - t) ** 3 * p0[0] + 3 * (1 - t) ** 2 * t * p1[0] + 3 * (1 - t) * t ** 2 * p2[0] + t ** 3 * p3[0],
-                (1 - t) ** 3 * p0[1] + 3 * (1 - t) ** 2 * t * p1[1] + 3 * (1 - t) * t ** 2 * p2[1] + t ** 3 * p3[1])
+        num_points = 100
+        coords = canvas.coords(arc)
+        if not coords:
+            return 0
+            
+        x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2 = coords
+        p0 = (x1, y1)
+        p1 = (ctrl1_x, ctrl1_y)
+        p2 = (ctrl2_x, ctrl2_y)
+        p3 = (x2, y2)
 
-    num_points = 100
-    coords = canvas.coords(arc)
-    x1, y1, ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, x2, y2 = coords
-    p0 = (x1, y1)
-    p1 = (ctrl1_x, ctrl1_y)
-    p2 = (ctrl2_x, ctrl2_y)
-    p3 = (x2, y2)
+        length = 0
+        prev_point = p0
 
-    length = 0
-    prev_point = p0
-
-    for i in range(1, num_points + 1):
-        t = i / num_points
-        current_point = bezier(t, p0, p1, p2, p3)
-        segment_length = math.sqrt(
-            (current_point[0] - prev_point[0]) ** 2 + (current_point[1] - prev_point[1]) ** 2)
-        length += segment_length
-        prev_point = current_point
-    return length
+        for i in range(1, num_points + 1):
+            t = i / num_points
+            current_point = bezier(t, p0, p1, p2, p3)
+            segment_length = math.sqrt(
+                (current_point[0] - prev_point[0]) ** 2 + (current_point[1] - prev_point[1]) ** 2)
+            length += segment_length
+            prev_point = current_point
+        return length
+    except Exception as e:
+        logging.error(f"计算弧线长度出错: {str(e)}")
+        return 0
 
 
 def update_arc_px(cur, pre):

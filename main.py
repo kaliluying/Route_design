@@ -263,7 +263,8 @@ def custom():
     """
     global index_img
 
-    img_path = filedialog.askopenfilename(title='选择图片', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+    img_path = filedialog.askopenfilename(
+        title='选择图片', filetypes=[("image", "*.jpg"), ("image", "*.png")])
 
     # image_path = expand(adjust_image_size(img_path))
     # image_path = start_direction(image_path)
@@ -279,7 +280,8 @@ def fg():
     :return: 
     """
     global fg_img, fg_path
-    fg_path = filedialog.askopenfilename(title='选择图片', filetypes=[("image", "*.jpg"), ("image", "*.png")])
+    fg_path = filedialog.askopenfilename(
+        title='选择图片', filetypes=[("image", "*.jpg"), ("image", "*.png")])
     img = Image.open(fg_path)
     img = img.resize((WIDTH, HEIGHT))
     fg_img = ImageTk.PhotoImage(img)
@@ -311,7 +313,8 @@ def dle():
         entry_list.clear()
         label_list.clear()
         # 将不为空的键值对取出
-        filtered_dict = {key: value for key, value in data_dict.items() if value}
+        filtered_dict = {key: value for key,
+                         value in data_dict.items() if value}
 
         for i in frame_info.winfo_children():
             i.destroy()
@@ -334,10 +337,12 @@ def dle():
 
         confirm_button = ttk.Button(frame_info, text="修改", command=partial(edit, filtered_dict),
                                     bootstyle="success-outline")
-        confirm_button.grid(row=len(filtered_dict), column=1, sticky="n", padx=5, pady=5)
+        confirm_button.grid(row=len(filtered_dict),
+                            column=1, sticky="n", padx=5, pady=5)
 
     except Exception as e:
-        logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
+        logging.error(
+            f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
         print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}")
         messagebox.showerror("Error", "出错了")
         logging.warning("赛事信息确认", e)
@@ -375,8 +380,10 @@ def edit(current_dist=None):
         entry.grid(row=i, column=1, sticky="w", padx=5, pady=5)
         entry.insert(0, data_dict.get(title, ""))
         entry_list.append(entry)
-    confirm_button = ttk.Button(frame_info, text="确认", command=dle, bootstyle=CONFIRM_STYLE)
-    confirm_button.grid(row=len(data_dict), column=1, sticky="n", padx=5, pady=5)
+    confirm_button = ttk.Button(
+        frame_info, text="确认", command=dle, bootstyle=CONFIRM_STYLE)
+    confirm_button.grid(row=len(data_dict), column=1,
+                        sticky="n", padx=5, pady=5)
 
 
 def allow(info_var, pro_value):
@@ -395,8 +402,10 @@ def allow(info_var, pro_value):
         pro_value.set('%.2fs' % t)
         return True
     except Exception as e:
-        logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '赛事信息出错：', e)
-        print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '赛事信息出错：', e)
+        logging.error(
+            f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '赛事信息出错：', e)
+        print(
+            f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '赛事信息出错：', e)
         logging.warning('赛事信息出错：', e)
         return False
 
@@ -436,10 +445,13 @@ def found():
         img = Image.open(fg_path)
         img = img.resize((WIDTH, HEIGHT))
         fg_img = ImageTk.PhotoImage(img)
-        canvas.create_image(15, 50, image=fg_img, anchor='nw', tags=('不框选', 'bg'))
+        canvas.create_image(15, 50, image=fg_img,
+                            anchor='nw', tags=('不框选', 'bg'))
     except AttributeError as e:
-        logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '背景图错误：', e)
-        print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '背景图错误：', e)
+        logging.error(
+            f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '背景图错误：', e)
+        print(
+            f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '背景图错误：', e)
 
     if state_f:
         font = 0.16 if sys_name == 'Darwin' else 0.1
@@ -506,7 +518,8 @@ def leftButtonMove(event):
 
     # 橡皮擦
     elif what.get() == 2:
-        te = canvas.find_overlapping(event.x - 10, event.y - 10, event.x + 10, event.y + 10)
+        te = canvas.find_overlapping(
+            event.x - 10, event.y - 10, event.x + 10, event.y + 10)
         for i in te:
             canvas.delete(i)
 
@@ -534,12 +547,14 @@ def leftButtonMove(event):
             except TypeError as e:
                 logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '多选框移动出错',
                               e)
-                print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '多选框移动出错', e)
+                print(
+                    f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", '多选框移动出错', e)
                 logging.warning('多选框移动出错', e)
     else:
         if get_frame_stare():
             canvas.delete('choice')
-            canvas.create_rectangle(X.get(), Y.get(), event.x, event.y, tags='choice', dash=(3, 5))
+            canvas.create_rectangle(
+                X.get(), Y.get(), event.x, event.y, tags='choice', dash=(3, 5))
             # current_frame_stare = True
 
 
@@ -590,7 +605,8 @@ def leftButtonUp(event):
             start_y.set(end_y.get())
 
     if current_frame_stare:
-        canvas.addtag_overlapping('choice_start', X.get(), Y.get(), event.x, event.y)
+        canvas.addtag_overlapping(
+            'choice_start', X.get(), Y.get(), event.x, event.y)
         canvas.dtag('不框选', 'choice_start')
         choice_tup.append(X.get())
         choice_tup.append(Y.get())
@@ -601,7 +617,8 @@ def leftButtonUp(event):
     if canvas.find_withtag('choice') and what.get() != '3':
         # TODO
         items = canvas.find_withtag('choice_start')
-        stack.append(('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
+        stack.append(
+            ('移动', items, (event.x - move_x.get(), event.y - move_y.get())))
     if len(canvas.find_withtag('choice_start')) == 1:
         canvas.delete('choice')
         choice_tup.clear()
@@ -747,7 +764,8 @@ def currency_font():
     :return: 
     """
     global font_size, remove_size, size
-    size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=size)
+    size = tkinter.simpledialog.askinteger(
+        '输入字号', prompt='', initialvalue=size)
     font_size = remove_size = size
 
 
@@ -757,7 +775,8 @@ def currency_pen():
     :return: 
     """
     global font_size
-    font_size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=font_size)
+    font_size = tkinter.simpledialog.askinteger(
+        '输入字号', prompt='', initialvalue=font_size)
 
 
 def currency_remove():
@@ -766,7 +785,8 @@ def currency_remove():
     :return: 
     """
     global remove_size
-    remove_size = tkinter.simpledialog.askinteger('输入字号', prompt='', initialvalue=remove_size)
+    remove_size = tkinter.simpledialog.askinteger(
+        '输入字号', prompt='', initialvalue=remove_size)
 
 
 def save_1():
@@ -850,63 +870,157 @@ def set_state():
     canvas.lower("watermark")
 
 
-def pop(id=None):
-    """
-    删除
-    :param id: 
-    :return: 
-    """
-    if id:
-        cur, line = get_cur()
-        try:
-            for i in id:
-                canvas.delete(i)
-        except:
-            canvas.delete(id)
+class DeletionManager:
+    """删除操作管理器"""
+    def __init__(self, canvas):
+        self.canvas = canvas  # 画布对象
+        self.lines = lines    # 全局路线数据
+        self.deleted_states = {}  # 存储删除项的状态，用于可能的恢复
 
-        if id == cur:
-            canvas.delete(line)
+    def safe_delete(self, item_id):
+        """安全删除单个项目
+        Args:
+            item_id: 要删除的画布项目ID
+        Returns:
+            bool: 删除是否成功
+        """
+        try:
+            if self.canvas.type(item_id):  # 检查项目是否存在
+                # 保存删除前的状态
+                self.deleted_states[item_id] = {
+                    'state': self.canvas.itemcget(item_id, 'state'),
+                    'tags': self.canvas.gettags(item_id)
+                }
+                self.canvas.delete(item_id)
+                return True
+            return False
+        except ttk.TclError:
+            logging.warning(f"尝试删除不存在的项目: {item_id}")
+            return False
+
+    def handle_multiple_deletions(self, items):
+        """处理多项删除
+        Args:
+            items: 要删除的项目ID列表
+        Returns:
+            tuple: (总长度, 已删除项目列表)
+        """
+        if not items:
+            raise ValueError("没有选中要删除的项目")
+            
+        total_length = 0
+        processed_arcs = set()  # 记录已处理的弧线，避免重复计算
+        deleted_items = []      # 记录成功删除的项目
+        
+        try:
+            for item in items:
+                if not self.canvas.type(item):
+                    continue
+                    
+                deleted_items.append(item)
+                tags = self.canvas.gettags(item)
+                
+                # 计算直线长度
+                if "line" in tags:
+                    length = self.calculate_line_length(item)
+                    total_length += length
+                
+                # 计算弧线长度
+                for arc_ in arc_list[:]:  # 使用切片创建副本进行迭代
+                    if item in arc_ and arc_[0] not in processed_arcs:
+                        arc_length = self.calculate_arc_length(arc_[0])
+                        total_length += arc_length
+                        processed_arcs.add(arc_[0])
+                        arc_list.remove(arc_)
+                
+                self.safe_delete(item)
+            
+            # 更新路线数据
+            self.update_lines(deleted_items)
+            
+            if not deleted_items:
+                raise ValueError("没有成功删除任何项目")
+                
+            return round(total_length, 2), deleted_items
+            
+        except Exception as e:
+            self.hide_items(deleted_items)  # 发生错误时隐藏项目而不是删除
+            raise e
+
+def pop(id=None):
+    """删除操作入口函数
+    Args:
+        id: 可选，指定要删除的项目ID
+    """
+    deletion_manager = DeletionManager(canvas)
+    
+    try:
+        # 处理单个指定项目的删除
+        if id:
+            if not deletion_manager.safe_delete(id):
+                raise ValueError("删除失败：项目不存在或无法删除")
+            deletion_manager.update_lines([id])
+            return
+
+        # 获取框选的项目
+        items = canvas.find_withtag("choice_start")[:-1]
+        if not items:
+            # 处理单个选中项的删除
+            cur, line = get_cur()
+            if cur:
+                deletion_manager.hide_items([cur, line] if line else [cur])
+                if line:
+                    length = deletion_manager.calculate_line_length(line)
+                    if length > 0:
+                        update_px(length, start=False)
+                deletion_manager.update_lines([cur, line] if line else [cur])
+                stack.append(('删除', (cur, line), get_obstacle()))
+                if get_obstacle():
+                    get_obstacle().ui_state = not get_obstacle().ui_state
             remove_from_not_com()
-        return
-    items = canvas.find_withtag("choice_start")[:-1]
-    if items:
+            return
+            
+        # 处理多选删除
+        total_length, deleted_items = deletion_manager.handle_multiple_deletions(items)
+        
+        # 更新UI状态
         canvas.itemconfig('choice', state='hidden')
         canvas.itemconfig('choice_start', state='hidden')
         canvas.dtag('choice_start', 'choice_start')
-        for i in items:
-            tags = canvas.gettags(i)
-            matched_items = [tag for tag in tags if re.match(r"^img-\d+$", tag)]
-            if matched_items:
-                tag = matched_items[0]
-                canvas.delete(tag + 'left_rect', tag + 'right_rect')
-
-            try:
-                for arc_ in arc_list:
-                    if i in arc_:
-                        length = compute_arc_length(i)
-                        update_px(length / 10, start=False)
-                canvas.image_data[i].ui_state = not canvas.image_data[i].ui_state
-                # canvas.image_data[i].remove()
-            except KeyError:
-                pass
-
-            for arc_ in arc_list:
-                rect_tags = canvas.gettags(i)
-                if i in arc_:
-                    arc_list.remove(arc_)
-                print(rect_tags[-1], arc_)
-                if rect_tags[-1] in arc_:
-                    print(rect_tags[-1])
+        
+        # 更新路线长度
+        if total_length > 0:
+            update_px(total_length, start=False)
+            
+        # 记录操作历史
         choice_tup.clear()
-        stack.append(('删除', items))
-    else:
-        cur, line = get_cur()
-        canvas.itemconfig(cur, state='hidden')
-        canvas.itemconfig(line, state='hidden')
-        stack.append(('删除', (cur, line), get_obstacle()))
-        get_obstacle().ui_state = not get_obstacle().ui_state
+        stack.append(('删除', deleted_items))
+        
+    except ValueError as e:
+        messagebox.showwarning("提示", str(e))
+    except Exception as e:
+        error_msg = f"删除操作失败: {str(e)}"
+        logging.error(error_msg, exc_info=True)
+        messagebox.showerror("错误", error_msg)
+    finally:
+        remove_from_not_com()
+        redraw_lines()  # 强制重绘路线
 
-    remove_from_not_com()
+
+def redraw_lines():
+    """重绘所有路线"""
+    # 清除现有路线
+    canvas.delete("line")
+
+    # 重绘所有路线
+    for line_data in lines:
+        if 'coords' in line_data:
+            canvas.create_line(
+                line_data['coords'],
+                fill=line_data.get('color', 'black'),
+                width=line_data.get('width', 1),
+                tags=('line', line_data.get('tags', ''))
+            )
 
 
 def grid():
@@ -927,11 +1041,13 @@ def grid():
         step = 100
         # 垂直线
         for i in range(range_x):
-            canvas.create_line(index_x, 50, index_x, HEIGHT + 50, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
+            canvas.create_line(index_x, 50, index_x, HEIGHT +
+                               50, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
             index_x += step
         # 水平线
         for i in range(range_y):
-            canvas.create_line(30, index_y, WIDTH + 15, index_y, dash=(5, 3), tags=('grid', '不框选'), smooth=True)
+            canvas.create_line(30, index_y, WIDTH + 15, index_y,
+                               dash=(5, 3), tags=('grid', '不框选'), smooth=True)
             index_y += step
         grid_start = 1
 
@@ -973,7 +1089,8 @@ def about():
     ttk.Label(app_frame, image=icon_obj).pack(pady=15)
     ttk.Label(app_frame, text="路线设计", font=("宋体", 15, "bold")).pack()
     ttk.Label(app_frame, text=f"版本 {CURRENT_VERSION}").pack()
-    ttk.Label(app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
+    ttk.Label(
+        app_frame, text="Copyright © 2022 山东体育学院.\nAll rights reserved.").pack()
     ttk.Label(app_frame, text="软件开发：许志亮 葛茂林").pack()
 
 
@@ -1041,7 +1158,8 @@ def save(automatic=False, delete_window=False):
         for arc, rect1, rect2, control_point in arc_list:
             rect1_center = get_center(rect1)
             rect2_center = get_center(rect2)
-            temp_arc.append((arc, rect1, rect2, rect1_center, rect2_center, control_point))
+            temp_arc.append((arc, rect1, rect2, rect1_center,
+                            rect2_center, control_point))
         save_dict['arc_list'] = temp_arc
         # 保存图片索引
         save_dict['index_img'] = index_img
@@ -1066,7 +1184,8 @@ def load(start_load=False):
     """
     global lines, arc_list, index_img
     if start_load:
-        json_files = glob.glob(os.path.join('./auto_backup', '__delete_window_auto__*.json'))
+        json_files = glob.glob(os.path.join(
+            './auto_backup', '__delete_window_auto__*.json'))
         if not json_files:
             print("指定文件夹下没有JSON文件")
             return None
@@ -1076,7 +1195,8 @@ def load(start_load=False):
         print(f"加载最近创建的JSON文件: {recent_file}")
         file_path = recent_file
     else:
-        file_path = filedialog.askopenfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        file_path = filedialog.askopenfilename(
+            defaultextension=".json", filetypes=[("JSON files", "*.json")])
     # reload_window()
     if file_path:
         try:
@@ -1098,7 +1218,8 @@ def load(start_load=False):
             # 加载障碍
             for key, value in state.items():
                 if '障碍组件' in key:
-                    CreateImg(canvas, value['index'], value['img_path'], ).load(**value)
+                    CreateImg(canvas, value['index'],
+                              value['img_path'], ).load(**value)
                 elif '障碍号' in key:
                     CreateTxt(canvas, value['index']).load(**value)
                 elif '障碍备注' in key:
@@ -1125,12 +1246,14 @@ def load(start_load=False):
             set_len(state['var_len'])
             index_img = state['index_img']
             if start_load:
-                messagebox.showinfo("加载成功", "程序状态已从最近关闭加载")
+                messagebox.showinfo("加载成功", "程序状态已从近关闭加载")
             else:
                 messagebox.showinfo("加载成功", "程序状态已从文件加载")
         except Exception as e:
-            logging.error(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
-            print(f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
+            logging.error(
+                f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
+            print(
+                f"{os.path.basename(__file__)}, line {sys._getframe().f_lineno}, {e}", e)
             messagebox.showerror("加载失败", f"无法加载文件: {e}")
 
 
@@ -1234,55 +1357,73 @@ frame_map = ttk.Frame(win, name="路线图")
 frame_map.place(x=10, y=10)
 
 # 路线图长度
-ttk.Label(frame_map, text="长度(m):", font=FONT).grid(row=1, column=0, sticky='e', padx=5, pady=5)
+ttk.Label(frame_map, text="长度(m):", font=FONT).grid(
+    row=1, column=0, sticky='e', padx=5, pady=5)
 var_l_w = ttk.StringVar()
 var_l_w.set('90')
 var_l_w_inp = Entry(frame_map, textvariable=var_l_w, width=5)
 var_l_w_inp.grid(row=1, column=1, sticky='e', padx=5, pady=5)
 
 # 路线图宽度
-ttk.Label(frame_map, text="宽度(m):", font=FONT).grid(row=2, column=0, sticky='e', padx=5, pady=5)
+ttk.Label(frame_map, text="宽度(m):", font=FONT).grid(
+    row=2, column=0, sticky='e', padx=5, pady=5)
 var_l_h = ttk.StringVar()
 var_l_h.set("60")
 var_l_h_inp = Entry(frame_map, textvariable=var_l_h, width=5)
 var_l_h_inp.grid(row=2, column=1, sticky='e', padx=5, pady=5)
 
-ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text="确认", command=found).grid(row=3, column=1, sticky='w')
+ttk.Button(frame_map, bootstyle=CONFIRM_STYLE, text="确认",
+           command=found).grid(row=3, column=1, sticky='w')
 
 frame_obstacle_length = ttk.Frame(win, name="全局障碍")
 frame_obstacle_length.place(x=180, y=10)
-ttk.Label(frame_obstacle_length, text='全局障碍长度(m):', font=FONT).grid(row=1, column=3, sticky='e', padx=5, pady=5)
+ttk.Label(frame_obstacle_length, text='全局障碍长度(m):', font=FONT).grid(
+    row=1, column=3, sticky='e', padx=5, pady=5)
 var_len = ttk.StringVar(value='4')
 len_ent = Entry(frame_obstacle_length, textvariable=var_len, width=4)
 len_ent.grid(row=1, column=4, sticky='e', padx=5, pady=5)
 
 ttk.Button(frame_obstacle_length, bootstyle=CONFIRM_STYLE, text='确认', command=partial(set_len, var_len)).grid(row=2,
-                                                                                                                column=4,
-                                                                                                                sticky='e',
-                                                                                                                padx=5,
-                                                                                                                pady=5)
+                                                                                                              column=4,
+                                                                                                              sticky='e',
+                                                                                                              padx=5,
+                                                                                                              pady=5)
 
 # 障碍物
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='进出口', command=gate).grid(row=0, column=0)
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='指北针', command=compass).grid(row=1, column=0)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='进出口', command=gate).grid(row=0, column=0)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='指北针',
+           command=compass).grid(row=1, column=0)
 #
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='水障', command=water_barrier).grid(row=0, column=1)
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='砖墙', command=brick_wall).grid(row=1, column=1)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='水障',
+           command=water_barrier).grid(row=0, column=1)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='砖墙',
+           command=brick_wall).grid(row=1, column=1)
 #
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='起/终点线', command=line).grid(row=0, column=2)
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='强制通过点', command=force).grid(row=1, column=2)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='起/终点线', command=line).grid(row=0, column=2)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='强制通过点', command=force).grid(row=1, column=2)
 
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='利物浦', command=live).grid(row=0, column=3)
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='单横木', command=monorail).grid(row=1, column=3)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='利物浦', command=live).grid(row=0, column=3)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='单横木',
+           command=monorail).grid(row=1, column=3)
 
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='双横木', command=oxer).grid(row=0, column=4)
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='三横木', command=tirail).grid(row=1, column=4)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='双横木', command=oxer).grid(row=0, column=4)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='三横木', command=tirail).grid(row=1, column=4)
 
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='AB组合障碍', command=combination_ab).grid(row=0, column=5)
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='ABC组合障碍', command=combination_abc).grid(row=1, column=5)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='AB组合障碍',
+           command=combination_ab).grid(row=0, column=5)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='ABC组合障碍',
+           command=combination_abc).grid(row=1, column=5)
 
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='自定义障碍', command=custom).grid(row=0, column=6)
-ttk.Button(frame_create, bootstyle=BUTTON_STYLE, text='导入背景图', command=fg).grid(row=1, column=6)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='自定义障碍', command=custom).grid(row=0, column=6)
+ttk.Button(frame_create, bootstyle=BUTTON_STYLE,
+           text='导入背景图', command=fg).grid(row=1, column=6)
 
 # 障碍号
 ttk.Label(frame_create, text="障碍号：", font=FONT).grid(row=0, column=7)
@@ -1290,15 +1431,18 @@ var_id = ttk.StringVar()
 e_id = Entry(frame_create, textvariable=var_id, width=4)
 e_id.grid(row=0, column=8)
 
-ttk.Button(frame_create, bootstyle=CONFIRM_STYLE, text='确认', command=insert).grid(row=1, column=8)
+ttk.Button(frame_create, bootstyle=CONFIRM_STYLE,
+           text='确认', command=insert).grid(row=1, column=8)
 
 width = 6
 
 # 工作模块
-but_0 = ttk.Checkbutton(frame_command, text='拖动', command=drag, width=width, bootstyle="round-toggle")
+but_0 = ttk.Checkbutton(frame_command, text='拖动',
+                        command=drag, width=width, bootstyle="round-toggle")
 but_0.grid(row=0, column=1, padx=0, pady=0)
 but_0.state(['selected'])
-but_3 = ttk.Checkbutton(frame_command, text='旋转', command=rotate, width=width, bootstyle="round-toggle")
+but_3 = ttk.Checkbutton(frame_command, text='旋转',
+                        command=rotate, width=width, bootstyle="round-toggle")
 but_3.grid(row=1, column=1, padx=0, pady=0)
 but_3.state(['!selected'])
 
@@ -1306,14 +1450,15 @@ but_3.state(['!selected'])
 # but_2.pack()
 
 ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='置底', command=set_state, width=width).grid(row=0, column=0,
-                                                                                                    padx=0, pady=0)
+                                                                                                  padx=0, pady=0)
 ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='删除', command=pop, width=width).grid(row=1, column=0, padx=0,
-                                                                                              pady=0)
+                                                                                            pady=0)
 
 # 辅助模块
 ttk.Button(frame_command, bootstyle=BUTTON_STYLE, text='网格辅助线', command=grid, width=width).grid(row=2, column=0,
-                                                                                                     padx=0, pady=0)
-aux_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
+                                                                                                padx=0, pady=0)
+aux_info = ttk.Checkbutton(
+    frame_command, bootstyle="round-toggle", text='辅助信息', command=info, width=width)
 aux_info.grid(row=2, column=1, padx=0, pady=0)
 aux_info.state(['selected'])
 
@@ -1322,38 +1467,45 @@ arc_info = ttk.Checkbutton(frame_command, bootstyle="round-toggle", text='弧线
 arc_info.grid(row=3, column=1, padx=0, pady=0)
 
 # 障碍参数
-ttk.Label(frame_aux_info, text="障碍备注：", font=FONT).grid(row=0, column=0, padx=0, pady=0)
+ttk.Label(frame_aux_info, text="障碍备注：", font=FONT).grid(
+    row=0, column=0, padx=0, pady=0)
 var_parameter = ttk.StringVar()
 e_parameter = Entry(frame_aux_info, textvariable=var_parameter, width=5)
 e_parameter.grid(row=0, column=1, padx=0, pady=0)
 
 ttk.Button(frame_aux_info, bootstyle=CONFIRM_STYLE, text='确认', command=parameter).grid(row=1, column=0, padx=0,
-                                                                                         pady=0)
-par_state = ttk.Button(frame_aux_info, bootstyle="success-outline", text='隐藏', command=hidden)
+                                                                                       pady=0)
+par_state = ttk.Button(
+    frame_aux_info, bootstyle="success-outline", text='隐藏', command=hidden)
 par_state.grid(row=1, column=1, padx=0, pady=0)
 
 # 圆
-ttk.Label(frame_aux_info, text="圆(m)：", font=FONT).grid(row=2, column=0, padx=0, pady=0, sticky='e')
+ttk.Label(frame_aux_info, text="圆(m)：", font=FONT).grid(
+    row=2, column=0, padx=0, pady=0, sticky='e')
 var_cir = ttk.StringVar()
 e_id = Entry(frame_aux_info, textvariable=var_cir, width=5)
 e_id.grid(row=2, column=1, sticky='w')
 ttk.Button(frame_aux_info, bootstyle=CONFIRM_STYLE, text='确认', command=circular).grid(row=3, column=1, padx=0, pady=0,
-                                                                                        sticky='w')
+                                                                                      sticky='w')
 
 # 测量模块
-but_1 = ttk.Checkbutton(frame_mea_com, bootstyle="round-toggle", text='画路线', command=pen, width=width)
+but_1 = ttk.Checkbutton(
+    frame_mea_com, bootstyle="round-toggle", text='画路线', command=pen, width=width)
 but_1.grid(row=0, column=0, padx=1, pady=1)
 
 ttk.Button(frame_mea_com, bootstyle=BUTTON_STYLE, text='清空路线', command=clear, width=width).grid(row=0, column=1,
-                                                                                                    padx=0, pady=0)
+                                                                                                padx=0, pady=0)
 
-canvas.create_rectangle(30, 120, WIDTH + 30, HEIGHT + 120, state='disabled', tags=('不框选', '实际画布'))
+canvas.create_rectangle(30, 120, WIDTH + 30, HEIGHT +
+                        120, state='disabled', tags=('不框选', '实际画布'))
 
 # 右上角显示路线长宽
 w = WIDTH / 10
 h = HEIGHT / 10
-h1 = canvas.create_text(WIDTH - 40, 130, text=f"长：{w}m", tags=('辅助信息', '不框选', '长'))
-h2 = canvas.create_text(WIDTH - 40, 150, text=f"宽：{h}m", tags=('辅助信息', '不框选', '宽'))
+h1 = canvas.create_text(
+    WIDTH - 40, 130, text=f"长：{w}m", tags=('辅助信息', '不框选', '长'))
+h2 = canvas.create_text(
+    WIDTH - 40, 150, text=f"宽：{h}m", tags=('辅助信息', '不框选', '宽'))
 
 # 左上角显示 5m的距离
 canvas.create_text(60, 130, text="5m", tags=('辅助信息', '不框选'))
@@ -1362,7 +1514,8 @@ canvas.create_line(85, 135, 85, 140, tags=('辅助信息', '不框选'))
 canvas.create_line(35, 140, 85, 140, tags=('辅助信息', '不框选'))
 
 # 右上显示，路线长度
-canvas.create_text(WIDTH - 40, 100, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
+canvas.create_text(
+    WIDTH - 40, 100, text=f"{px / 10}m", tags=('实时路线', '不框选', '辅助信息'))
 
 
 # 鼠标实时坐标
@@ -1373,9 +1526,11 @@ def shu(event):
     canvas.itemconfig('鼠标y', text=f'y:{y:.2f}')
 
 
-# 右下角显示鼠标实时坐标
-canvas.create_text(WIDTH - 10, HEIGHT + 130, text='x:', tags=('辅助信息', '不框选', '鼠标x'))
-canvas.create_text(WIDTH - 10, HEIGHT + 140, text='y:', tags=('辅助信息', '不框选', '鼠标y'))
+# 右下角显示鼠实时坐标
+canvas.create_text(WIDTH - 10, HEIGHT + 130, text='x:',
+                   tags=('辅助信息', '不框选', '鼠标x'))
+canvas.create_text(WIDTH - 10, HEIGHT + 140, text='y:',
+                   tags=('辅助信息', '不框选', '鼠标y'))
 
 canvas.bind('<Motion>', shu)
 
@@ -1399,14 +1554,16 @@ canvas.bind('<B1-Motion>', leftButtonMove)  # 鼠标左键移动事件
 canvas.bind('<ButtonRelease-1>', leftButtonUp)  # 松开左键
 
 # 标题
-canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称', font=("微软雅黑", 18), tags=('比赛名称', '不框选'))
+canvas.create_text((WIDTH + 40) / 2, 20, text='比赛名称',
+                   font=("微软雅黑", 18), tags=('比赛名称', '不框选'))
 tit_x = 0
 tit_y = 0
 canvas.tag_bind('比赛名称', '<Button-1>', tit_click)
 canvas.tag_bind('比赛名称', '<B1-Motion>', tit_move)
 
 # 赛事级别
-canvas.create_text((WIDTH + 40) / 2, 40, text='级别赛制', font=("微软雅黑", 14), tags=('级别赛制', '不框选'))
+canvas.create_text((WIDTH + 40) / 2, 40, text='级别赛制',
+                   font=("微软雅黑", 14), tags=('级别赛制', '不框选'))
 
 level_x = 0
 level_y = 0
@@ -1493,7 +1650,8 @@ app_help = ttk.Menu(menu, tearoff=0)
 menu.add_cascade(label="帮助", menu=app_help)
 app_help.add_command(label="关于软件", command=about)
 app_help.add_command(label="帮助文档", command=open_web)
-app_help.add_command(label="检查更新", command=partial(check_for_update, win, check=True))
+app_help.add_command(label="检查更新", command=partial(
+    check_for_update, win, check=True))
 
 win.config(menu=menu)
 
@@ -1507,7 +1665,8 @@ win.bind('<BackSpace>', delete)
 load(start_load=True)
 
 # 版本检测
-t = threading.Thread(target=lambda: check_for_update(win), name='update_thread')
+t = threading.Thread(target=lambda: check_for_update(win),
+                     name='update_thread')
 t.daemon = True  # 守护为True，设置True线程会随着进程一同关闭
 t.start()
 
@@ -1545,16 +1704,18 @@ def processWheel(event):
 canvas.bind("<MouseWheel>", processWheel)
 
 
-def delete_window():
-    """
-    窗口关闭时保存
-    :return:
-    """
-    save(automatic=True, delete_window=True)
-    win.destroy()
+# def delete_window():
+#     """
+#     窗口关闭时保存
+#     :return:
+#     """
+#     print('窗口关闭')
+#     save(automatic=True, delete_window=True)
+#     print('自动保存')
+#     win.destroy()
 
 
-# 窗口关闭时保存
-win.protocol("WM_DELETE_WINDOW", delete_window)
+# # 窗口关闭时保存
+# win.protocol("WM_DELETE_WINDOW", delete_window)
 
 win.mainloop()
