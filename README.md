@@ -5,6 +5,8 @@
 
 [源码链接](https://github.com/kaliluying/Route_design)
 
+[下载地址](https://github.com/kaliluying/Route_design/releases)
+
 ### 界面预览
 
 ![](./readme_img/demo.png)
