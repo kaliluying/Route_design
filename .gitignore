@@ -1,4 +1,5 @@
 .idea
+.venv
 
 dist
 build
@@ -8,7 +9,10 @@ ms_download
 backup
 auto_backup
 temp_img
+readme_img
+TEST
 
+REFACTORING_*
 
 *.log
 demo.py
