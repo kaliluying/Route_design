@@ -1,5 +1,16 @@
 from PIL import Image, ImageOps
-from Commom import *
+from Common import *
+
+
+# ===== 避免循环依赖的本地函数 =====
+def get_one_path():
+    """获取单横木路径（本地定义避免循环依赖）"""
+    return "img/one.png"
+
+
+def get_live_path():
+    """获取利物浦路径（本地定义避免循环依赖）"""
+    return "img/liverpool3.png"
 
 
 class Entry(tk.Entry):
@@ -8,34 +19,34 @@ class Entry(tk.Entry):
         self.con = None
         self.kw = kw
         self.undo_stack = []
-        self.current_value = ''
+        self.current_value = ""
         self.undo_ = undo
-        self.bind('<Key>', self.on_key)
-        self.bind("<Command-KeyPress-z>", self.undo if self.undo_ else '')
-        self.bind("<Control-KeyPress-z>", self.undo if self.undo_ else '')
+        self.bind("<Key>", self.on_key)
+        self.bind("<Command-KeyPress-z>", self.undo if self.undo_ else "")
+        self.bind("<Control-KeyPress-z>", self.undo if self.undo_ else "")
 
     def config(self, cnf=None, **kw):
         tk.Entry.configure(self, cnf, **kw)
         self.con = kw
 
     def getname(self):
-        return self.kw['name']
+        return self.kw["name"]
 
     def getstate(self):
         try:
             try:
-                return self.con['state']
+                return self.con["state"]
             except:
-                return self.kw['state']
+                return self.kw["state"]
         except:
-            return ''
+            return ""
 
     def on_key(self, event):
-        if event.keysym in ('Return', 'KP_Enter'):
+        if event.keysym in ("Return", "KP_Enter"):
             self.undo_stack.append(self.current_value)
-        elif event.keysym == 'BackSpace':
+        elif event.keysym == "BackSpace":
             self.current_value = self.get()
-        elif event.keysym == 'Delete':
+        elif event.keysym == "Delete":
             self.current_value = self.get()
         else:
             self.undo_stack.append(self.current_value)
@@ -57,6 +68,7 @@ def is_number(s):
         pass  # 如果引发了ValueError这种异常，不做任何事情（pass：不做任何事情，一般用做占位语句）
     try:
         import unicodedata  # 处理ASCii码的包
+
         unicodedata.numeric(s)  # 把一个表示数字的字符串转换为浮点数返回的函数
         return True
     except (TypeError, ValueError):
@@ -110,8 +122,8 @@ def expand(path, state=1):
     img2 = ImageOps.expand(img, padding, fill=(236, 236, 236, 0))
     directory = os.path.dirname(path)
     file_name = os.path.basename(path)
-    image_name = file_name.replace('.', '-exp.')
-    image_path = directory + "/" + image_name
+    image_name = file_name.replace(".", "-exp.")
+    image_path = os.path.join(directory, image_name)
     img2.save(image_path)
     return image_path
 
@@ -127,8 +139,8 @@ def start_direction(image_path):
     img1.paste(img2, (0, h // 2 - 5), alpha)
     directory = os.path.dirname(image_path)
     file_name = os.path.basename(image_path)
-    image_name = file_name.replace('.', '-dir.')
-    image_path = directory + "/" + image_name
+    image_name = file_name.replace(".", "-dir.")
+    image_path = os.path.join(directory, image_name)
     img1.save(image_path)
     return image_path
 
@@ -150,7 +162,9 @@ def combination(m1, m2, m3):
 
 
 def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
-    img_obj1 = img_obj2 = img_obj3 = img_obj4 = img_obj5 = img_obj6 = Image.open(get_one_path())
+    img_obj1 = img_obj2 = img_obj3 = img_obj4 = img_obj5 = img_obj6 = Image.open(
+        get_one_path()
+    )
     result = Image.new(img_obj1.mode, (m1 + m2 + m3 + m4 + m5 + 30, 40))
 
     if m1:
@@ -161,7 +175,7 @@ def com_abc(m1=0, m2=0, m3=0, m4=0, m5=0):
     result.paste(img_obj4, box=(m1 + m2 + m3 + 15, 0))
     if m5:
         result.paste(img_obj5, box=(m1 + m2 + m3 + m4 + 20, 0))
-    result.paste(img_obj6, box=(m1 + m2 + m3 + + m4 + m5 + 25, 0))
+    result.paste(img_obj6, box=(m1 + m2 + m3 + +m4 + m5 + 25, 0))
 
     result.save("img/com_abc.png")
     com_image = "img/com_abc.png"
@@ -232,7 +246,9 @@ def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
     result = Image.new(img_obj.mode, (a + b + c + a_b + b_c + 50, 40))
     result.paste(img_obj, box=(0, 0))
     result.paste(img_obj2, box=(a + a_b + (10 if a else 5), 0))
-    result.paste(image3, box=(a + b + a_b + b_c + (10 if a else 5) + (10 if b else 5), 0))
+    result.paste(
+        image3, box=(a + b + a_b + b_c + (10 if a else 5) + (10 if b else 5), 0)
+    )
     result.save("img/obs_abc.png")
     com_image = "img/obs_abc.png"
     result.save(com_image)
@@ -260,19 +276,19 @@ def water_wh(w, h):
     :param h:
     :return:
     """
-    img = Image.open(water_barrier_iamge)
+    img = Image.open(water_barrier_image)
     img = img.resize((w, h))
     img.save("img/water_wh.png")
     return start_direction(expand("img/water_wh.png"))
 
 
-def live_two_tool(path='img/liverpool3.png'):
+def live_two_tool(path="img/liverpool3.png"):
     """
     利物浦单横木变双横木
     :return:
     """
     img = Image.open(path)
-    img2 = Image.open('img/one.png')
+    img2 = Image.open("img/one.png")
     w, h = img.size
     result = Image.new(img.mode, (w, h))
     result.paste(img, box=(0, 0))
@@ -282,9 +298,9 @@ def live_two_tool(path='img/liverpool3.png'):
     return start_direction(expand("img/live_two.png"))
 
 
-def live_one_tool(path=get_live_path()):
+def live_one_tool(path="img/liverpool3.png"):
     img = Image.open(path)
-    img2 = Image.open('img/one.png')
+    img2 = Image.open("img/one.png")
     w, h = img.size
     result = Image.new(img.mode, (w, h))
     result.paste(img, box=(0, 0))
@@ -294,13 +310,13 @@ def live_one_tool(path=get_live_path()):
 
 
 def live_edit(w, h):
-    img = Image.open(get_live_path())
+    img = Image.open("img/liverpool3.png")
     img = img.resize((w, h))
     img.save("img/live_wh.png")
     id = get_live()
-    if id == '1' or id == 1:
+    if id == "1" or id == 1:
         return live_two_tool("img/live_wh.png")
-    elif id == 0 or id == '0':
+    elif id == 0 or id == "0":
         a = live_one_tool("img/live_wh.png")
         return a
 
@@ -316,9 +332,9 @@ def remove_from_edit():
 # 删除除功能容器的容器
 def remove_from_not_com():
     for i in frame_function.winfo_children():
-        if i.winfo_name() == '工作模块':
+        if i.winfo_name() == "工作模块":
             for j in i.winfo_children():
-                if j.winfo_name() == '功能容器':
+                if j.winfo_name() == "功能容器":
                     pass
                 else:
                     j.destroy()

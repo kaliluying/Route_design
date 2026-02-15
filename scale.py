@@ -1,6 +1,9 @@
-import Commom
+import Common
 from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, water_wh, live_edit, Entry
-from Commom import *
+from Common import *
+
+# 使用 state.xxx 访问全局状态
+# choice_tup, stack, rotate_ 等通过 Common.state 访问
 
 
 class T:
