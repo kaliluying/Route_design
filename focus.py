@@ -7,6 +7,7 @@ class Focus:
     """
     组件聚焦后
     """
+
     instance = None
 
     def __init__(self, win):

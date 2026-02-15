@@ -252,10 +252,7 @@ def __setattr__(name, value):
     else:
         object.__setattr__(__import__(__name__), name, value)
 
-# ===== 7. 初始化 Focus ✅ 修复：传入 win 而非 frame_job =====
-from focus import Focus
-
-focus = Focus(win)
+# Focus 初始化延迟到 main.py 中，避免循环导入
 
 # ===== 8. 导出工具函数 =====
 from src.core.tool_functions import (

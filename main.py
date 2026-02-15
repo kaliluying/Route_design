@@ -1115,4 +1115,8 @@ win.bind("<Button-1>", unfocus_click)
 win.bind("<BackSpace>", delete)
 # win.protocol("WM_DELETE_WINDOW", save)
 
+# 初始化 Focus（延迟导入避免循环依赖）
+from focus import Focus
+focus = Focus(win)
+
 win.mainloop()
