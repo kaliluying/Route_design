@@ -1,11 +1,18 @@
 .idea
-
-main.spec
+.venv
 
 dist
 build
-download
-ms_download
 __pycache__
-demo
+
+ms_download
+backup
+auto_backup
 temp_img
+readme_img
+TEST
+
+REFACTORING_*
+
+*.log
+demo.py

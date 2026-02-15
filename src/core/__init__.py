@@ -1,47 +1,18 @@
-from .obstacle_factory import (
-    insert,
-    parameter,
-    hidden,
-    create_monorail,
-    create_oxer,
-    create_tirail,
-    create_combination_ab,
-    create_combination_abc,
-    create_live,
-    create_force,
-    create_compass,
-    create_water_barrier,
-    create_brick_wall,
-    create_line,
-    create_gate,
-    create_circular,
-)
-from .tool_functions import (
-    create_tool_functions,
-    create_canvas_tools,
-    create_aux_tools,
-    create_obstacle_tools,
-)
+"""
+核心模块
+包含应用程序的核心逻辑
+"""
+
+from .application import Application
+from .canvas_manager import CanvasManager
+from .obstacle_manager import ObstacleManager
+from .event_manager import EventManager
+from .file_manager import FileManager
 
 __all__ = [
-    'insert',
-    'parameter',
-    'hidden',
-    'create_monorail',
-    'create_oxer',
-    'create_tirail',
-    'create_combination_ab',
-    'create_combination_abc',
-    'create_live',
-    'create_force',
-    'create_compass',
-    'create_water_barrier',
-    'create_brick_wall',
-    'create_line',
-    'create_gate',
-    'create_circular',
-    'create_tool_functions',
-    'create_canvas_tools',
-    'create_aux_tools',
-    'create_obstacle_tools',
+    'Application',
+    'CanvasManager', 
+    'ObstacleManager',
+    'EventManager',
+    'FileManager'
 ]

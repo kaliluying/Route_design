@@ -1,15 +1,7 @@
 """
-Route_design 源代码包
+马术路线设计软件
+重构后的项目结构
 """
 
-from .state import AppState
-from .core import obstacle_factory, tool_functions
-from .ui import menu_handler, save_handler
-
-__all__ = [
-    'AppState',
-    'obstacle_factory',
-    'tool_functions',
-    'menu_handler',
-    'save_handler',
-]
+__version__ = "2.0.0"
+__author__ = "山东体育学院"

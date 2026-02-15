@@ -1,382 +1,311 @@
-"""
-Common.py - 统一兼容层
-负责：初始化窗口 + 导出全局变量 + 修复已知问题
-
-使用说明:
-    - 导入此模块时会自动初始化窗口和所有全局变量
-    - 修复了 Focus(frame_job) 错误，现为 Focus(win)
-    - 修复了 water_barrier_iamge 拼写错误
-"""
-
-import os
-import tkinter as tk
-import platform
 import logging
-from functools import partial
-from PIL import Image, ImageTk, ImageOps
+import os
+import platform
+import threading
+import requests
+import traceback
+import webbrowser
+import ttkbootstrap as ttk
+from PIL import Image, ImageTk, ImageOps, ImageGrab, EpsImagePlugin
+import math
+from tkinter import messagebox
 
-# ===== 1. 初始化状态管理 =====
-from src.state.app_state import AppState, get_app_state
+from ttkbootstrap.utility import enable_high_dpi_awareness
 
-_app_state = get_app_state()
+from Middleware import *
 
-# ===== 1.5 初始化图像处理器 =====
-from src.core.image_processor import ImageProcessor
+# 当前版本
+CURRENT_VERSION = "1.0.0"
 
-_image_processor = ImageProcessor()
+# 最新版本信息的URL
+VERSION_URL = "https://github.com/kaliluying/Route_design/raw/dev/version.txt"
 
-# ===== 2. 初始化窗口 =====
-from src.ui.main_window import get_main_window
+# 创建窗口
+# win = ttk.Tk()
+win = ttk.Window(
+    title="路线设计",
+    iconphoto='img/ic.png'
+)
+# enable_high_dpi_awareness(win, 2.0)
 
-_main_window = get_main_window()
+# 程序最大化
+W = win.winfo_screenwidth()
+H = win.winfo_screenheight()
+win.geometry(f"{W}x{H}")
 
-# ===== 3. 导出核心对象 =====
-win = _main_window.window
-canvas = _main_window.canvas
+logging.basicConfig(
+    format='%(asctime)s.%(msecs)03d [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s',
+    filename='logging.log',
+    # encoding='utf-8',
+)
 
-# ===== 4. 导出所有 Frames =====
-frame_job = _main_window.get_frame("frame_job")
-frame_function = _main_window.get_frame("frame_function")
-frame_aux = _main_window.get_frame("frame_aux")
-frame_mea = _main_window.get_frame("frame_mea")
-frame_create = _main_window.get_frame("frame_create")
 
-# 临时按钮 Frame
-frame_temp_1 = _main_window.get_frame("frame_temp_1")
-frame_temp_2 = _main_window.get_frame("frame_temp_2")
-frame_temp_3 = _main_window.get_frame("frame_temp_3")
-frame_temp_4 = _main_window.get_frame("frame_temp_4")
-frame_temp_5 = _main_window.get_frame("frame_temp_5")
-frame_temp_6 = _main_window.get_frame("frame_temp_6")
-frame_temp_7 = _main_window.get_frame("frame_temp_7")
-frame_temp_8 = _main_window.get_frame("frame_temp_8")
-frame_temp_9 = _main_window.get_frame("frame_temp_9")
+# 设置异常处理函数
+def log_error(exctype, value, tb):
+    # 打印错误日志
+    error_msg = ''.join(traceback.format_exception(exctype, value, tb))
+    print(error_msg)
+    logging.error("预料之外的错误: %s", error_msg, exc_info=True)
 
-# 功能 Frame
-frame_command_left = _main_window.get_frame("frame_command_left")
-frame_command_right = _main_window.get_frame("frame_command_right")
-frame_command = _main_window.get_frame("frame_command")
-frame_edit = _main_window.get_frame("frame_edit")
-frame_aux_com = _main_window.get_frame("frame_aux_com")
-frame_aux_com_lef = _main_window.get_frame("frame_aux_com_lef")
-frame_aux_com_rig = _main_window.get_frame("frame_aux_com_rig")
 
-# 辅助信息 Frame
-frame_aux_info = _main_window.get_frame("frame_aux_info")
-frame_aux_tit = _main_window.get_frame("frame_aux_tit")
-frame_aux_inp = _main_window.get_frame("frame_aux_inp")
-frame_aux_tit2 = _main_window.get_frame("frame_aux_tit2")
-frame_aux_inp2 = _main_window.get_frame("frame_aux_inp2")
-frame_aux_but = _main_window.get_frame("frame_aux_but")
+win.report_callback_exception = log_error
 
-# 测量功能 Frame
-frame_mea_com = _main_window.get_frame("frame_mea_com")
-frame_mea_com_lef = _main_window.get_frame("frame_mea_com_lef")
-frame_mea_com_rig = _main_window.get_frame("frame_mea_com_rig")
 
-# ===== 5. 导出图像路径（兼容旧代码） =====
-force_image = "img/force.png"
-compass_image = "img/compass.png"
-water_barrier_image = "img/water_barrier.png"
-brick_wall_image = "img/brick_wall.png"
-line_image = "img/line.png"
-gate_image = "img/gate.png"
-circular_image = "img/circular.png"
-icon_path = "img/ic.png"
-force_obj = _main_window.get_image("force_image")
-icon_obj = _main_window.get_image("icon_path")
+def check_for_update(window, check=False):
+    try:
+        response = requests.get(VERSION_URL)
+        response.raise_for_status()
+        latest_version = response.text.strip()
+    except:
+        return
+    if latest_version != CURRENT_VERSION:
+        message = f'当前版本[{CURRENT_VERSION}], 有新版本[{latest_version}]'
+        result = messagebox.askokcancel(title='更新提示', message=message)
+        if result:
+            webbrowser.open('https://gitee.com/gmlwb/ms/releases/')
+            window.destroy()
+    elif check and latest_version == CURRENT_VERSION:
+        messagebox.showinfo(title='更新提示', message='暂无新版本')
 
-# ===== 6. 导出状态变量 =====
+
+# 当前系统
 sys_name = platform.system()
-FONT = ("微软雅黑", 15 if sys_name == "Darwin" else 12)
-WIDTH, HEIGHT = 900, 600
 
-# ===== 7. 导出 AppState 实例（推荐使用）=====
-# 推荐新代码使用: from Common import state
-# 然后通过 state.index_img, state.px 等访问
-state = _app_state
+# 全局变量
+WIDTH = 900
+HEIGHT = 600
+if sys_name == 'Darwin':
+    FONT = ("微软雅黑", 15)
+elif sys_name == 'Windows':
+    FONT = ("微软雅黑", 12)
+X = ttk.IntVar(value=0)
+Y = ttk.IntVar(value=0)
+what = ttk.IntVar(value=0)
+# no_what = ttk.IntVar(value=0)
 
-# 获取 AppState 的辅助函数
-def get_app_state():
-    """获取 AppState 实例"""
-    return _app_state
+# 样式
+CONFIRM_STYLE = 'success-outline'
+BUTTON_STYLE = 'outline'
+
+canvas = ttk.Canvas(win, width=WIDTH + 50, height=HEIGHT + 180, highlightthickness=0)
+CANVAS_X = 250
+CANVAS_Y = 100
+canvas.place(x=CANVAS_X, y=CANVAS_Y)
+# canvas.place(x=175, y=100)
+canvas.image_data = {}
+
+fg_img = None
+fg_path = None
+
+# 初始点
+start_x = ttk.IntVar(value=0)
+start_y = ttk.IntVar(value=0)
+# 终止点
+end_x = ttk.IntVar(value=0)
+end_y = ttk.IntVar(value=0)
+# 路线测量每一次点击的位置
+route_click = []
+# 点击次数
+click_num = 1
+
+# 网格状态
+grid_start = 0
+
+# 比赛名
+temp_txt = None
+
+# 多选框坐标
+choice_tup = []
+
+# 辅助信息状态
+aux_stare = True
+
+# 撤销栈
+stack = []
+
+# 撤销移动的还原点
+move_x = ttk.IntVar(value=0)
+move_y = ttk.IntVar(value=0)
+
+# 多选框框中的状态
+choice_start = False
+
+# 记录长度测量时每一次点击的值
+click = []
+
+# 记录每次旋转的角度
+rotate_ = [0]
+
+# 赛事信息
+filtered_dict = {}
+
+# 记录一次画线的坐标
+current_line = None
+
+# 记录弧线点击次数
+arc_click = 0
+
+# 总坐标
+lines = []
+
+lastDraw = 0
+end = [0]
+size = 1
+font_size = 1
+remove_size = 1
+state_f = 1
+px = 0
+remove_px = {}
+
+index = 0
+index_txt = 0
+index_img = 0
+
+par_index = 1
+
+# 创建一个变量来跟踪 弧线 的状态
+check_var = ttk.BooleanVar()
 
 
-# ===== 8. 导出 ImageProcessor 实例 =====
-# 新图像处理模块，可通过 img_processor 访问
-img_processor = _image_processor
-
-def get_image_processor():
-    """获取 ImageProcessor 实例"""
-    return _image_processor
+def get_px():
+    return px
 
 
-# ===== 9. 导出 CanvasObject 类 =====
-# 新的画布对象类（重构版）
-# 使用方式: from Common import CreateImg, CreateTxt, CreateParameter
-# 注意: 需要通过 canvas 参数传入画布对象
-try:
-    from src.models.canvas_objects import CanvasObject, CreateTxt, CreateParameter, CreateImg
-    _canvas_objects_available = True
-except ImportError:
-    _canvas_objects_available = False
-    CanvasObject = None
-    CreateTxt = None
-    CreateParameter = None
-    CreateImg = None
+# 拓展方法
+def adjust_image_size(image_path):
+    image = Image.open(image_path)
+    w, h = image.size
+    h = int(get_len() * 10)
+    image = image.resize((w, h))
+    if not os.path.exists('./temp_img'):
+        os.mkdir('./temp_img')
+    file_name = os.path.basename(image_path)
+    name = file_name.replace('.', '-adj.')
+    file_path = "./temp_img/" + name
+    image.save(file_path)
+
+    return file_path
 
 
-# ===== 10. 导出 EditPanel 类 =====
-# 新的编辑面板类（重构版）
-# 使用方式: from Common import EditPanel
-try:
-    from src.models.edit_panel import EditPanel
-    _edit_panel_available = True
-except ImportError:
-    _edit_panel_available = False
-    EditPanel = None
+# 装饰器
+def load_image(func):
+    def wrapper(*args, **kwargs):
+        image = func(*args, **kwargs)
+        adjusted_image = adjust_image_size(image)
+        return adjusted_image
+
+    return wrapper
 
 
-# ===== 11. 图像处理兼容层 =====
-# 为旧代码提供包装函数，内部调用 ImageProcessor
-
+@load_image
 def get_one_path():
-    """获取单横木路径"""
-    return _image_processor.get_one_path()
+    """
+    获取单横木
+    :return:
+    """
+    return 'img/one.png'
 
 
+@load_image
 def get_live_path():
-    """获取利物浦路径"""
-    return _image_processor.get_live_path()
+    """
+    获取利物浦
+    :return:
+    """
+    return "img/liverpool3.png"
 
 
-def merge(m, m1=0, state=1):
-    """合并障碍物"""
-    return _image_processor.merge(m, m1, state)
+@load_image
+def get_oxer_path():
+    """
+    获取双横木
+    :return:
+    """
+    return "img/oxer.png"
 
 
-def expand(path, state=1):
-    """扩展图像"""
-    return _image_processor.expand(path, state)
+# 强制通过点
+force_image = "img/force.png"
+force_obj = ImageTk.PhotoImage(Image.open(force_image))
+# 指北针
+compass_image = "img/compass.png"
+# 水障
+water_barrier_iamge = "img/water_barrier.png"
+# 砖墙
+brick_wall_image = "img/brick_wall.png"
+# 起/终点线
+# line_image = "img/line.png"
+line_image = r"img/start_end.png"
+# 进出口
+gate_image = "img/gate.png"
+# 树木
+tree_image = "img/tree.png"
+# 小丑
+joker_image = "img/joker.png"
 
+# icon
+icon_path = "img/ic.png"
+icon_obj = ImageTk.PhotoImage(Image.open(icon_path))
+# 20米圆
+circular_image = "img/circular.png"
 
-def start_direction(image_path):
-    """添加方向箭头"""
-    return _image_processor.start_direction(image_path)
+# 左侧功能栏
+frame_function = ttk.Frame(win, name='左侧功能栏')
+frame_function.place(x=5, y=150)
 
+# 工作模块容器
+frame_job = ttk.Frame(frame_function, name='工作模块')
+frame_job.pack(side='top')
 
-def merge_ab(state, m1=0, m2=0):
-    """AB组合障碍"""
-    return _image_processor.merge_ab(state, m1, m2)
+frame_aux_mea = ttk.Frame(frame_function, name='辅助模块')
+frame_aux_mea.pack(side='top')
+# 辅助模块容器
+frame_aux = ttk.Frame(frame_aux_mea, name='辅助模块')
+# 测量模块容器
+frame_mea = ttk.Frame(frame_aux_mea, name='测量模块')
+frame_aux.pack()
+frame_mea.pack()
 
+# 功能容器
+frame_command = ttk.Frame(frame_job, name='功能容器')
+frame_command.pack()
 
-def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
-    """双横木障碍"""
-    return _image_processor.oxer_obs_ab(stare_a, state_b, state_c, a, b, c, a_b, b_c)
+# 旋转、备注编辑主容器
+frame_edit = ttk.Frame(frame_job, name='旋转、备注')
+frame_edit.pack()
 
+# 旋转容器
+frame_x = ttk.Frame(frame_edit, name='旋转')
+frame_x.pack()
+frame_focus_x_ladel = ttk.Frame(frame_x)
+frame_focus_x_ent = ttk.Frame(frame_x)
+frame_focus_x_but = ttk.Frame(frame_x)
+frame_focus_x_but.pack(side='bottom')
+frame_focus_x_ladel.pack(side='left')
+frame_focus_x_ent.pack(side='right')
 
-def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
-    """三横木障碍"""
-    return _image_processor.oxer_obs_abc(a, b, c, a_b, b_c)
+# 备注容器
+frame_z = ttk.Frame(frame_edit, name='备注')
+frame_z.pack()
+frame_focus_z_ladel = ttk.Frame(frame_z)
+frame_focus_z_ent = ttk.Frame(frame_z)
+frame_focus_z_but = ttk.Frame(frame_z)
+frame_focus_z_but.pack(side='bottom')
+frame_focus_z_ladel.pack(side='left')
+frame_focus_z_ent.pack(side='right')
 
+# 辅助信息容器
+frame_aux_info = ttk.Frame(frame_aux, name='辅助信息容器')
+frame_aux_info.pack()
 
-def obs_ab(a=0, b=0, a_b=30):
-    """单障碍"""
-    return _image_processor.obs_ab(a, b, a_b)
+# 测量功能容器
+frame_mea_com = ttk.Frame(frame_mea, name='测量功能容器')
+frame_mea_com.pack()
 
+# 障碍按键容器
+frame_create = ttk.Frame(win, name='按键')
+frame_create.place(x=450, y=5)
 
-def water_wh(w, h):
-    """水障"""
-    return _image_processor.water_wh(w, h)
+from focus import Focus
 
-
-def live_two_tool(path="img/liverpool3.png"):
-    """利物浦双横木"""
-    return _image_processor.live_two_tool(path)
-
-
-def live_one_tool(path="img/liverpool3.png"):
-    """利物浦单横木"""
-    return _image_processor.live_one_tool(path)
-
-
-def live_edit(w, h):
-    """利物浦编辑"""
-    return _image_processor.live_edit(w, h)
-
-
-# 工具变量（延迟获取，因为需要主窗口创建后才能初始化 tk 变量）
-class _DelayedVar:
-    """延迟获取 tk 变量的包装类"""
-
-    def __init__(self, app_state, attr_name):
-        self._app_state = app_state
-        self._attr_name = attr_name
-
-    def get(self):
-        return getattr(self._app_state, self._attr_name)
-
-    def set(self, value):
-        getattr(self._app_state, self._attr_name).set(value)
-
-
-what = _DelayedVar(_app_state, "what")
-no_what = _DelayedVar(_app_state, "no_what")
-
-# ===== 模块级变量通过 __getattr__/__setattr__ 代理到 AppState =====
-# 这样当函数中使用 global index_txt 然后 index_txt = xxx 时，
-# 会自动转发到 AppState
-
-_known_attrs = {
-    'choice_tup', 'stack', 'rotate_',
-    'watermark', 'fg_img', 'fg_path',
-    'info_var', 'pro_var', 'h1', 'h2',
-    'route_click', 'route_clicks',
-    'aux_stare', 'current_frame_stare',
-    'remove_px', 'click_num', 'lastDraw', 'end',
-    'grid_start', 'create_grid', 'state_f', 'temp_txt',
-    'index_txt', 'index_img', 'par_index', 'px',
-    'state', 'get_app_state'
-}
-
-def __getattr__(name):
-    """模块级属性访问代理到 AppState"""
-    if name in _known_attrs:
-        return getattr(_app_state, name)
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-def __setattr__(name, value):
-    """模块级属性赋值代理到 AppState"""
-    if name in _known_attrs:
-        setattr(_app_state, name, value)
-    else:
-        object.__setattr__(__import__(__name__), name, value)
-
-# Focus 初始化延迟到 main.py 中，避免循环导入
-# 在 main.py 中设置: Common.focus = focus
-
-# focus 对象（由 main.py 初始化后设置）
-focus = None
-
-def set_focus(f):
-    """设置 focus 对象"""
-    global focus
-    focus = f
-
-# ===== 8. 导出工具函数 =====
-from src.core.tool_functions import (
-    create_tool_functions,
-    create_canvas_tools,
-    create_aux_tools,
-    create_obstacle_tools,
-)
-from src.core.obstacle_factory import (
-    insert,
-    parameter,
-    hidden,
-    create_monorail,
-    create_oxer,
-    create_tirail,
-    create_combination_ab,
-    create_combination_abc,
-    create_live,
-    create_force,
-    create_compass,
-    create_water_barrier,
-    create_brick_wall,
-    create_line,
-    create_gate,
-    create_circular,
-)
-
-# ===== 9. 迁移的 Middleware 函数 =====
-_current_tag = None
-_line_tag = None
-_current_frame_stare = True
-_live_state = 0
-_bar_len = 4.0
-
-
-def set_cur(cur):
-    """设置障碍tag"""
-    global _current_tag
-    _current_tag = cur
-
-
-def set_line(line):
-    """设置辅助线tag"""
-    global _line_tag
-    _line_tag = line
-
-
-def get_cur():
-    """获取障碍tag和辅助线tag"""
-    return _current_tag, _line_tag
-
-
-def set_frame_stare(frame_stare):
-    """设置多选框状态"""
-    global _current_frame_stare
-    _current_frame_stare = frame_stare
-
-
-def get_frame_stare():
-    """获取多选框状态"""
-    return _current_frame_stare
-
-
-def get_live():
-    """获取利物浦是否为双横木"""
-    return _live_state
-
-
-def set_live(state):
-    """设置利物浦是否为双横木"""
-    global _live_state
-    _live_state = state
-
-
-def set_len(length):
-    """设置全局障碍长度"""
-    global _bar_len
-    _bar_len = float(length.get())
-
-
-def get_len():
-    """获取全局障碍长度"""
-    return _bar_len
-
-
-# ===== 导出到模块级别（向后兼容） =====
-import sys
-
-_current_module = sys.modules[__name__]
-_current_module.set_len = set_len
-_current_module.get_len = get_len
-_current_module.get_cur = get_cur
-_current_module.set_cur = set_cur
-_current_module.set_line = set_line
-_current_module.get_frame_stare = get_frame_stare
-_current_module.set_frame_stare = set_frame_stare
-_current_module.get_live = get_live
-_current_module.set_live = set_live
-
-
-from src.core.obstacle_factory import (
-    insert,
-    parameter,
-    hidden,
-    create_monorail,
-    create_oxer,
-    create_tirail,
-    create_combination_ab,
-    create_combination_abc,
-    create_live,
-    create_force,
-    create_compass,
-    create_water_barrier,
-    create_brick_wall,
-    create_line,
-    create_gate,
-    create_circular,
-)
+focus = Focus(frame_job)

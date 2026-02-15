@@ -1,0 +1,12 @@
+[project]
+name = "route-design"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "data-url>=1.3.0",
+    "pillow>=9.4.0",
+    "requests>=2.32.4",
+    "ttkbootstrap>=1.10.1",
+]
