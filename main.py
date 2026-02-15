@@ -74,103 +74,92 @@ def tirail():
 
 # AB组合障碍
 def combination_ab():
-    global index_img
     image_path = merge_ab(state=1, m1=30)
-    index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle="combination_ab").create()
+    CreateImg(canvas, state.index_img, image_path, obstacle="combination_ab").create()
+    state.index_img += 1
     drag()
 
 
 # ABC组合障碍
 def combination_abc():
-    global index_img
     image_path = merge_ab(state=1, m1=30, m2=30)
-    index_img += 1
+    CreateImg(canvas, state.index_img, image_path, obstacle="combination_abc").create()
+    state.index_img += 1
     CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create()
     drag()
 
 
 # 利物浦
 def live():
-    global index_img
-    index_img += 1
-    # image_path = expand(get_live_path())
     image_path = live_one_tool()
-    CreateImg(canvas, index_img, image_path, obstacle="live").create()
+    CreateImg(canvas, state.index_img, image_path, obstacle="live").create()
+    state.index_img += 1
     drag()
 
 
 # 强制通过点
 def force():
-    global index_img
-    index_img += 1
-    CreateImg(canvas, index_img, force_image).create()
+    CreateImg(canvas, state.index_img, force_image).create()
+    state.index_img += 1
     drag()
 
 
 # 指北针
 def compass():
-    global index_img
-    index_img += 1
     image_path = expand(compass_image)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, state.index_img, image_path).create()
+    state.index_img += 1
     drag()
 
 
 # 水障
 def water_barrier():
-    global index_img
-    index_img += 1
     image_path = expand(water_barrier_iamge)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path, obstacle="water").create()
+    CreateImg(canvas, state.index_img, image_path, obstacle="water").create()
+    state.index_img += 1
     drag()
 
 
 # 砖墙
 def brick_wall():
-    global index_img
-    index_img += 1
     image_path = expand(brick_wall_image)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, state.index_img, image_path).create()
+    state.index_img += 1
     drag()
 
 
 # 起/终点线
 def line():
-    global index_img
-    index_img += 1
     image_path = expand(line_image)
     image_path = start_direction(image_path)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, state.index_img, image_path).create()
+    state.index_img += 1
     drag()
 
 
 # 进出口
 def gate():
-    global index_img
-    index_img += 1
     image_path = expand(gate_image)
-    CreateImg(canvas, index_img, image_path).create()
+    CreateImg(canvas, state.index_img, image_path).create()
+    state.index_img += 1
     drag()
 
 
 # 圆
 def circular():
-    global index_img
-    index_img += 1
     cir = int(var_cir.get()) * 10
     img = Image.open(circular_image)
     img = img.resize((cir, cir))
     img.save("./img/cir.png")
     cir_path = "./img/cir.png"
-    CreateImg(canvas, index_img, cir_path).create()
+    CreateImg(canvas, state.index_img, cir_path).create()
+    state.index_img += 1
     drag()
 
 
 # 赛事信息确认
 def dle():
-    global temp_txt
     try:
         temp = {}
         for i in frame_tit.winfo_children():
@@ -185,8 +174,8 @@ def dle():
 
         for key, value in temp.items():
             if key == "比赛名称":
-                temp_txt = value.get()
-                canvas.itemconfig("比赛名称", text=temp_txt)
+                state.temp_txt = value.get()
+                canvas.itemconfig("比赛名称", text=state.temp_txt)
                 continue
             font = 21 if sys_name == "Darwin" else 15
             tk.Label(frame_tit, text=key + ": ", font=("微软雅黑", font)).pack(
@@ -262,26 +251,25 @@ def allow(info_var, pro_value):
 
 # 生成路线图
 def found():
-    global WIDTH, HEIGHT, h1, h2, watermark, fg_img, fg_path
     w = var_l_w.get()
     h = var_l_h.get()
     # if w.isdigit() and h.isdigit():
-    WIDTH = int(float(w) * 10)
-    HEIGHT = int(float(h) * 10)
-    canvas.config(width=WIDTH + 30, height=HEIGHT + 70)
-    canvas.coords("实际画布", 15, 50, WIDTH + 15, HEIGHT + 50)
+    state.WIDTH = int(float(w) * 10)
+    state.HEIGHT = int(float(h) * 10)
+    canvas.config(width=state.WIDTH + 30, height=state.HEIGHT + 70)
+    canvas.coords("实际画布", 15, 50, state.WIDTH + 15, state.HEIGHT + 50)
     # canvas.place(x=175, y=130)
-    but1.place(x=WIDTH + 260, y=700)
-    but2.place(x=WIDTH + 360, y=700)
-    frame_info.place(x=WIDTH + 200, y=150)
-    canvas.delete(watermark)
-    wid = WIDTH / 10
-    hei = HEIGHT / 10
+    but1.place(x=state.WIDTH + 260, y=700)
+    but2.place(x=state.WIDTH + 360, y=700)
+    frame_info.place(x=state.WIDTH + 200, y=150)
+    canvas.delete(state.watermark)
+    wid = state.WIDTH / 10
+    hei = state.HEIGHT / 10
     canvas.itemconfig("长", text=f"长：{wid}m")
     canvas.itemconfig("宽", text=f"宽：{hei}m")
-    canvas.coords("长", WIDTH - 40, 60)
-    canvas.coords("宽", WIDTH - 40, 80)
-    canvas.coords("实时路线", WIDTH - 40, 30)
+    canvas.coords("长", state.WIDTH - 40, 60)
+    canvas.coords("宽", state.WIDTH - 40, 80)
+    canvas.coords("实时路线", state.WIDTH - 40, 30)
     canvas.delete("bg")
     img = Image.open(fg_path)
     img = img.resize((WIDTH, HEIGHT))
@@ -308,15 +296,14 @@ def found():
 
 # 鼠标左键按下
 def leftButtonDown(event):
-    global choice_tup
-    if choice_tup and not (
-        min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
-        and min(choice_tup[1], choice_tup[3])
+    if state.choice_tup and not (
+        min(state.choice_tup[0], state.choice_tup[2]) < event.x < max(state.choice_tup[0], state.choice_tup[2])
+        and min(state.choice_tup[1], state.choice_tup[3])
         < event.y
-        < max(choice_tup[1], choice_tup[3])
+        < max(state.choice_tup[1], state.choice_tup[3])
     ):
         canvas.delete("choice")
-        choice_tup.clear()
+        state.choice_tup.clear()
         canvas.dtag("choice_start", "choice_start")
     X.set(event.x)
     Y.set(event.y)
@@ -333,10 +320,9 @@ def create_line(x1, y1, x2, y2):
 
 # 鼠标左键滚动事件
 def leftButtonMove(event):
-    global lastDraw, px, remove_px, click_num, choice_tup, current_frame_stare
     shu(event)
     if what.get() == 1:
-        lastDraw = canvas.create_line(
+        state.lastDraw = canvas.create_line(
             X.get(),
             Y.get(),
             event.x,
@@ -346,22 +332,14 @@ def leftButtonMove(event):
             tags=("line", "不框选"),
             smooth=True,
         )
-        x1, y1, x2, y2 = canvas.coords(lastDraw)
-        px += (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
+        x1, y1, x2, y2 = canvas.coords(state.lastDraw)
+        state.px += (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
         temp_px = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
-        # x = abs(event.x - X.get())
-        # y = abs(event.y - Y.get())
-        # if x != 0 and y != 0:
-        #     px += (math.sqrt(x * x + y * y)) / 10
-        #     temp_px = (math.sqrt(x * x + y * y)) / 10
-        # else:
-        #     px += (abs(x + y)) / 10
-        #     temp_px = (abs(x + y)) / 10
-        remove_px[lastDraw] = temp_px
-        canvas.itemconfig("实时路线", text="%.2fm" % px)
+        state.remove_px[state.lastDraw] = temp_px
+        canvas.itemconfig("实时路线", text="%.2fm" % state.px)
         X.set(event.x)
         Y.set(event.y)
-        click_num = 1
+        state.click_num = 1
 
     # 橡皮擦
     elif what.get() == 2:
@@ -372,19 +350,19 @@ def leftButtonMove(event):
             canvas.delete(i)
 
     # 多选框移动
-    elif what.get() == 0 and choice_tup:
-        if min(choice_tup[0], choice_tup[2]) < event.x < max(
-            choice_tup[0], choice_tup[2]
-        ) and min(choice_tup[1], choice_tup[3]) < event.y < max(
-            choice_tup[1], choice_tup[3]
+    elif what.get() == 0 and state.choice_tup:
+        if min(state.choice_tup[0], state.choice_tup[2]) < event.x < max(
+            state.choice_tup[0], state.choice_tup[2]
+        ) and min(state.choice_tup[1], state.choice_tup[3]) < event.y < max(
+            state.choice_tup[1], state.choice_tup[3]
         ):
             bbox = canvas.bbox("choice")
             canvas.move("choice_start", event.x - X.get(), event.y - Y.get())
             X.set(event.x)
             Y.set(event.y)
             try:
-                choice_tup.clear()
-                choice_tup.extend(list(bbox))
+                state.choice_tup.clear()
+                state.choice_tup.extend(list(bbox))
             except TypeError as e:
                 logging.warning("多选框移动出错: %s", e)
     else:
@@ -393,67 +371,57 @@ def leftButtonMove(event):
             canvas.create_rectangle(
                 X.get(), Y.get(), event.x, event.y, tags="choice", dash=(3, 5)
             )
-            # current_frame_stare = True
 
 
 # 松开左键
 def leftButtonUp(event):
-    global lastDraw, click_num, px, choice_tup, choice_start, remove_px
-    end.append(lastDraw)
-    current_frame_stare = get_frame_stare()
+    state.end.append(state.lastDraw)
+    state.current_frame_stare = get_frame_stare()
     if what.get() == 1:
-        if click_num == 1:
+        if state.click_num == 1:
             if move_x.get() != event.x or move_y.get() != event.y:
-                id = remove_px.keys()
-                total = sum(remove_px.values())
-                route_click.append((start_x.get(), start_y.get()))
-                stack.append(("长度测量", (id, total)))
-                remove_px = {}
+                id = state.remove_px.keys()
+                total = sum(state.remove_px.values())
+                state.route_click.append((start_x.get(), start_y.get()))
+                state.stack.append(("长度测量", (id, total)))
+                state.remove_px = {}
             start_x.set(event.x)
             start_y.set(event.y)
-            click_num = 2
-        elif click_num == 2:
+            state.click_num = 2
+        elif state.click_num == 2:
             end_x.set(event.x)
             end_y.set(event.y)
-            # click_num = 1
             id = create_line(start_x.get(), start_y.get(), end_x.get(), end_y.get())
-
-            # x = abs(end_x.get() - start_x.get())
-            # y = abs(end_y.get() - start_y.get())
-            # temp_px = (abs(x + y)) / 10
             x1, y1, x2, y2 = canvas.coords(id)
             distance = (math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)) / 10
-            px += distance
-            route_click.append((start_x.get(), start_y.get()))
-            stack.append(("长度测量", ([id], distance)))
-            canvas.itemconfig("实时路线", text="%.2fm" % px)
-            # remove_px[lastDraw] = px
+            state.px += distance
+            state.route_click.append((start_x.get(), start_y.get()))
+            state.stack.append(("长度测量", ([id], distance)))
+            canvas.itemconfig("实时路线", text="%.2fm" % state.px)
             start_x.set(end_x.get())
             start_y.set(end_y.get())
     elif what.get() == 4:
-        if click_num == 1:
+        if state.click_num == 1:
             start_x.set(event.x)
             start_y.set(event.y)
-            click_num = 2
-        elif click_num == 2:
+            state.click_num = 2
+        elif state.click_num == 2:
             end_x.set(event.x)
             end_y.set(event.y)
-            # create_arc(start_x.get(), start_y.get(), end_x.get(), end_y.get())
             start_x.set(end_x.get())
             start_y.set(end_y.get())
-    if current_frame_stare:
+    if state.current_frame_stare:
         canvas.addtag_overlapping("choice_start", X.get(), Y.get(), event.x, event.y)
         canvas.dtag("不框选", "choice_start")
-        choice_tup.append(X.get())
-        choice_tup.append(Y.get())
-        choice_tup.append(event.x)
-        choice_tup.append(event.y)
+        state.choice_tup.append(X.get())
+        state.choice_tup.append(Y.get())
+        state.choice_tup.append(event.x)
+        state.choice_tup.append(event.y)
     else:
         set_frame_stare(True)
     if canvas.find_withtag("choice") and what.get() != "3":
-        # TODO
         items = canvas.find_withtag("choice_start")
-        stack.append(("移动", items, (event.x - move_x.get(), event.y - move_y.get())))
+        state.stack.append(("移动", items, (event.x - move_x.get(), event.y - move_y.get())))
 
 
 # def create_arc(x1, y1, x2, y2):
@@ -493,11 +461,10 @@ def drag():
 
 # 铅笔
 def pen():
-    global click_num
     what.set(1)
     set_color()
     no_what.set(1)
-    click_num = 1
+    state.click_num = 1
 
 
 # 橡皮擦
@@ -550,63 +517,58 @@ def set_color():
 
 # 清屏
 def clear():
-    global px, click_num, stack
     canvas.delete("line")
     canvas.delete("rubber")
-    px = 0
-    canvas.itemconfig("实时路线", text="%.2fm" % px)
-    click_num = 1
+    state.px = 0
+    canvas.itemconfig("实时路线", text="%.2fm" % state.px)
+    state.click_num = 1
     to_be_deleted = []
-    for i in range(len(stack)):
-        if stack[i][0] == "长度测量":
+    for i in range(len(state.stack)):
+        if state.stack[i][0] == "长度测量":
             to_be_deleted.append(i)
     for idx in reversed(to_be_deleted):
-        stack.pop(idx)
+        state.stack.pop(idx)
 
 
 # 撤销
 def back():
-    global end, remove_px, px
     temp = 0
     temp_dict = {}
-    iteration = remove_px.keys()
-    for i in range(end[-2] + 1, end[-1] + 1):
-        if next(iter(remove_px)) > i:
+    iteration = state.remove_px.keys()
+    for i in range(state.end[-2] + 1, state.end[-1] + 1):
+        if next(iter(state.remove_px)) > i:
             continue
         canvas.delete(i)
     for i in iteration:
-        if i > end[-2]:
-            temp += remove_px[i]
-            temp_dict[i] = remove_px[i]
+        if i > state.end[-2]:
+            temp += state.remove_px[i]
+            temp_dict[i] = state.remove_px[i]
     for i in temp_dict.keys():
-        if i in remove_px:
-            del remove_px[i]
-    end.pop()
-    px -= temp
+        if i in state.remove_px:
+            del state.remove_px[i]
+    state.end.pop()
+    state.px -= temp
 
-    canvas.itemconfig("实时路线", text="%.2fm" % px)
+    canvas.itemconfig("实时路线", text="%.2fm" % state.px)
 
 
 # 通用字号
 def currency_font():
-    global font_size, remove_size, size
-    size = tkinter.simpledialog.askinteger("输入字号", prompt="", initialvalue=size)
-    font_size = remove_size = size
+    state.size = tkinter.simpledialog.askinteger("输入字号", prompt="", initialvalue=state.size)
+    state.font_size = state.remove_size = state.size
 
 
 # 铅笔字号
 def currency_pen():
-    global font_size
-    font_size = tkinter.simpledialog.askinteger(
-        "输入字号", prompt="", initialvalue=font_size
+    state.font_size = tkinter.simpledialog.askinteger(
+        "输入字号", prompt="", initialvalue=state.font_size
     )
 
 
 # 橡皮擦字号
 def currency_remove():
-    global remove_size
-    remove_size = tkinter.simpledialog.askinteger(
-        "输入字号", prompt="", initialvalue=remove_size
+    state.remove_size = tkinter.simpledialog.askinteger(
+        "输入字号", prompt="", initialvalue=state.remove_size
     )
 
 
@@ -623,7 +585,7 @@ def save_0():
 # 保存
 def save(checkvar):
     current_time = time.strftime("%Y%m%d-%H%M%S")
-    txt = temp_txt if temp_txt else "路线设计_" + current_time
+    txt = state.temp_txt if state.temp_txt else "路线设计_" + current_time
     if not os.path.exists("./ms_download"):
         os.mkdir("./ms_download")
     path = filedialog.asksaveasfilename(
@@ -708,15 +670,14 @@ def pop(id=None):
 
 # 网格辅助线
 def grid():
-    global create_grid, grid_start
-    if grid_start:
+    if state.grid_start:
         canvas.itemconfig("grid", stat="hidden")
-        grid_start = 0
-    elif create_grid and not grid_start:
+        state.grid_start = 0
+    elif state.create_grid and not state.grid_start:
         canvas.itemconfig("grid", stat="normal")
-        grid_start = 1
+        state.grid_start = 1
 
-    if not create_grid:
+    if not state.create_grid:
         range_x = (WIDTH + 30) // 100
         range_y = (HEIGHT + 70) // 100
         index_x = 15
@@ -731,27 +692,25 @@ def grid():
                 15, index_y, WIDTH + 15, index_y, dash=(5, 3), tags=("grid", "不框选")
             )
             index_y += 100
-        create_grid = True
-        grid_start = 1
+        state.create_grid = True
+        state.grid_start = 1
 
 
 def info():
-    global aux_stare
-    if aux_stare:
+    if state.aux_stare:
         canvas.itemconfig("辅助信息", stat="hidden")
         aux_info.config(text="显示辅助信息")
-        aux_stare = False
+        state.aux_stare = False
     else:
         canvas.itemconfig("辅助信息", stat="normal")
         aux_info.config(text="隐藏辅助信息")
-        aux_stare = True
+        state.aux_stare = True
 
 
 # 清除水印
 def remove_f():
-    global state_f
-    canvas.delete(watermark)
-    state_f = 0
+    canvas.delete(state.watermark)
+    state.state_f = 0
 
 
 # 关于软件
@@ -777,30 +736,23 @@ def open_web():
 
 # 自定义障碍
 def custom():
-    global index_img
-
     img_path = filedialog.askopenfilename(
         title="选择Excel文件", filetypes=[("image", "*.jpg"), ("image", "*.png")]
     )
-
-    # image_path = expand(adjust_image_size(img_path))
-    # image_path = start_direction(image_path)
-    # image_path = start_direction(img_path)
-    index_img += 1
-    CreateImg(canvas, index_img, img_path).create()
+    CreateImg(canvas, state.index_img, img_path).create()
+    state.index_img += 1
     drag()
 
 
 # 设置背景图
 def fg():
-    global fg_img, fg_path
-    fg_path = filedialog.askopenfilename(
+    state.fg_path = filedialog.askopenfilename(
         title="选择Excel文件", filetypes=[("image", "*.jpg"), ("image", "*.png")]
     )
-    img = Image.open(fg_path)
+    img = Image.open(state.fg_path)
     img = img.resize((WIDTH, HEIGHT))
-    fg_img = ImageTk.PhotoImage(img)
-    canvas.create_image(15, 50, image=fg_img, anchor="nw", tags=("不框选", "bg"))
+    state.fg_img = ImageTk.PhotoImage(img)
+    canvas.create_image(15, 50, image=state.fg_img, anchor="nw", tags=("不框选", "bg"))
 
 
 # 删除背景图
@@ -943,7 +895,7 @@ canvas.create_line(20, 70, 70, 70, tags=("辅助信息", "不框选"))
 
 # 右上显示，路线长度
 canvas.create_text(
-    WIDTH - 40, 30, text=f"{px / 10}m", tags=("实时路线", "不框选", "辅助信息")
+    WIDTH - 40, 30, text=f"{state.px / 10}m", tags=("实时路线", "不框选", "辅助信息")
 )
 
 
@@ -1105,9 +1057,8 @@ win.config(menu=menu)
 
 # 撤销
 def undo(event):
-    global px, route_click
-    if stack and event.widget == win:
-        item = stack.pop()
+    if state.stack and event.widget == win:
+        item = state.stack.pop()
         if item[0] == "创建":
             pop(id=item[1])
         elif item[0] == "移动":
@@ -1120,15 +1071,15 @@ def undo(event):
             id, temp_px = item[1]
             for i in id:
                 pop(i)
-            px -= temp_px
-            canvas.itemconfig("实时路线", text="%.2fm" % px)
-            x, y = route_click.pop()
+            state.px -= temp_px
+            canvas.itemconfig("实时路线", text="%.2fm" % state.px)
+            x, y = state.route_click.pop()
             start_x.set(x)
             start_y.set(y)
         elif item[0] == "旋转":
             obj = item[1]
-            rotate_.pop()
-            obj.rotate(obj.id, rotate_[-1])
+            state.rotate_.pop()
+            obj.rotate(obj.id, state.rotate_[-1])
 
 
 # 绑定ctrl+z兼容Mac和win
