@@ -20,6 +20,11 @@ from src.state.app_state import AppState, get_app_state
 
 _app_state = get_app_state()
 
+# ===== 1.5 初始化图像处理器 =====
+from src.core.image_processor import ImageProcessor
+
+_image_processor = ImageProcessor()
+
 # ===== 2. 初始化窗口 =====
 from src.ui.main_window import get_main_window
 
@@ -95,6 +100,15 @@ state = _app_state
 def get_app_state():
     """获取 AppState 实例"""
     return _app_state
+
+
+# ===== 8. 导出 ImageProcessor 实例 =====
+# 新图像处理模块，可通过 img_processor 访问
+img_processor = _image_processor
+
+def get_image_processor():
+    """获取 ImageProcessor 实例"""
+    return _image_processor
 
 
 # 工具变量（延迟获取，因为需要主窗口创建后才能初始化 tk 变量）
