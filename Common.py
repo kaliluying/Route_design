@@ -111,6 +111,32 @@ def get_image_processor():
     return _image_processor
 
 
+# ===== 9. 导出 CanvasObject 类 =====
+# 新的画布对象类（重构版）
+# 使用方式: from Common import CreateImg, CreateTxt, CreateParameter
+# 注意: 需要通过 canvas 参数传入画布对象
+try:
+    from src.models.canvas_objects import CanvasObject, CreateTxt, CreateParameter, CreateImg
+    _canvas_objects_available = True
+except ImportError:
+    _canvas_objects_available = False
+    CanvasObject = None
+    CreateTxt = None
+    CreateParameter = None
+    CreateImg = None
+
+
+# ===== 10. 导出 EditPanel 类 =====
+# 新的编辑面板类（重构版）
+# 使用方式: from Common import EditPanel
+try:
+    from src.models.edit_panel import EditPanel
+    _edit_panel_available = True
+except ImportError:
+    _edit_panel_available = False
+    EditPanel = None
+
+
 # 工具变量（延迟获取，因为需要主窗口创建后才能初始化 tk 变量）
 class _DelayedVar:
     """延迟获取 tk 变量的包装类"""
