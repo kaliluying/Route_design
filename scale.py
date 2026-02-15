@@ -5,6 +5,15 @@ from Common import *
 # 使用 state.xxx 访问全局状态
 state = Common.state
 
+# 尝试使用重构的 CanvasObject 作为基类（可选）
+# 如果导入失败则使用本地 T 类
+try:
+    from src.models.canvas_objects import CanvasObject as _CanvasObjectBase
+    _has_canvas_object = True
+except ImportError:
+    _CanvasObjectBase = object
+    _has_canvas_object = False
+
 
 class T:
     all_instances = []
