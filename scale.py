@@ -3,7 +3,7 @@ from Tools import is_number, merge, oxer_obs_abc, obs_ab, remove_from_edit, wate
 from Common import *
 
 # 使用 state.xxx 访问全局状态
-# choice_tup, stack, rotate_ 等通过 Common.state 访问
+state = Common.state
 
 
 class T:
@@ -30,13 +30,12 @@ class T:
         :param event:
         :return:
         """
-        global choice_tup
         set_frame_stare(False)
         try:
-            if choice_tup and not (min(choice_tup[0], choice_tup[2]) < event.x < max(choice_tup[0], choice_tup[2])
-                                   and min(choice_tup[1], choice_tup[3]) < event.y < max(choice_tup[1], choice_tup[3])):
+            if state.choice_tup and not (min(state.choice_tup[0], state.choice_tup[2]) < event.x < max(state.choice_tup[0], state.choice_tup[2])
+                                   and min(state.choice_tup[1], state.choice_tup[3]) < event.y < max(state.choice_tup[1], state.choice_tup[3])):
                 self.app.delete('choice')
-                choice_tup.clear()
+                state.choice_tup.clear()
                 self.app.dtag('choice_start', 'choice_start')
         except Exception as e:
             print(e)
@@ -61,8 +60,8 @@ class T:
         :param event:
         :return:
         """
-        # global choice_tup
-        if what.get() == 0 and not choice_tup:
+        # global state.choice_tup
+        if what.get() == 0 and not state.choice_tup:
             set_frame_stare(False)
             self.app.move(tag, event.x - self.startx, event.y - self.starty)
             if self.line_tag:
@@ -78,10 +77,10 @@ class T:
         dx = event.x - move_x.get()
         dy = event.y - move_y.get()
         if dx or dy:
-            stack.append(('移动', (self.id,), (dx, dy)))
+            state.stack.append(('移动', (self.id,), (dx, dy)))
         if what.get() == 3 and self.temp_angle != self.angle:
-            rotate_.append(self.angle)
-            stack.append(("旋转", self))
+            state.rotate_.append(self.angle)
+            state.stack.append(("旋转", self))
 
 
 class CreateTxt(T):
@@ -90,7 +89,7 @@ class CreateTxt(T):
         self.tag = "txt-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=self.tag)
         self.id = text
-        stack.append(('创建', text))
+        state.stack.append(('创建', text))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -103,7 +102,7 @@ class CreateParameter(T):
         self.tag = "parameter-" + self.index
         text = self.app.create_text(self.startx, self.starty, text=txt, tags=('parameter', self.tag))
         self.id = text
-        stack.append(('创建', text))
+        state.stack.append(('创建', text))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, text))
         # self.app.tag_bind(tag, "<Button-2>", partial(self.pop, tag))
@@ -136,7 +135,7 @@ class CreateImg(T):
         img_id = self.app.create_image(self.startx, self.starty, image=self.img_file,
                                        tag=self.tag)
         self.id = img_id
-        stack.append(('创建', img_id))
+        state.stack.append(('创建', img_id))
         self.app.tag_bind(self.tag, "<Button-1>", partial(self.mousedown, self.tag))
         self.app.tag_bind(self.tag, "<B1-Motion>", partial(self.drag, img_id))
         # self.app.tag_bind(self.tag, "<Button-2>", partial(self.pop, self.tag))
@@ -424,8 +423,8 @@ class CreateImg(T):
         self.angle = angle
         self.rotate(id, angle)
         if state:
-            rotate_.append(angle)
-            stack.append(("旋转", self))
+            state.rotate_.append(angle)
+            state.stack.append(("旋转", self))
 
     def rotate(self, id, angle):
         """
