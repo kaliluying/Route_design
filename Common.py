@@ -253,6 +253,15 @@ def __setattr__(name, value):
         object.__setattr__(__import__(__name__), name, value)
 
 # Focus 初始化延迟到 main.py 中，避免循环导入
+# 在 main.py 中设置: Common.focus = focus
+
+# focus 对象（由 main.py 初始化后设置）
+focus = None
+
+def set_focus(f):
+    """设置 focus 对象"""
+    global focus
+    focus = f
 
 # ===== 8. 导出工具函数 =====
 from src.core.tool_functions import (

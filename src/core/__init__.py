@@ -22,15 +22,6 @@ from .tool_functions import (
     create_aux_tools,
     create_obstacle_tools,
 )
-from .image_loader import (
-    ImageLoader,
-    get_image_loader,
-    set_bar_length,
-    get_bar_length,
-    load_image,
-    load_image_tk,
-    get_image_path,
-)
 
 __all__ = [
     'insert',
@@ -53,11 +44,4 @@ __all__ = [
     'create_canvas_tools',
     'create_aux_tools',
     'create_obstacle_tools',
-    'ImageLoader',
-    'get_image_loader',
-    'set_bar_length',
-    'get_bar_length',
-    'load_image',
-    'load_image_tk',
-    'get_image_path',
 ]

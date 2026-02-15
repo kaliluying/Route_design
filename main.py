@@ -10,6 +10,39 @@ from Common import set_len, get_len, get_cur, get_frame_stare, set_cur, set_line
 from scale import CreateImg, CreateTxt, CreateParameter, T
 from Tools import *
 
+# 障碍物创建工厂（可选使用重构版）
+try:
+    from src.core.obstacle_factory import (
+        create_monorail as _create_monorail,
+        create_oxer as _create_oxer,
+        create_tirail as _create_tirail,
+        create_combination_ab as _create_combination_ab,
+        create_combination_abc as _create_combination_abc,
+        create_live as _create_live,
+        create_force as _create_force,
+        create_compass as _create_compass,
+        create_water_barrier as _create_water_barrier,
+        create_brick_wall as _create_brick_wall,
+        create_line as _create_line,
+        create_gate as _create_gate,
+        create_circular as _create_circular,
+    )
+    _USE_OBSTACLE_FACTORY = True
+except ImportError:
+    _USE_OBSTACLE_FACTORY = False
+
+# 工具函数模块（可选使用重构版）
+try:
+    from src.core.tool_functions import (
+        create_tool_functions,
+        create_canvas_tools,
+        create_aux_tools,
+        create_obstacle_tools,
+    )
+    _USE_TOOL_FUNCTIONS = True
+except ImportError:
+    _USE_TOOL_FUNCTIONS = False
+
 # from Common import *
 import time
 
@@ -48,114 +81,152 @@ def hidden():
 
 # 单横木
 def monorail():
-    image_path = expand(get_one_path())
-    image_path = start_direction(image_path)
-    CreateImg(canvas, state.index_img, image_path, obstacle="monorail").create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_monorail()
+    else:
+        image_path = expand(get_one_path())
+        image_path = start_direction(image_path)
+        CreateImg(canvas, state.index_img, image_path, obstacle="monorail").create()
+        state.index_img += 1
+        drag()
 
 
 # 双横木
 def oxer():
-    image_path = merge(10)
-    image_path = start_direction(image_path)
-    CreateImg(canvas, state.index_img, image_path, obstacle="oxer").create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_oxer()
+    else:
+        image_path = merge(10)
+        image_path = start_direction(image_path)
+        CreateImg(canvas, state.index_img, image_path, obstacle="oxer").create()
+        state.index_img += 1
+        drag()
 
 
 # 三横木
 def tirail():
-    image_path = merge(10, 10)
-    index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle="tirail").create()
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_tirail()
+    else:
+        image_path = merge(10, 10)
+        CreateImg(canvas, state.index_img, image_path, obstacle="tirail").create()
+        state.index_img += 1
+        drag()
 
 
 # AB组合障碍
 def combination_ab():
-    image_path = merge_ab(state=1, m1=30)
-    CreateImg(canvas, state.index_img, image_path, obstacle="combination_ab").create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_combination_ab()
+    else:
+        image_path = merge_ab(state=1, m1=30)
+        CreateImg(canvas, state.index_img, image_path, obstacle="combination_ab").create()
+        state.index_img += 1
+        drag()
 
 
 # ABC组合障碍
 def combination_abc():
-    image_path = merge_ab(state=1, m1=30, m2=30)
-    CreateImg(canvas, state.index_img, image_path, obstacle="combination_abc").create()
-    state.index_img += 1
-    CreateImg(canvas, index_img, image_path, obstacle="combination_abc").create()
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_combination_abc()
+    else:
+        image_path = merge_ab(state=1, m1=30, m2=30)
+        CreateImg(canvas, state.index_img, image_path, obstacle="combination_abc").create()
+        state.index_img += 1
+        drag()
 
 
 # 利物浦
 def live():
-    image_path = live_one_tool()
-    CreateImg(canvas, state.index_img, image_path, obstacle="live").create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_live()
+    else:
+        image_path = live_one_tool()
+        CreateImg(canvas, state.index_img, image_path, obstacle="live").create()
+        state.index_img += 1
+        drag()
 
 
 # 强制通过点
 def force():
-    CreateImg(canvas, state.index_img, force_image).create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_force()
+    else:
+        CreateImg(canvas, state.index_img, force_image).create()
+        state.index_img += 1
+        drag()
 
 
 # 指北针
 def compass():
-    image_path = expand(compass_image)
-    CreateImg(canvas, state.index_img, image_path).create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_compass()
+    else:
+        image_path = expand(compass_image)
+        CreateImg(canvas, state.index_img, image_path).create()
+        state.index_img += 1
+        drag()
 
 
 # 水障
 def water_barrier():
-    image_path = expand(water_barrier_iamge)
-    image_path = start_direction(image_path)
-    CreateImg(canvas, state.index_img, image_path, obstacle="water").create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_water_barrier()
+    else:
+        image_path = expand(water_barrier_image)
+        image_path = start_direction(image_path)
+        CreateImg(canvas, state.index_img, image_path, obstacle="water").create()
+        state.index_img += 1
+        drag()
 
 
 # 砖墙
 def brick_wall():
-    image_path = expand(brick_wall_image)
-    CreateImg(canvas, state.index_img, image_path).create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_brick_wall()
+    else:
+        image_path = expand(brick_wall_image)
+        CreateImg(canvas, state.index_img, image_path).create()
+        state.index_img += 1
+        drag()
 
 
 # 起/终点线
 def line():
-    image_path = expand(line_image)
-    image_path = start_direction(image_path)
-    CreateImg(canvas, state.index_img, image_path).create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_line()
+    else:
+        image_path = expand(line_image)
+        image_path = start_direction(image_path)
+        CreateImg(canvas, state.index_img, image_path).create()
+        state.index_img += 1
+        drag()
 
 
 # 进出口
 def gate():
-    image_path = expand(gate_image)
-    CreateImg(canvas, state.index_img, image_path).create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_gate()
+    else:
+        image_path = expand(gate_image)
+        CreateImg(canvas, state.index_img, image_path).create()
+        state.index_img += 1
+        drag()
 
 
 # 圆
 def circular():
-    cir = int(var_cir.get()) * 10
-    img = Image.open(circular_image)
-    img = img.resize((cir, cir))
-    img.save("./img/cir.png")
-    cir_path = "./img/cir.png"
-    CreateImg(canvas, state.index_img, cir_path).create()
-    state.index_img += 1
-    drag()
+    if _USE_OBSTACLE_FACTORY:
+        _create_circular(var_cir)
+    else:
+        cir = int(var_cir.get()) * 10
+        img = Image.open(circular_image)
+        img = img.resize((cir, cir))
+        img.save("./img/cir.png")
+        cir_path = "./img/cir.png"
+        CreateImg(canvas, state.index_img, cir_path).create()
+        state.index_img += 1
+        drag()
 
 
 # 赛事信息确认
@@ -1115,8 +1186,18 @@ win.bind("<Button-1>", unfocus_click)
 win.bind("<BackSpace>", delete)
 # win.protocol("WM_DELETE_WINDOW", save)
 
-# 初始化 Focus（延迟导入避免循环依赖）
-from focus import Focus
-focus = Focus(win)
+# 初始化 EditPanel（优先使用重构版）
+try:
+    from src.models.edit_panel import EditPanel
+    focus = EditPanel(win)
+    print("使用 EditPanel (重构版)")
+except ImportError:
+    from focus import Focus
+    focus = Focus(win)
+    print("使用 Focus (原版)")
+
+# 导出 focus 到 Common 模块，供 scale.py 等使用
+import Common
+Common.focus = focus
 
 win.mainloop()
