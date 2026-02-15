@@ -15,7 +15,7 @@ except ImportError:
     _has_canvas_object = False
 
 
-class T:
+class T(_CanvasObjectBase):
     all_instances = []
 
     def __init__(self, app, index):
