@@ -1,16 +1,79 @@
 from PIL import Image, ImageOps
 from Common import *
 
+# 使用 ImageProcessor 处理图像
+_img_processor = img_processor
 
-# ===== 避免循环依赖的本地函数 =====
+
+# ===== 代理到 ImageProcessor =====
 def get_one_path():
-    """获取单横木路径（本地定义避免循环依赖）"""
-    return "img/one.png"
+    """获取单横木路径"""
+    return _img_processor.get_one_path()
 
 
 def get_live_path():
-    """获取利物浦路径（本地定义避免循环依赖）"""
-    return "img/liverpool3.png"
+    """获取利物浦路径"""
+    return _img_processor.get_live_path()
+
+
+def merge(m, m1=0, state=1):
+    """合并障碍物"""
+    return _img_processor.merge(m, m1, state)
+
+
+def expand(path, state=1):
+    """扩展图像"""
+    return _img_processor.expand(path, state)
+
+
+def start_direction(image_path):
+    """添加方向箭头"""
+    return _img_processor.start_direction(image_path)
+
+
+def combination(m1, m2, m3):
+    """组合障碍"""
+    return _img_processor.combination(m1, m2, m3)
+
+
+def merge_ab(state, m1=0, m2=0):
+    """AB组合障碍"""
+    return _img_processor.merge_ab(state, m1, m2)
+
+
+def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
+    """双横木障碍"""
+    return _img_processor.oxer_obs_ab(stare_a, state_b, state_c, a, b, c, a_b, b_c)
+
+
+def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
+    """三横木障碍"""
+    return _img_processor.oxer_obs_abc(a, b, c, a_b, b_c)
+
+
+def obs_ab(a=0, b=0, a_b=30):
+    """单障碍"""
+    return _img_processor.obs_ab(a, b, a_b)
+
+
+def water_wh(w, h):
+    """水障"""
+    return _img_processor.water_wh(w, h)
+
+
+def live_two_tool(path="img/liverpool3.png"):
+    """利物浦双横木"""
+    return _img_processor.live_two_tool(path)
+
+
+def live_one_tool(path="img/liverpool3.png"):
+    """利物浦单横木"""
+    return _img_processor.live_one_tool(path)
+
+
+def live_edit(w, h):
+    """利物浦编辑"""
+    return _img_processor.live_edit(w, h)
 
 
 class Entry(tk.Entry):

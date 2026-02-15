@@ -137,6 +137,74 @@ except ImportError:
     EditPanel = None
 
 
+# ===== 11. 图像处理兼容层 =====
+# 为旧代码提供包装函数，内部调用 ImageProcessor
+
+def get_one_path():
+    """获取单横木路径"""
+    return _image_processor.get_one_path()
+
+
+def get_live_path():
+    """获取利物浦路径"""
+    return _image_processor.get_live_path()
+
+
+def merge(m, m1=0, state=1):
+    """合并障碍物"""
+    return _image_processor.merge(m, m1, state)
+
+
+def expand(path, state=1):
+    """扩展图像"""
+    return _image_processor.expand(path, state)
+
+
+def start_direction(image_path):
+    """添加方向箭头"""
+    return _image_processor.start_direction(image_path)
+
+
+def merge_ab(state, m1=0, m2=0):
+    """AB组合障碍"""
+    return _image_processor.merge_ab(state, m1, m2)
+
+
+def oxer_obs_ab(stare_a, state_b, state_c=0, a=0, b=0, c=0, a_b=30, b_c=0):
+    """双横木障碍"""
+    return _image_processor.oxer_obs_ab(stare_a, state_b, state_c, a, b, c, a_b, b_c)
+
+
+def oxer_obs_abc(a=0, b=0, c=0, a_b=30, b_c=0):
+    """三横木障碍"""
+    return _image_processor.oxer_obs_abc(a, b, c, a_b, b_c)
+
+
+def obs_ab(a=0, b=0, a_b=30):
+    """单障碍"""
+    return _image_processor.obs_ab(a, b, a_b)
+
+
+def water_wh(w, h):
+    """水障"""
+    return _image_processor.water_wh(w, h)
+
+
+def live_two_tool(path="img/liverpool3.png"):
+    """利物浦双横木"""
+    return _image_processor.live_two_tool(path)
+
+
+def live_one_tool(path="img/liverpool3.png"):
+    """利物浦单横木"""
+    return _image_processor.live_one_tool(path)
+
+
+def live_edit(w, h):
+    """利物浦编辑"""
+    return _image_processor.live_edit(w, h)
+
+
 # 工具变量（延迟获取，因为需要主窗口创建后才能初始化 tk 变量）
 class _DelayedVar:
     """延迟获取 tk 变量的包装类"""
